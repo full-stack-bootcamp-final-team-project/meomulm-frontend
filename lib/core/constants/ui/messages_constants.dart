@@ -73,6 +73,7 @@ class EmptyMessages {
   static const String searchResult = '검색 결과가 없습니다.';
   static const String rooms = '객실이 없습니다.';
   static const String favorites = '찜한 숙소가 없습니다.';
+  static const String recentAccommodationsEmpty  = '최근 본 숙소가 없습니다.';
 }
 
 /// =====================

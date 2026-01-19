@@ -33,6 +33,7 @@ class ThemeProvider with ChangeNotifier {
   ThemeData _buildTheme() {
     return ThemeData(
         useMaterial3: true,
+        fontFamily: 'Inter',
         scaffoldBackgroundColor: AppColors.white
     );
   }
