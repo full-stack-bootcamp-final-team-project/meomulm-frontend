@@ -9,7 +9,7 @@ import 'features/auth/presentation/providers/auth_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // .env 파일 로드
+  // .env.development 파일 로드
   await dotenv.load(fileName: ".env.development");
 
   if (EnvConfig.isDevelopment) EnvConfig.printEnvInfo();
