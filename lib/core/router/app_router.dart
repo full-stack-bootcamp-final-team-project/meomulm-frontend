@@ -29,7 +29,7 @@ import '../constants/paths/route_paths.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/intro',
+    initialLocation: '/login',
     routes: [
       /// =====================
       /// intro 라우팅
