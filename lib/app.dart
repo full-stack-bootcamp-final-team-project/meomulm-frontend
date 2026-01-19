@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'core/constants/config/env_config.dart';
 import 'core/providers/theme_provider.dart';
 import 'core/router/app_router.dart';
+import 'features/auth/presentation/providers/auth_provider.dart';
 
 class MeomulmApp extends StatelessWidget {
-  const MeomulmApp({super.key});
+  final AuthProvider authProvider;
+
+  const MeomulmApp({
+    super.key,
+    required this.authProvider,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider.value(value: authProvider),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
