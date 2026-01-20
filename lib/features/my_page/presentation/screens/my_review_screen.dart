@@ -4,14 +4,14 @@ import 'package:go_router/go_router.dart';
 /*
  * 마이페이지 - 내 리뷰 스크린 - only_app_style : 수정 필요.
  */
-class MyreviewScreen extends StatefulWidget {
-  const MyreviewScreen({super.key});
+class MyReviewScreen extends StatefulWidget {
+  const MyReviewScreen({super.key});
 
   @override
-  State<MyreviewScreen> createState() => _MyreviewScreenState();
+  State<MyReviewScreen> createState() => _MyReviewScreenState();
 }
 
-class _MyreviewScreenState extends State<MyreviewScreen> {
+class _MyReviewScreenState extends State<MyReviewScreen> {
   // ✅ 더미 데이터 (나중에 API 연동 시 이 리스트만 교체하시면 됩니다)
   final List<_ReviewItem> _reviews = [
     _ReviewItem(

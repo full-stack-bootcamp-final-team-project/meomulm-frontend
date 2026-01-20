@@ -4,14 +4,14 @@ import 'package:go_router/go_router.dart';
 /*
  * 마이페이지 - 리뷰 작성 스크린 - only_app_style : 수정 필요.
  */
-class ReviewWriteScreen extends StatefulWidget {
-  const ReviewWriteScreen({super.key});
+class MyReviewWriteScreen extends StatefulWidget {
+  const MyReviewWriteScreen({super.key});
 
   @override
-  State<ReviewWriteScreen> createState() => _ReviewWriteScreenState();
+  State<MyReviewWriteScreen> createState() => _MyReviewWriteScreenState();
 }
 
-class _ReviewWriteScreenState extends State<ReviewWriteScreen> {
+class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
   double _rating = 0.0; // 0.0 ~ 5.0 (0.5 step)
   final TextEditingController _controller = TextEditingController();
 
