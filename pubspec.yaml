@@ -62,5 +62,7 @@ flutter:
   assets:
     - assets/images/naver_logo.png
     - assets/images/kakao_logo.png
+    - assets/images/login_logo.png
+    - assets/images/main_logo.png
     - .env.development
     - .env.product
