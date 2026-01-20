@@ -46,6 +46,7 @@ dependencies:
   # [Media]
   image_picker: ^1.1.1           # 사진 선택
   google_fonts: ^7.0.2
+  cloudinary_flutter: ^1.3.0
 
 dev_dependencies:
   flutter_test:
