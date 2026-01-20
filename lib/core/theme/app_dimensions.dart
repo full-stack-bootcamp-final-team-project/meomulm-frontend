@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class AppSpacing {
   AppSpacing._();
 
+  static const double xxs = 2.0;
   static const double xs = 4.0;
   static const double sm = 8.0;
   static const double md = 12.0;
@@ -21,6 +22,7 @@ class AppSpacing {
 class AppBorderRadius {
   AppBorderRadius._();
 
+  static const double xs = 5.0;
   static const double sm = 8.0;
   static const double md = 10.0;
   static const double lg = 12.0;
