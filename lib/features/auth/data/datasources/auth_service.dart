@@ -1,7 +1,6 @@
 
 import 'package:dio/dio.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
-import 'package:meomulm_frontend/features/auth/data/models/user_model.dart';
 import '../models/login_request_model.dart';
 import '../models/login_response_model.dart';
 import '../models/signup_request_model.dart';

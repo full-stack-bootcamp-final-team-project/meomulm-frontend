@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meomulm_frontend/core/theme/app_decorations.dart';
-import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
 
 // 시간대 기반 테마
