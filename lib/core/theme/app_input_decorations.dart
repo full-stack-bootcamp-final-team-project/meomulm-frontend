@@ -23,7 +23,7 @@ class AppInputDecorations {
       focusColor: AppColors.main, // 추후 확인 요망 (cursorColor??)
       isDense: true,
       contentPadding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.xl,
+        horizontal: AppSpacing.md,
         vertical: AppSpacing.lg,
       ),
       enabledBorder: OutlineInputBorder(
@@ -101,7 +101,7 @@ class AppInputDecorations {
       hintStyle: AppTextStyles.inputPlaceholder,
       isDense: true,
       contentPadding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.xl,
+        horizontal: AppSpacing.md,
         vertical: AppSpacing.lg,
       ),
       enabledBorder: OutlineInputBorder(
