@@ -1,8 +1,39 @@
-import 'package:flutter/material.dart';
-import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'dart:async';
 
-class HomeScreen extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late LinearGradient _currentGradient;
+  late final Timer _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentGradient = AppGradients.byTime();
+
+    _timer = Timer.periodic(
+      const Duration(minutes: 1),
+          (_) => _updateGradientIfNeeded(),
+    );
+  }
+
+  void _updateGradientIfNeeded() {
+    final newGradient = AppGradients.byTime();
+    if (newGradient != _currentGradient) {
+      setState(() => _currentGradient = newGradient);
+    }
+  }
 
   static final ScrollController _adScroll = ScrollController();
   static final ScrollController _recentScroll = ScrollController();
@@ -10,46 +41,54 @@ class HomeScreen extends StatelessWidget {
   static final ScrollController _jejuScroll = ScrollController();
   static final ScrollController _busanScroll = ScrollController();
 
-  // 가데이터
-  static final List<Map<String, String>> dummyItems = List.generate(12, (index) => {
-    "title": "라발스 호텔 부산 ${index + 1}",
-    "price": "86,660원 ~",
-    "img": "https://picsum.photos/id/${index + 10}/400/600",
-  });
+  // 가데이터 AD
+  static final List<Map<String, String>> ADItems = [
+    {
+      "title": "박세원",
+      "url": "https://github.com/svv0003",
+      "imageUrl": "assets/images/ad/ad_01.png",
+    },
+    {
+      "title": "박형빈",
+      "url": "https://github.com/PHB-1994",
+      "imageUrl": "assets/images/ad/ad_02.png",
+    },
+    {
+      "title": "유기태",
+      "url": "https://github.com/tiradovi",
+      "imageUrl": "assets/images/ad/ad_01.png",
+    },
+    {
+      "title": "오유성",
+      "url": "https://github.com/Emma10003",
+      "imageUrl": "assets/images/ad/ad_02.png",
+    },
+    {
+      "title": "조연희",
+      "url": "https://github.com/yeonhee-cho",
+      "imageUrl": "assets/images/ad/ad_01.png",
+    },
+    {
+      "title": "현윤선",
+      "url": "https://github.com/yunseonhyun",
+      "imageUrl": "assets/images/ad/ad_02.png",
+    },
+  ];
 
-  Map<String, dynamic> _getGradientSettings() {
-    final hour = DateTime.now().hour;
-
-    if (hour >= 3 && hour < 9) {
-      return {
-        "colors": [const Color(0xFF5699CD), const Color(0xFFFFECC9)],
-        "stops": [0.0, 0.6],
-      };
-    } else if (hour >= 9 && hour < 17) {
-      return {
-        "colors": [const Color(0xFF91CFFF), const Color(0xFFE7EFF0)],
-        "stops": [0.0, 0.6],
-      };
-    } else if (hour >= 17 && hour < 21) {
-      return {
-        "colors": [const Color(0xFFA7A6CB), const Color(0xFFE56E50)],
-        "stops": [0.0, 1.0],
-      };
-    } else {
-      return {
-        "colors": [const Color(0xFF3A586E), const Color(0xFF4C1D47)],
-        "stops": [0.0, 0.5],
-      };
+  // 가데이터 숙소
+  static final List<Map<String, String>> dummyItems = List.generate(
+    12, (index) =>
+    {
+      "title": "라발스 호텔 부산 ${index + 1}",
+      "price": "86,660원 ~",
+      "img": "https://picsum.photos/id/${index + 10}/400/600",
     }
-  }
+  );
 
-  void _scrollByItem(
-      ScrollController controller,
+  void _scrollByItem(ScrollController controller,
       double itemWidth,
       double spacing,
-      bool isLeft,
-      )
-  {
+      bool isLeft,) {
     final step = itemWidth + spacing;
 
     final targetOffset =
@@ -69,10 +108,14 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gradient = _getGradientSettings();
+    final screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
+    final bottomBarHeight = screenHeight * 0.09;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppColors.white,
       body: LayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.maxWidth;
@@ -81,17 +124,13 @@ class HomeScreen extends StatelessWidget {
           final headerHeight = height * 0.16;
           final adHeight = width * 0.25;
           final sectionHeight = width * 0.5;
-          final bottomBarHeight = height * 0.09;
 
-          return Container(
+          return AnimatedContainer(
             width: double.infinity,
+            duration: const Duration(seconds: 2),
+            curve: Curves.easeInOut,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: const Alignment(0, -0.2),
-                colors: gradient["colors"],
-                stops: gradient["stops"],
-              ),
+              gradient: _currentGradient,
             ),
             child: Column(
               children: [
@@ -150,39 +189,44 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                _buildBottomBar(bottomBarHeight),
               ],
             ),
           );
         },
       ),
+      bottomNavigationBar: _buildBottomBar(bottomBarHeight, context),
     );
   }
 
+  /// ================== 분리할 내용
   // HEADER
   Widget _buildHeader() {
     return Positioned(
-      top: AppSpacing.xxxl,
+      top: AppSpacing.xxxl + AppSpacing.md,
       left: AppSpacing.lg,
       right: AppSpacing.lg,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children:[
+        children: [
           // 로고
-          Image.asset(
-            'assets/images/main_logo.png',
-            width: 60,
-            height: 48,
-            fit: BoxFit.contain,
-            // 이미지가 없을 때 에러 방지를 위한 처리
-            errorBuilder: (context, error, stackTrace) {
-              return Text(
+          GestureDetector(
+            onTap: () => context.push(RoutePaths.home), // 새로고침의 느낌으로 넣어두었습니다!
+            child:
+            Image.asset(
+              'assets/images/main_logo.png',
+              width: 60,
+              height: 48,
+              fit: BoxFit.contain,
+              // 이미지가 없을 때 에러 방지를 위한 처리
+              errorBuilder: (context, error, stackTrace) {
+                return Text(
                   '머묾',
                   style: AppTextStyles.appBarTitle.copyWith(
                     color: Colors.white,
                   ),
-              );
-            },
+                );
+              },
+            ),
           ),
           // 알림
           Icon(
@@ -195,11 +239,21 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+  Future<void> _openExternalUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+    }
+  }
+
   // AD SECTION
   Widget _buildAdSection(double height, double width) {
     const horizontalPadding = AppSpacing.lg;
     const itemSpacing = AppSpacing.lg;
-    final itemCount = dummyItems.length;
+    final itemCount = ADItems.length;
 
     final itemWidth =
         (width - (horizontalPadding * 2) - itemSpacing) / 2;
@@ -214,47 +268,57 @@ class HomeScreen extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.only(left: horizontalPadding),
             child: Row(
-
               children: List.generate(
                 itemCount,
-                  (i) => Container(
-                  width: itemWidth,
-                  height: height * 0.75,
-                  margin: EdgeInsets.only(
-                    right: i == itemCount - 1 ? 0 : itemSpacing,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(AppBorderRadius.xs),
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        "https://picsum.photos/id/${i + 50}/800/400", // TODO !! 이미지 변경
+                  (i) {
+                    final item = ADItems[i];
+
+                    return GestureDetector(
+                      onTap: () => _openExternalUrl(item["url"]!),
+                      child: Semantics(
+                        label: item["title"], // 이미지 alt
+                        child: Container(
+                          width: itemWidth,
+                          height: itemWidth * 0.43,
+                          margin: EdgeInsets.only(
+                            right: i == itemCount - 1 ? 0 : itemSpacing,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                                AppBorderRadius.xs),
+                            image: DecorationImage(
+                              image: AssetImage(item["imageUrl"]!),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
                       ),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
+                    );
+                  }
               ),
             ),
           ),
           _buildArrowBtn(
             left: AppSpacing.md,
             isLeft: true,
-            onTap: () => _scrollByItem(
-              _adScroll,
-              itemWidth,
-              itemSpacing,
-              true,
-            ),
+            onTap: () =>
+              _scrollByItem(
+                _adScroll,
+                itemWidth,
+                itemSpacing,
+                true,
+              ),
           ),
           _buildArrowBtn(
             left: width - AppSpacing.md - AppSpacing.lg,
             isLeft: false,
-            onTap: () => _scrollByItem(
-              _adScroll,
-              itemWidth,
-              itemSpacing,
-              false,
-            ),
+            onTap: () =>
+              _scrollByItem(
+                _adScroll,
+                itemWidth,
+                itemSpacing,
+                false,
+              ),
           ),
         ],
       ),
@@ -262,13 +326,11 @@ class HomeScreen extends StatelessWidget {
   }
 
   // SECTION 스타일 공통
-  Widget _buildSection(
-      double width,
+  Widget _buildSection(double width,
       double height,
       String title,
       bool isHot,
-      ScrollController controller,
-      ) {
+      ScrollController controller,) {
     const horizontalPadding = AppSpacing.lg;
     const itemSpacing = AppSpacing.lg;
 
@@ -278,9 +340,10 @@ class HomeScreen extends StatelessWidget {
         (width - (horizontalPadding * 2) - (itemSpacing * 3)) / 4;
 
     return SizedBox(
-      height: height + AppSpacing.xl,
+      height: height + AppSpacing.xxxl,
       child: Stack(
         children: [
+
           /// 타이틀
           Positioned(
             left: horizontalPadding,
@@ -300,7 +363,8 @@ class HomeScreen extends StatelessWidget {
                   Container(
                     margin: const EdgeInsets.only(left: AppSpacing.xs),
                     padding:
-                    const EdgeInsets.symmetric(horizontal: AppSpacing.xs, vertical: AppSpacing.xxs),
+                    const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.xs, vertical: AppSpacing.xxs),
                     color: AppColors.black,
                     child: Text(
                       'HOT',
@@ -328,46 +392,59 @@ class HomeScreen extends StatelessWidget {
               child: Row(
                 children: List.generate(
                   itemCount,
-                      (i) => Container(
-                    width: itemWidth,
-                    margin: EdgeInsets.only(
-                      right: i == itemCount - 1 ? 0 : itemSpacing,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AspectRatio(
-                          aspectRatio: 3 / 4,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(AppBorderRadius.xs),
-                              image: DecorationImage(
-                                image: NetworkImage(dummyItems[i]['img']!), // TODO 이미지
-                                fit: BoxFit.cover,
+                      (i) =>
+                      Container(
+                        width: itemWidth,
+                        margin: EdgeInsets.only(
+                          right: i == itemCount - 1 ? 0 : itemSpacing,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AspectRatio(
+                              aspectRatio: 3 / 4,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                      AppBorderRadius.xs),
+                                  image: DecorationImage(
+                                    image: NetworkImage(dummyItems[i]['img']!),
+                                    // TODO 이미지
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                            const SizedBox(height: AppSpacing.sm),
+                            SizedBox(
+                              height: 300,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    child: Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Text(
+                                        dummyItems[i]['title']!,
+                                        style: AppTextStyles.subTitle,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: AppSpacing.sm),
+                                  Text(
+                                    dummyItems[i]['price']!,
+                                    style: AppTextStyles.subTitle.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: AppSpacing.sm),
-                        SizedBox(
-                          height: 36,
-                          child: Text(
-                            dummyItems[i]['title']!, // TODO 타이틀 변경
-                            style: AppTextStyles.subTitle,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        SizedBox(height: AppSpacing.sm),
-                        Text(
-                          dummyItems[i]['price']!, // TODO 가격 변경
-                          style: AppTextStyles.subTitle.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
                 ),
               ),
             ),
@@ -378,12 +455,13 @@ class HomeScreen extends StatelessWidget {
             left: AppSpacing.md,
             top: height * 0.46,
             isLeft: true,
-            onTap: () => _scrollByItem(
-              controller,
-              itemWidth,
-              itemSpacing,
-              true,
-            ),
+            onTap: () =>
+                _scrollByItem(
+                  controller,
+                  itemWidth,
+                  itemSpacing,
+                  true,
+                ),
           ),
 
           /// 오른쪽 화살표
@@ -391,19 +469,20 @@ class HomeScreen extends StatelessWidget {
             left: width - AppSpacing.md - AppSpacing.lg,
             top: height * 0.46,
             isLeft: false,
-            onTap: () => _scrollByItem(
-              controller,
-              itemWidth,
-              itemSpacing,
-              false,
-            ),
+            onTap: () =>
+                _scrollByItem(
+                  controller,
+                  itemWidth,
+                  itemSpacing,
+                  false,
+                ),
           ),
         ],
       ),
     );
   }
 
-
+  // SECTION ARROW BTN
   Widget _buildArrowBtn({
     required double left,
     double? top,
@@ -416,17 +495,17 @@ class HomeScreen extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          width: 18,
-          height: 26,
+          width: AppSpacing.lg + AppSpacing.xxs,
+          height: AppSpacing.xl + AppSpacing.xxs,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(AppBorderRadius.xs),
-            border: Border.all(color: Colors.grey),
+            border: Border.all(color: AppColors.gray4),
           ),
           child: Icon(
-            isLeft ? Icons.chevron_left : Icons.chevron_right,
-            size: 16,
-            color: Colors.grey,
+            isLeft ? AppIcons.arrowLeft : AppIcons.arrowRight,
+            size: AppIcons.sizeSm,
+            color: AppColors.gray1,
           ),
         ),
       ),
@@ -434,18 +513,39 @@ class HomeScreen extends StatelessWidget {
   }
 
   // BOTTOM BAR
-  Widget _buildBottomBar(double height) {
-    return SizedBox(
-      height: height,
+  Widget _buildBottomBar(double height, BuildContext context) {
+    return Container(
+      height: height / 1.3,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        boxShadow: AppShadows.bottomNav,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: const [
-          Icon(Icons.home_filled, color: Color(0xFFA7A6CB)),
-          Icon(Icons.search),
-          Icon(Icons.map_outlined),
-          Icon(Icons.favorite_border),
-          Icon(Icons.person_outline),
+        children: [
+          _navIcon(context, AppIcons.home, RoutePaths.home, color: AppColors.main),
+          _navIcon(context, AppIcons.search, RoutePaths.searchAccommodation),
+          _navIcon(context, AppIcons.map, RoutePaths.map),
+          _navIcon(context, AppIcons.favorite, '${RoutePaths.myPage}${RoutePaths.favorite}'),
+          _navIcon(context, AppIcons.person, RoutePaths.myPage),
         ],
+      ),
+    );
+  }
+
+  // BOTTOM BAR ICON
+  Widget _navIcon(
+      BuildContext context,
+      IconData icon,
+      String page,
+      {Color color = AppColors.black}
+  ) {
+    return GestureDetector(
+      onTap: () => context.push(page),
+      child: Icon(
+        icon,
+        size: AppIcons.sizeXl,
+        color: color, // 홈만 나오는 탭이므로 홈 부분만 색 고정
       ),
     );
   }

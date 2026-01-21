@@ -9,7 +9,7 @@ class AppColors {
   // =========== 메인 시간 대 색상 ===========
   // 노을
   static const main = Color(0xFF9D96CA);
-  static const sub = Color(0xFFD27F76);
+  static const sub = Color(0xFFE56E50);
   // ========================================
 
   // ========== 메인 외 시간 대 별 색상 ==========
@@ -23,7 +23,7 @@ class AppColors {
 
   // 밤
   static const nightMain = Color(0xFF3A586E);
-  static const nightSub = Color(0xFF3A586E);
+  static const nightSub = Color(0xFF4C1D47);
   // ============================================
 
   // Menu Colors

@@ -27,7 +27,7 @@ class AppGradients {
   // 메인 그라디언트 (노을)
   static const sunset = LinearGradient(
     begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
+    end: Alignment(0.0, -0.2),
     colors: [
       AppColors.main,
       AppColors.sub,
@@ -67,4 +67,20 @@ class AppGradients {
     ],
     stops: [0.0, 0.5],
   );
+
+  /// 현재 시간 기준 메인 그라디언트
+  static LinearGradient byTime({DateTime? debugTime}) {
+    final now = debugTime ?? DateTime.now();
+    final hour = now.hour;
+
+    if (hour >= 5 && hour < 11) {
+      return dawn;
+    } else if (hour >= 11 && hour < 17) {
+      return day;
+    } else if (hour >= 17 && hour < 21) {
+      return sunset;
+    } else {
+      return night;
+    }
+  }
 }
