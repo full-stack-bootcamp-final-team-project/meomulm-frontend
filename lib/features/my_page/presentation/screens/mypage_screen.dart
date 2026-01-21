@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:meomulm_frontend/core/router/app_router.dart';
 
@@ -27,7 +28,7 @@ class MypageScreen extends StatelessWidget {
             onConfirm: () {
               // TODO: 로그인 기능 구현
             },
-            content: Text("로그아웃 하시겠습니까?"),
+            content: Text(DialogMessages.logoutContent),
             confirmLabel: "확인",
         );
       },
@@ -48,7 +49,7 @@ class MypageScreen extends StatelessWidget {
             // TODO: 탈퇴 완료 후 이동 기능 구현
             // context.go('/');
           },
-          content: Text("탈퇴를 진행하시겠습니까?"),
+          content: Text("탈퇴를 진행하시겠습니까?"),  // TODO: 상수 추가
           confirmLabel: "탈퇴",
         );
       },
@@ -127,7 +128,7 @@ class MypageScreen extends StatelessWidget {
                       icon: AppIcons.favoriteRounded,
                       label: '찜 목록',
                       onTap: () {
-                        context.go('${RoutePaths.myPage}${RoutePaths.favorite}');  // /mypage/favorite
+                        context.push('${RoutePaths.myPage}${RoutePaths.favorite}');  // /mypage/favorite
                       },
                     ),
                   ),
@@ -136,7 +137,7 @@ class MypageScreen extends StatelessWidget {
                       icon: AppIcons.commentOutline,
                       label: '내 리뷰',
                       onTap: () {
-                        context.go('${RoutePaths.myPage}${RoutePaths.myReview}');  // /mypage/review
+                        context.push('${RoutePaths.myPage}${RoutePaths.myReview}');  // /mypage/review
                       },
                     ),
                   ),
@@ -145,7 +146,7 @@ class MypageScreen extends StatelessWidget {
                       icon: AppIcons.calendarMonth,
                       label: '예약 내역',
                       onTap: () {
-                        context.go('${RoutePaths.myPage}${RoutePaths.myReservation}');
+                        context.push('${RoutePaths.myPage}${RoutePaths.myReservation}');
                       },
                     ),
                   ),
@@ -162,13 +163,13 @@ class MypageScreen extends StatelessWidget {
               _MenuItem(
                 title: '회원정보 수정',
                 onTap: () {
-                  context.go('${RoutePaths.myPage}${RoutePaths.editProfile}'); // /profile/edit
+                  context.push('${RoutePaths.myPage}${RoutePaths.editProfile}'); // /profile/edit
                 },
               ),
               _MenuItem(
                 title: '비밀번호 수정',
                 onTap: () {
-                  context.go('${RoutePaths.myPage}${RoutePaths.myPageChangePassword}');  // /change-password
+                  context.push('${RoutePaths.myPage}${RoutePaths.myPageChangePassword}');  // /change-password
                 },
               ),
               _MenuItem(
