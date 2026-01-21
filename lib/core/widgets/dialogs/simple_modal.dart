@@ -7,30 +7,34 @@ import '../buttons/button_widgets.dart';
 class SimpleModal extends StatelessWidget {
   final VoidCallback onConfirm;
   final VoidCallback? onClose; // X 버튼 클릭 시 행동
-  final String label;
+  final Widget content;  // 커스텀 본문
+  final String confirmLabel;
 
-  const SimpleModal({super.key, required this.onConfirm, this.onClose, required this.label});
+  const SimpleModal({
+    super.key,
+    required this.onConfirm,
+    this.onClose,
+    required this.content,
+    required this.confirmLabel,
+    });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        ModalBarrier(color: AppColors.backdrop, dismissible: false),
+        const ModalBarrier(color: AppColors.backdrop, dismissible: true),
         Center(
           child: Dialog(
             backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: AppBorderRadius.circular(AppBorderRadius.md),
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: AppSpacing.xl,
-                horizontal: AppSpacing.xl,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.sm, right: AppSpacing.sm),
+                  child: Row(
                     children: [
                       const Spacer(),
                       IconButton(
@@ -39,21 +43,31 @@ class SimpleModal extends StatelessWidget {
                         splashRadius: AppBorderRadius.xxxl,
                       ),
                     ],
-                  ),
+                  )
+                ),
+                Padding(
+                  padding: const EdgeInsetsGeometry.fromLTRB(AppSpacing.xl, AppSpacing.sm, AppSpacing.xl, AppSpacing.xl),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SingleChildScrollView(child: content),
 
-                  const SizedBox(height: AppSpacing.xl),
+                      const SizedBox(height: AppSpacing.xxl),
 
-                  // 하단 확인 버튼
-                  SizedBox(
-                    width: double.infinity,
-                    child: MediumButton(
-                      label: label,
-                      onPressed: () =>onConfirm,
-                      enabled: true,
-                    ),
-                  ),
-                ],
-              ),
+                      // 하단 확인 버튼
+                      SizedBox(
+                        width: double.infinity,
+                        child: MediumButton(
+                          label: confirmLabel,
+                          onPressed: onConfirm,
+                          enabled: true,
+                        ),
+                      ),
+                    ],
+                  )
+                ),
+
+              ],
             ),
           ),
         ),
