@@ -21,3 +21,13 @@ class AppDurations {
   static const slow = Duration(milliseconds: 500);
   static const snackbar = Duration(milliseconds: 1200);
 }
+/// =====================
+/// AppBar 관련 레이아웃 상수
+/// =====================
+class AppBarDimensions {
+  AppBarDimensions._();
+
+  static const double appBarHeight = 70;
+  static const double searchBarHeight = 48;
+  static const double dividerHeight = 1;
+}

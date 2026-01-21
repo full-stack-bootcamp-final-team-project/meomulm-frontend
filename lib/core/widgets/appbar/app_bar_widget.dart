@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final VoidCallback? onBack;
 
-  static const double _appBarHeight = 70;
-  static const double _dividerHeight = 1;
-
-  const AppBarWidget({
-    super.key,
-    required this.title,
-  });
+  const AppBarWidget({super.key, required this.title, this.onBack});
 
   @override
   Widget build(BuildContext context) {
@@ -19,24 +15,20 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       centerTitle: true,
 
-
-      toolbarHeight: _appBarHeight - _dividerHeight,
+      toolbarHeight: AppBarDimensions.appBarHeight - AppBarDimensions.dividerHeight,
 
       leading: IconButton(
         icon: const Icon(AppIcons.back),
-        onPressed: () => Navigator.of(context).maybePop(),
+        onPressed: onBack ?? () => Navigator.of(context).maybePop(),
       ),
 
-      title: Text(
-        title,
-        style: AppTextStyles.appBarTitle,
-      ),
+      title: Text(title, style: AppTextStyles.appBarTitle),
 
       bottom: const PreferredSize(
-        preferredSize: Size.fromHeight(_dividerHeight),
+        preferredSize: Size.fromHeight(AppBarDimensions.dividerHeight),
         child: Divider(
-          height: _dividerHeight,
-          thickness: _dividerHeight,
+          height: AppBarDimensions.dividerHeight,
+          thickness: AppBarDimensions.dividerHeight,
           color: AppColors.gray3,
         ),
       ),
@@ -44,6 +36,5 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize =>
-      const Size.fromHeight(_appBarHeight);
+  Size get preferredSize => const Size.fromHeight(AppBarDimensions.appBarHeight);
 }
