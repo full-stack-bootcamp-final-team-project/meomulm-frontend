@@ -22,9 +22,9 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   // ✅ DB에서 받아온 값(예시) - 실제로는 API/Provider로 주입
   final String _emailFromDb = 'gangster@exam.com';
-  final int _birthYearFromDb = 2000;
-  final int _birthMonthFromDb = 11;
-  final int _birthDayFromDb = 22;
+  final String _birthYearFromDb = "2000";
+  final String _birthMonthFromDb = "11";
+  final String _birthDayFromDb = "22";
 
   late final TextEditingController _nameCtrl;
   late final TextEditingController _phoneCtrl;
@@ -101,22 +101,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   AppSpacing.lg,
                   AppSpacing.xxl,
                   AppSpacing.xl,
-              ), // TODO: 공통상수로 수정하기
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SizedBox(height: AppSpacing.md),
                   // 이메일 (Disabled)
                   TextFieldWidget(
+                    label: "이메일",
                     style: AppInputStyles.disabled,
                     decoration: AppInputDecorations.disabled(),
-                    // TODO: 이메일 불변값 넣기
+                    initialValue: _emailFromDb,
                   ),
 
                   const SizedBox(height: AppSpacing.lg),
 
                   // 이름 (Editable)
                   TextFieldWidget(
+                    label: "이름",
                     style: AppInputStyles.standard,
                     decoration: AppInputDecorations.standard(),
                     controller: _nameCtrl,
@@ -126,6 +128,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                   // 연락처 (Editable)
                   TextFieldWidget(
+                    label: "연락처",
                     style: AppInputStyles.standard,
                     decoration: AppInputDecorations.standard(),
                     controller: _phoneCtrl,
@@ -139,30 +142,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       Expanded(
                         flex: 2,
                         child: TextFieldWidget(
+                          label: "생년월일",
                           style: AppInputStyles.disabled,
-                          decoration: AppInputDecorations.disabled(
-                            // TODO: 생년월일-연도 불변값 넣기 : $_birthYearFromDb
-                          )
+                          decoration: AppInputDecorations.disabled(),
+                          initialValue: _birthYearFromDb,
                         )
                       ),
                       SizedBox(width: AppSpacing.sm),
                       Expanded(
                         flex: 1,
                         child: TextFieldWidget(
-                            style: AppInputStyles.disabled,
-                            decoration: AppInputDecorations.disabled(
-                              // TODO: 생년월일-월 불변값 넣기 : $_birthMonthFromDb
-                            )
+                          label: " ",
+                          style: AppInputStyles.disabled,
+                          decoration: AppInputDecorations.disabled(),
+                          initialValue: _birthMonthFromDb,
                         )
                       ),
                       SizedBox(width: AppSpacing.sm),
                       Expanded(
                         flex: 1,
                         child: TextFieldWidget(
-                            style: AppInputStyles.disabled,
-                            decoration: AppInputDecorations.disabled(
-                              // TODO: 생년월일-일 불변값 넣기 : $_birthDayFromDb
-                            )
+                          label: " ",
+                          style: AppInputStyles.disabled,
+                          decoration: AppInputDecorations.disabled(),
+                          initialValue: _birthDayFromDb,
                         )
                       ),
                     ],

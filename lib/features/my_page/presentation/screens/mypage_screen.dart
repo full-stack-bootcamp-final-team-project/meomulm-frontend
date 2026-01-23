@@ -29,7 +29,7 @@ class MypageScreen extends StatelessWidget {
               // TODO: 로그인 기능 구현
             },
             content: Text(DialogMessages.logoutContent),
-            confirmLabel: "확인",
+            confirmLabel: ButtonLabels.confirm,
         );
       },
     );
@@ -68,7 +68,7 @@ class MypageScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBarWidget(title: "내 정보",),
+      appBar: AppBarWidget(title: TitleLabels.myInfo),
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),
@@ -126,7 +126,7 @@ class MypageScreen extends StatelessWidget {
                   Expanded(
                     child: _IconMenuButton(
                       icon: AppIcons.favoriteRounded,
-                      label: '찜 목록',
+                      label: TitleLabels.wishlist,
                       onTap: () {
                         context.push('${RoutePaths.myPage}${RoutePaths.favorite}');  // /mypage/favorite
                       },
@@ -135,7 +135,7 @@ class MypageScreen extends StatelessWidget {
                   Expanded(
                     child: _IconMenuButton(
                       icon: AppIcons.commentOutline,
-                      label: '내 리뷰',
+                      label: TitleLabels.myReviews,
                       onTap: () {
                         context.push('${RoutePaths.myPage}${RoutePaths.myReview}');  // /mypage/review
                       },
@@ -144,7 +144,7 @@ class MypageScreen extends StatelessWidget {
                   Expanded(
                     child: _IconMenuButton(
                       icon: AppIcons.calendarMonth,
-                      label: '예약 내역',
+                      label: TitleLabels.myBookings,
                       onTap: () {
                         context.push('${RoutePaths.myPage}${RoutePaths.myReservation}');
                       },
@@ -161,13 +161,13 @@ class MypageScreen extends StatelessWidget {
               // 하단 메뉴 리스트
               // =====================
               _MenuItem(
-                title: '회원정보 수정',
+                title: TitleLabels.editProfile,
                 onTap: () {
                   context.push('${RoutePaths.myPage}${RoutePaths.editProfile}'); // /profile/edit
                 },
               ),
               _MenuItem(
-                title: '비밀번호 수정',
+                title: TitleLabels.mypageChangePassword,
                 onTap: () {
                   context.push('${RoutePaths.myPage}${RoutePaths.myPageChangePassword}');  // /change-password
                 },

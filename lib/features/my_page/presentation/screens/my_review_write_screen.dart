@@ -1,5 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
+import 'package:meomulm_frontend/core/constants/config/app_config.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_decorations.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_icons.dart';
+import 'package:meomulm_frontend/core/theme/app_input_decorations.dart';
+import 'package:meomulm_frontend/core/theme/app_input_styles.dart';
+import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
+import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
+import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
+import 'package:meomulm_frontend/core/widgets/layouts/star_rating_widget.dart';
 
 /*
  * 마이페이지 - 리뷰 작성 스크린 - only_app_style : 수정 필요.
@@ -34,16 +47,15 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('리뷰 등록이 완료되었습니다'),
+        content: Text(SnackBarMessages.reviewSubmitted),
         behavior: SnackBarBehavior.floating,
-        duration: Duration(milliseconds: 1200),
+        duration: AppDurations.snackbar,
       ),
     );
 
-    // TODO: "내 리뷰" 페이지로 이동
-    // 예) context.go('/myreview');
-    // 예) context.pop(); // 이전이 내 리뷰 페이지라면
-    context.go('/my-reviews');
+    // TODO: push/pop 중 하나로 결정
+    // context.push('${RoutePaths.myPage}${RoutePaths.myReview}');
+    context.pop();
   }
 
   @override
@@ -53,61 +65,39 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
     final maxWidth = w >= 600 ? w : double.infinity;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            context.go('/my-reservation'); // 추후 마이페이지 경로로 변경
-          },
-        ),
-        title: const Text(
-          '리뷰 작성',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: Divider(height: 1, thickness: 1, color: Color(0xFFE5E5E5)),
-        ),
-      ),
+      backgroundColor: AppColors.white,
+      appBar: AppBarWidget(title: TitleLabels.writeReview),
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               child: Column(
                 children: [
                   // 상단 예약 정보 카드
                   _ReservationInfoCard(),
 
-                  const SizedBox(height: 14),
+                  const SizedBox(height: AppSpacing.xl),
 
-                  // 별점 영역 (0.5 단위 터치)
+                  // TODO: star_rating_widget은 별점 선택이 불가해서 별도 위젯 생성함.
                   _RatingRow(
                     rating: _rating,
                     onChanged: (v) => setState(() => _rating = v),
                     ratingFromDx: _ratingFromDx,
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
 
                   // 리뷰 입력 박스
                   Expanded(
                     child: Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(
-                        border: Border.all(color: const Color(0xFFE0E0E0)),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.white,
+                        border: Border.all(color: AppColors.gray3),
+                        borderRadius: AppBorderRadius.mediumRadius,
+                        color: AppColors.white,
                       ),
                       child: TextField(
                         controller: _controller,
@@ -118,44 +108,24 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
                           isCollapsed: true,
                           border: InputBorder.none,
                           hintText: '리뷰를 입력하세요.',
-                          hintStyle: TextStyle(
-                            color: Color(0xFFBDBDBD),
-                            fontWeight: FontWeight.w600,
-                          ),
+                          hintStyle: AppTextStyles.inputPlaceholder,
                         ),
-                        style: const TextStyle(
-                          fontSize: 14,
-                          height: 1.35,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppTextStyles.inputTextMd.copyWith(height: 1.35),
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.md),
 
                   // 등록 버튼
-                  SizedBox(
-                    width: double.infinity,
-                    height: 44,
-                    child: ElevatedButton(
-                      onPressed: _onSubmit,
-                      style: ElevatedButton.styleFrom(
-                        elevation: 0,
-                        backgroundColor: const Color(0xFF9B93CF), // 사진 느낌의 보라색
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: const Text(
-                        '등록',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ),
+                  LargeButton(
+                      label: ButtonLabels.register, 
+                      onPressed: () {
+                        // TODO: 버튼 클릭 시 백엔드 연결하는 함수 구현
+                        // TODO: 백엔드 응답 ok(200)일 때 나의 리뷰 스크린으로 이동
+                        // TODO: 등록 완료 시 SnackBar 띄우기
+                      }, 
+                      enabled: false // TODO: 별점 등록 및 리뷰 입력 시 true 로 변경하는 함수 구현 후 호출
                   ),
                 ],
               ),
@@ -167,100 +137,105 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
   }
 }
 
+
 /// ===============================
-/// 상단 예약 정보 카드 (사진과 유사한 구조)
-/// - 이미지: 회색 placeholder
-/// - 호텔명/룸정보 + 체크인/체크아웃
+/// 상단 예약 정보 카드
+/// TODO: 위젯 분리하기
 /// ===============================
 class _ReservationInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: Color(0x558B8B8B)),
-        borderRadius: BorderRadius.circular(12),
-      ),
+    return Container(
+      decoration: AppCardStyles.card,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+        padding: const EdgeInsets.all(AppSpacing.md),
         child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // 숙소 사진 영역
                 Container(
                   width: 48,
                   height: 48,
+                  // TODO: 백엔드에서 불러온 숙소 사진으로 변경하기
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE0E0E0),
-                    borderRadius: BorderRadius.circular(6),
+                    color: AppColors.gray5,
+                    borderRadius: BorderRadius.circular(AppBorderRadius.xs),
                   ),
                   child: const Center(
-                    child: Icon(Icons.image, color: Color(0xFF9E9E9E), size: 18),
+                    child: Icon(Icons.image, color: AppColors.gray3),
                   ),
                 ),
-                const SizedBox(width: 10),
+
+                const SizedBox(width: AppSpacing.lg),
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
-                        '롯데 호텔 명동',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          height: 1.2,
-                        ),
+                    children: [
+                      const Text(
+                        "롯데 호텔 명동",  // TODO: 추후 백엔드 데이터로 교체
+                        style: AppTextStyles.cardTitle,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      SizedBox(height: 3),
+
+                      const SizedBox(height: AppSpacing.xs),
+
                       Text(
-                        '스탠다드 룸 · 1박',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF8B8B8B),
-                          fontWeight: FontWeight.w600,
-                        ),
+                        "스탠다드 룸 · 1박",  // TODO: 추후 백엔드 데이터로 교체
+                        style: AppTextStyles.subTitle.copyWith(color: AppColors.gray2),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
-            const Divider(height: 1, thickness: 1, color: Color(0xFFEAEAEA)),
-            const SizedBox(height: 10),
-            Row(
-              children: const [
-                Expanded(
-                  child: _MiniDateBlock(
-                    label: '체크인',
-                    value: '12.24 (수) 15:00',
+
+            const SizedBox(height: AppSpacing.md),
+
+            Padding(
+              padding: const EdgeInsets.only(left: AppSpacing.md),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _MiniDateBlock(
+                        label: "체크인",
+                        value: "12.14 (수) 15:00"  // TODO: 추후 백엔드 데이터로 교체
+                    ),
                   ),
-                ),
-                SizedBox(
-                  height: 32,
-                  child: VerticalDivider(
-                    width: 1,
-                    thickness: 1,
-                    color: Color(0xFFE0E0E0),
+
+                  SizedBox(
+                    height: 32,
+                    child: VerticalDivider(
+                      width: AppBorderWidth.md,
+                      thickness: AppBorderWidth.md,
+                      color: AppColors.gray4,
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: _MiniDateBlock(
-                    label: '체크아웃',
-                    value: '12.25 (목) 11:00',
-                  ),
-                ),
-              ],
+
+                  const SizedBox(width: AppSpacing.lg),
+
+                  Expanded(
+                      child: _MiniDateBlock(
+                          label: "체크아웃",
+                          value: "12.25 (목) 11:00"  // TODO: 추후 백엔드 데이터로 교체
+                      )
+                  )
+                ],
+              ),
             ),
           ],
         ),
-      ),
+      )
     );
   }
 }
 
+/// ===============================
+/// 체크인/체크아웃 위젯
+/// TODO: 위젯 분리하기
+/// ===============================
 class _MiniDateBlock extends StatelessWidget {
   final String label;
   final String value;
@@ -277,20 +252,14 @@ class _MiniDateBlock extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 11,
-            color: Color(0xFF8B8B8B),
-            fontWeight: FontWeight.w600,
+          style: AppTextStyles.buttonSm.copyWith(
+            color: AppColors.gray2,
           ),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSpacing.xs),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.black,
-            fontWeight: FontWeight.w700,
-          ),
+          style: AppTextStyles.bodyMd,
         ),
       ],
     );
@@ -300,7 +269,7 @@ class _MiniDateBlock extends StatelessWidget {
 /// ===============================
 /// 별점 Row
 /// - 터치 위치에 따라 0.5 단위로 변경
-/// - 별점 텍스트는 "x.x / 5.0"
+/// TODO: 위젯 분리하기
 /// ===============================
 class _RatingRow extends StatelessWidget {
   final double rating;
@@ -322,14 +291,10 @@ class _RatingRow extends StatelessWidget {
           onChanged: onChanged,
           ratingFromDx: ratingFromDx,
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: AppSpacing.md),
         Text(
           '${rating.toStringAsFixed(1)} / 5.0',
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
+          style: AppTextStyles.bodyLg,
         ),
       ],
     );
@@ -339,7 +304,7 @@ class _RatingRow extends StatelessWidget {
 /// ===============================
 /// 별 5개를 0.5 단위로 조절 가능한 바
 /// - Drag/Touch로 조절
-/// - material icon 사용
+/// TODO: 위젯 분리하기
 /// ===============================
 class _HalfStarBar extends StatelessWidget {
   final double rating;
@@ -354,13 +319,12 @@ class _HalfStarBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const starSize = 24.0;
-    const starColor = Color(0xFFBDBDBD); // 사진에서 옅은 별 느낌
+    const starSize = AppIcons.sizeLg;
+    const starColor = AppColors.ratingColor;
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // 별 영역의 실제 width (별 5개 + 간격)
-        final width = (starSize * 5) + (4 * 6);
+        final width = (starSize * 5) + AppSpacing.xl;
 
         return SizedBox(
           width: width,
@@ -376,25 +340,24 @@ class _HalfStarBar extends StatelessWidget {
 
                 IconData icon;
                 if (rating >= starIndex) {
-                  icon = Icons.star_rounded; // 꽉 찬 별
+                  icon = AppIcons.starRounded;
                 } else if (rating >= starIndex - 0.5) {
-                  icon = Icons.star_half_rounded; // 반 별
+                  icon = AppIcons.starHalfRounded;
                 } else {
-                  icon = Icons.star_border_rounded; // 빈 별
+                  icon = AppIcons.starBorderRounded;
                 }
 
                 return Padding(
-                  padding: EdgeInsets.only(right: i == 4 ? 0 : 6),
+                  padding: EdgeInsets.only(right: i == 4 ? 0 : AppSpacing.xs),
                   child: Icon(
                       icon,
                       size: starSize,
                       color: (icon == Icons.star_rounded ||
                           icon == Icons.star_half_rounded)
-                          ? Colors.amber            // 선택된 별만 amber
-                          : const Color(0xFFBDBDBD) // 선택되지 않은 별
+                          ? AppColors.ratingColor
+                          : AppColors.gray4
                   ),
                 );
-
               }),
             ),
           ),
