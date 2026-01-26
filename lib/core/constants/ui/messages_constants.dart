@@ -5,7 +5,7 @@ class DialogMessages {
   DialogMessages._();
 
   static const logoutContent = '로그아웃하시겠습니까?';
-  static const cancelBookingContent = '예약을 취소하시겠습니까?\n  취소 후에는 다시 되돌릴 수 없습니다.';
+  static const cancelBookingContent = '예약을 취소하시겠습니까?\n취소 후에는 다시 되돌릴 수 없습니다.';
   static const discardChangesContent = '저장하지 않은 리뷰가 있습니다.\n정말 나가시겠습니까?';
   static const deleteReview = '리뷰를 삭제하시겠습니까?';
   static const cancelPaymentContent = '결제를 취소하시겠습니까?';

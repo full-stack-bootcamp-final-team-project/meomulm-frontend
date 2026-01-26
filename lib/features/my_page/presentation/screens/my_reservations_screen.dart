@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_input_decorations.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/simple_modal.dart';
+import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 
 /*
  * 마이페이지 - 예약내역 스크린
@@ -34,63 +43,15 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
       context: context,
       barrierDismissible: true,
       builder: (context) {
-        return Dialog(
-          backgroundColor: Colors.white,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          child: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 30),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const SizedBox(height: 10),
-                    const Text(
-                      '예약을 취소하시겠습니까?\n취소 후에는 다시 되돌릴 수 없습니다.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14,
-                        height: 1.4,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    SizedBox(
-                      width: 160,
-                      height: 40,
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF8E86C9),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          '확인',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                right: 6,
-                top: 6,
-                child: IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close, size: 18),
-                  splashRadius: 18,
-                ),
-              ),
-            ],
-          ),
+        return SimpleModal(
+            onConfirm: () {
+              // TODO: 버튼 클릭 시 예약 취소하는 함수 구현 후 호출 (백엔드 연결)
+            },
+            content: Text(
+              DialogMessages.cancelBookingContent,
+              textAlign: TextAlign.center,
+            ),
+            confirmLabel: ButtonLabels.confirm,
         );
       },
     );
@@ -102,11 +63,7 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
       context: context,
       barrierDismissible: true,
       builder: (context) {
-        return const Dialog(
-          backgroundColor: Color(0xFFF5F6FF), // 사진처럼 살짝 푸른 톤
-          insetPadding: EdgeInsets.symmetric(horizontal: 30),
-          child: ReservationChangeDialog(),
-        );
+        return ReservationChangeDialog();
       },
     );
   }
@@ -117,32 +74,17 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
     final maxWidth = w >= 600 ? w : double.infinity;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => context.go('/'), // TODO: 추후 마이페이지로 변경
-        ),
-        title: const Text(
-          '예약 내역',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(44),
+      appBar: AppBarWidget(title: TitleLabels.myBookings),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxWidth),
           child: Column(
             children: [
               TabBar(
                 controller: _tabController,
-                labelColor: const Color(0xFF009DFF),
-                unselectedLabelColor: const Color(0xFF8B8B8B),
-                indicatorColor: const Color(0xFF009DFF),
+                labelColor: AppColors.menuSelected,
+                unselectedLabelColor: AppColors.gray3,
+                indicatorColor: AppColors.menuSelected,
                 indicatorWeight: 2,
                 tabs: const [
                   Tab(text: '이용전'),
@@ -150,46 +92,51 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
                   Tab(text: '취소됨'),
                 ],
               ),
-              const Divider(height: 1, thickness: 1, color: Color(0xFFE5E5E5)),
-            ],
-          ),
-        ),
-      ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: maxWidth),
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              ReservationBeforeTab(
-                onCancelTap: _showCancelDialog,
-                onChangeTap: _showChangeDialog, // ✅ 여기서 예약 변경 모달 호출
+
+              const Divider(
+                  height: AppBorderWidth.md,
+                  thickness: AppBorderWidth.sm,
+                  color: AppColors.gray5
               ),
-              ReservationAfterTab(
-                onReviewTap: (mode) {
-                  if (mode == ReviewMode.write) {
-                    // TODO: 리뷰 입력 페이지로 이동
-                    context.push('${RoutePaths.myPage}${RoutePaths.myReviewWrite}');
-                  } else {
-                    // TODO: 리뷰 확인 페이지로 이동
-                    context.push('${RoutePaths.myPage}${RoutePaths.myReview}');
-                  }
-                },
+
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    ReservationBeforeTab(
+                      onCancelTap: _showCancelDialog,
+                      onChangeTap: _showChangeDialog, // ✅ 여기서 예약 변경 모달 호출
+                    ),
+                    ReservationAfterTab(
+                      onReviewTap: (mode) {
+                        if (mode == ReviewMode.write) {
+                          // TODO: 리뷰 입력 페이지로 이동
+                          context.push('${RoutePaths.myPage}${RoutePaths.myReviewWrite}');
+                        } else {
+                          // TODO: 리뷰 확인 페이지로 이동
+                          context.push('${RoutePaths.myPage}${RoutePaths.myReview}');
+                        }
+                      },
+                    ),
+                    const ReservationCanceledTab(),
+                  ],
+                ),
               ),
-              const ReservationCanceledTab(),
             ],
-          ),
+          )
         ),
       ),
     );
   }
 }
 
+
 /// ===============================
 /// (모달) 예약 변경 다이얼로그 위젯
 /// - 사진에 맞춰: 상단 타이틀 + 닫기(X)
 /// - 입력 3개: 예약자 이름/이메일/휴대폰 번호
 /// - 하단 버튼: "예약 변경"
+/// TODO: 위젯으로 분리
 /// ===============================
 class ReservationChangeDialog extends StatefulWidget {
   const ReservationChangeDialog({super.key});
@@ -220,163 +167,57 @@ class _ReservationChangeDialogState extends State<ReservationChangeDialog> {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ Dialog의 크기 조절: 여기 width/constraints를 바꾸시면 됩니다.
-    // - width 값을 키우면 더 큰 팝업
-    // - maxWidth를 줄이면 더 작은 팝업
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 420),
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(25, 25, 25, 25),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF5F6FF),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Stack(
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // 상단 타이틀 영역
-                const SizedBox(height: 4),
-                const Text(
-                  '예약 변경',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 25),
+    return SimpleModal(
+      onConfirm: () {
+        // TODO: 버튼 클릭 시 백엔드 연결 함수 호출하기 (변경내역 저장)
+      },
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            "예약자 정보 변경",
+            style: AppTextStyles.cardTitle.copyWith(fontWeight: FontWeight.w600),
+          ),
 
-                // 입력 폼
-                _UnderlineField(
-                  label: '예약자 이름',
-                  hint: '예약자 이름을 입력하세요.',
-                  controller: _nameCtrl,
-                ),
-                const SizedBox(height: 18),
-                _UnderlineField(
-                  label: '이메일',
-                  hint: '이메일을 입력하세요.',
-                  controller: _emailCtrl,
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 18),
-                _UnderlineField(
-                  label: '휴대폰 번호',
-                  hint: '휴대폰 번호를 입력하세요.',
-                  controller: _phoneCtrl,
-                  keyboardType: TextInputType.phone,
-                ),
+          const SizedBox(height: AppSpacing.xl),
 
-                const SizedBox(height: 30),
-
-                // 버튼
-                SizedBox(
-                  width: double.infinity,
-                  height: 44,
-                  child: ElevatedButton(
-                    onPressed: _onSubmit,
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      backgroundColor: const Color(0xFF8E86C9),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      '예약 변경',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+          TextFieldWidget(
+            label: "예약자 이름",
+            decoration: AppInputDecorations.underline(
+              hintText: "예약자 이름을 입력하세요.",
             ),
+            errorText: "", // TODO: 유효성검사에 따라 에러메세지 반환하는 함수 구현
+          ),
 
-            // 우측 상단 닫기(X)
-            Positioned(
-              right: 0,
-              top: 0,
-              child: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.close, size: 18, color: Colors.black),
-                splashRadius: 18,
-              ),
+          const SizedBox(height: AppSpacing.xl),
+
+          TextFieldWidget(
+            label: "이메일",
+            decoration: AppInputDecorations.underline(
+              hintText: "이메일을 입력하세요.",
             ),
-          ],
-        ),
+            errorText: "", // TODO: 유효성검사에 따라 에러메세지 반환하는 함수 구현
+          ),
+          const SizedBox(height: AppSpacing.xl),
+
+          TextFieldWidget(
+            label: "휴대폰 번호",
+            decoration: AppInputDecorations.underline(
+              hintText: "휴대폰 번호를 입력하세요.",
+            ),
+            errorText: "", // TODO: 유효성검사에 따라 에러메세지 반환하는 함수 구현
+          ),
+        ],
       ),
+      confirmLabel: ButtonLabels.changeBooking,
     );
   }
 }
 
-/// ===============================
-/// (모달 내부) 라벨 + underline TextField
-/// ===============================
-class _UnderlineField extends StatelessWidget {
-  final String label;
-  final String hint;
-  final TextEditingController controller;
-  final TextInputType? keyboardType;
-
-  const _UnderlineField({
-    required this.label,
-    required this.hint,
-    required this.controller,
-    this.keyboardType,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Color(0xFF9E9E9E),
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 6),
-        TextField(
-          controller: controller,
-          keyboardType: keyboardType,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: Colors.black,
-          ),
-          decoration: InputDecoration(
-            isDense: true,
-            hintText: hint,
-            hintStyle: const TextStyle(
-              fontSize: 13,
-              color: Color(0xFFBDBDBD),
-              fontWeight: FontWeight.w600,
-            ),
-            border: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFE0E0E0), width: 1),
-            ),
-            enabledBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFE0E0E0), width: 1),
-            ),
-            focusedBorder: const UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFBDBDBD), width: 1),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 /// ===============================
 /// 공통: 리스트 래퍼
+/// TODO: 위젯으로 분리하기
 /// ===============================
 class ReservationList extends StatelessWidget {
   final List<Widget> children;
@@ -390,27 +231,25 @@ class ReservationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 예약내역이 없는 경우
     if (children.isEmpty) {
       return ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
           Text(
             emptyText,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Color(0xFF8B8B8B),
-              fontWeight: FontWeight.w600,
-            ),
+            style: AppTextStyles.bodyMd.copyWith(color: AppColors.gray2),
           ),
         ],
       );
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       itemCount: children.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 14),
+      separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.lg),
       itemBuilder: (context, index) => children[index],
     );
   }
@@ -418,6 +257,7 @@ class ReservationList extends StatelessWidget {
 
 /// ===============================
 /// 탭 1) 이용전
+/// TODO: 위젯으로 분리하기
 /// ===============================
 class ReservationBeforeTab extends StatelessWidget {
   final VoidCallback onCancelTap;
@@ -434,9 +274,8 @@ class ReservationBeforeTab extends StatelessWidget {
     return ReservationList(
       emptyText: '이용전 예약 내역이 없습니다.',
       children: [
+        // TODO: 백엔드에서 가져온 데이터로 변경 (반복문 사용)
         ReservationCardBefore(
-          statusTitle: '예약확정',
-          statusSubTitle: '1일 2시간 30분 뒤 입실 가능',
           hotelName: '롯데 호텔 명동',
           roomInfo: '스탠다드 룸 · 1박',
           checkInValue: '12.31 (수) 15:00',
@@ -451,6 +290,7 @@ class ReservationBeforeTab extends StatelessWidget {
 
 /// ===============================
 /// 탭 2) 이용후
+/// TODO: 위젯으로 분리하기
 /// ===============================
 enum ReviewMode { write, view }
 
@@ -467,6 +307,7 @@ class ReservationAfterTab extends StatelessWidget {
     return ReservationList(
       emptyText: '이용후 예약 내역이 없습니다.',
       children: [
+        // TODO: 백엔드에서 가져온 데이터로 변경 (반복문 사용)
         ReservationCardAfter(
           hotelName: '롯데 호텔 명동',
           roomInfo: '스탠다드 룸 · 1박',
@@ -490,6 +331,7 @@ class ReservationAfterTab extends StatelessWidget {
 
 /// ===============================
 /// 탭 3) 취소됨
+/// TODO: 위젯으로 분리하기
 /// ===============================
 class ReservationCanceledTab extends StatelessWidget {
   const ReservationCanceledTab({super.key});
@@ -499,6 +341,7 @@ class ReservationCanceledTab extends StatelessWidget {
     return ReservationList(
       emptyText: '취소된 예약 내역이 없습니다.',
       children: const [
+        // TODO: 백엔드에서 가져온 데이터로 변경 (반복문 사용)
         ReservationCardCanceled(
           hotelName: '롯데 호텔 명동',
           roomInfo: '스탠다드 룸 · 1박',
@@ -512,6 +355,7 @@ class ReservationCanceledTab extends StatelessWidget {
 
 /// ===============================
 /// 공통 카드 베이스
+/// TODO: 위젯 분리
 /// ===============================
 class ReservationCardBase extends StatelessWidget {
   final Widget headerLeft;
@@ -537,145 +381,88 @@ class ReservationCardBase extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final labelColor =
-    isCanceled ? const Color(0xFF9F9F9F) : const Color(0xFF8B8B8B);
-    final valueColor = isCanceled ? const Color(0xFF9F9F9F) : Colors.black;
+    final labelColor = AppColors.gray3;
+    final valueColor = isCanceled ? AppColors.gray2 : AppColors.black;
 
-    return Card(
-      color: Colors.white,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        side: const BorderSide(color: Color(0x558B8B8B)),
-        borderRadius: BorderRadius.circular(12),
-      ),
+    return Container(
+      decoration: AppCardStyles.card,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             headerLeft,
-            const SizedBox(height: 10),
-            const Divider(height: 1, thickness: 1),
-            const SizedBox(height: 10),
+            const SizedBox(height: AppSpacing.md),
+            const Divider(height: AppBorderWidth.md, thickness: AppBorderWidth.md,),
+            const SizedBox(height: AppSpacing.md),
 
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // 숙소 이미지 영역
                 Container(
                   width: 64,
                   height: 64,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE0E0E0),
+                  decoration: BoxDecoration(  // TODO: 백엔드에서 받아온 이미지로 변경하기
+                    color: AppColors.gray5,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: const Center(
-                    child: Icon(Icons.image, color: Color(0xFF9E9E9E)),
+                    child: Icon(AppIcons.image, color: AppColors.gray3),
                   ),
                 ),
-                const SizedBox(width: 12),
+
+                const SizedBox(width: AppSpacing.md),
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         hotelName,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                        ),
+                        style: AppTextStyles.cardTitle,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: AppSpacing.xs),
                       Text(
                         roomInfo,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Color(0xFF8B8B8B),
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: AppTextStyles.subTitle,
                       ),
                     ],
                   ),
-                ),
+                )
               ],
             ),
 
-            const SizedBox(height: 14),
+            const SizedBox(height: AppSpacing.lg),
 
             LayoutBuilder(
               builder: (context, constraints) {
-                final isNarrow = constraints.maxWidth < 360;
-
-                if (isNarrow) {
-                  return Column(
-                    children: [
-                      _DateRow(
-                        label: '체크인',
-                        value: checkInValue,
-                        labelColor: labelColor,
-                        valueColor: valueColor,
-                      ),
-                      const SizedBox(height: 8),
-                      _DateRow(
-                        label: '체크아웃',
-                        value: checkOutValue,
-                        labelColor: labelColor,
-                        valueColor: valueColor,
-                      ),
-                    ],
-                  );
-                }
-
-                return Row(
-                  children: [
-                    Expanded(
-                      child: _DateRow(
-                        label: '체크인',
-                        value: checkInValue,
-                        labelColor: labelColor,
-                        valueColor: valueColor,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const SizedBox(
-                      height: 34,
-                      child: VerticalDivider(
-                        width: 1,
-                        thickness: 1,
-                        color: Color(0xFF8B8B8B),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _DateRow(
-                        label: '체크아웃',
-                        value: checkOutValue,
-                        labelColor: labelColor,
-                        valueColor: valueColor,
-                      ),
-                    ),
-                  ],
+                return _DateRow(
+                    checkInDate: checkInValue,
+                    checkOutDate: checkOutValue,
+                    labelColor: labelColor,
+                    valueColor: valueColor
                 );
               },
             ),
 
             if (bottomAction != null) ...[
-              const SizedBox(height: 14),
+              const SizedBox(height: AppSpacing.lg),
               bottomAction!,
             ],
           ],
         ),
-      ),
+      )
     );
   }
 }
 
 /// ===============================
 /// 이용전 카드
+/// TODO: 위젯으로 분리하기
 /// ===============================
 class ReservationCardBefore extends StatelessWidget {
-  final String statusTitle;
-  final String statusSubTitle;
 
   final String hotelName;
   final String roomInfo;
@@ -687,8 +474,6 @@ class ReservationCardBefore extends StatelessWidget {
 
   const ReservationCardBefore({
     super.key,
-    required this.statusTitle,
-    required this.statusSubTitle,
     required this.hotelName,
     required this.roomInfo,
     required this.checkInValue,
@@ -700,60 +485,31 @@ class ReservationCardBefore extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ReservationCardBase(
-      headerLeft: _StatusBlock(title: statusTitle, subTitle: statusSubTitle),
+      headerLeft: _StatusBlock(title: "예약확정"),
       hotelName: hotelName,
       roomInfo: roomInfo,
       checkInValue: checkInValue,
       checkOutValue: checkOutValue,
       bottomAction: LayoutBuilder(
         builder: (context, constraints) {
-          final isNarrow = constraints.maxWidth < 360;
+          final isNarrow = constraints.maxWidth < 360;  // 설정되어 있는 mobile 브레이크포인트로 설정하면 이상해서 일단 이렇게 설정함.
 
-          Widget changeBtn() => SizedBox(
-            width: double.infinity,
-            height: 36,
-            child: ElevatedButton(
+          Widget changeBtn() => OptionButton(
+              // label: ButtonLabels.changeBooking, -> 현재 공통 상수에는 "예약 변경"으로 되어 있어서 일단 임시로 바꿔둠
+              label: "예약자 정보 변경",
               onPressed: onChangeTap,
-              style: ElevatedButton.styleFrom(
-                elevation: 0,
-                backgroundColor: const Color(0xFFD2D2D2),
-                foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text(
-                '예약 변경',
-                style: TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ),
           );
 
-          Widget cancelBtn() => SizedBox(
-            width: double.infinity,
-            height: 36,
-            child: ElevatedButton(
+          Widget cancelBtn() => OptionCancelButton(
+              label: ButtonLabels.cancelBooking,
               onPressed: onCancelTap,
-              style: ElevatedButton.styleFrom(
-                elevation: 0,
-                backgroundColor: const Color(0xFFFFBEBE),
-                foregroundColor: const Color(0xFFFF2A2A),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: const Text(
-                '예약 취소',
-                style: TextStyle(fontWeight: FontWeight.w800),
-              ),
-            ),
           );
 
           if (isNarrow) {
             return Column(
               children: [
                 changeBtn(),
-                const SizedBox(height: 10),
+                const SizedBox(height: AppSpacing.md),
                 cancelBtn(),
               ],
             );
@@ -762,7 +518,7 @@ class ReservationCardBefore extends StatelessWidget {
           return Row(
             children: [
               Expanded(child: changeBtn()),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Expanded(child: cancelBtn()),
             ],
           );
@@ -774,6 +530,7 @@ class ReservationCardBefore extends StatelessWidget {
 
 /// ===============================
 /// 이용후 카드 (리뷰 입력/확인)
+/// TODO: 위젯으로 분리
 /// ===============================
 class ReservationCardAfter extends StatelessWidget {
   final String hotelName;
@@ -797,35 +554,16 @@ class ReservationCardAfter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ReservationCardBase(
-      headerLeft: const Text(
-        '이용완료',
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w800,
-          color: Colors.black,
-        ),
-      ),
+      headerLeft: _StatusBlock(title: "이용완료"),
       hotelName: hotelName,
       roomInfo: roomInfo,
       checkInValue: checkInValue,
       checkOutValue: checkOutValue,
       bottomAction: SizedBox(
         width: double.infinity,
-        height: 36,
-        child: ElevatedButton(
-          onPressed: onReviewTap,
-          style: ElevatedButton.styleFrom(
-            elevation: 0,
-            backgroundColor: const Color(0xFFD2D2D2),
-            foregroundColor: Colors.black,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          child: Text(
-            reviewLabel,
-            style: const TextStyle(fontWeight: FontWeight.w700),
-          ),
+        child: OptionButton(
+            label: ButtonLabels.writeReview,
+            onPressed: onReviewTap
         ),
       ),
     );
@@ -834,6 +572,7 @@ class ReservationCardAfter extends StatelessWidget {
 
 /// ===============================
 /// 취소됨 카드
+/// TODO: 위젯으로 분리
 /// ===============================
 class ReservationCardCanceled extends StatelessWidget {
   final String hotelName;
@@ -852,14 +591,7 @@ class ReservationCardCanceled extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ReservationCardBase(
-      headerLeft: const Text(
-        '예약취소',
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w800,
-          color: Color(0xFFFF2A2A),
-        ),
-      ),
+      headerLeft: _StatusBlock(title: "예약취소"),
       hotelName: hotelName,
       roomInfo: roomInfo,
       checkInValue: checkInValue,
@@ -869,84 +601,150 @@ class ReservationCardCanceled extends StatelessWidget {
   }
 }
 
-/// 이용전 상태 블록
+
+/// ===============================
+/// 예약 상태 블록
+/// TODO: 위젯으로 분리
+/// ===============================
 class _StatusBlock extends StatelessWidget {
   final String title;
-  final String subTitle;
 
   const _StatusBlock({
     required this.title,
-    required this.subTitle,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          subTitle,
-          style: const TextStyle(
-            fontSize: 11,
-            color: Color(0xFF009DFF),
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
+    if(title == "예약확정") {
+      return _StatusBlockStyle(
+        title: title,
+        backgroundColor: AppColors.selectedLight,
+        textColor: AppColors.menuSelected,
+      );
+    }
+
+    if(title == "이용완료") {
+      return _StatusBlockStyle(
+        title: title,
+        backgroundColor: AppColors.gray4,
+        textColor: AppColors.gray2,
+      );
+    }
+
+    return _StatusBlockStyle(
+      title: title,
+      backgroundColor: AppColors.cancelledLight,
+      textColor: AppColors.cancelled,
     );
   }
 }
 
+/// ===============================
+/// 예약 상태 블록 공통 스타일
+/// TODO: 위젯으로 분리
+/// ===============================
+class _StatusBlockStyle extends StatelessWidget {
+  final String title;
+  final Color backgroundColor;
+  final Color textColor;
+
+  const _StatusBlockStyle({
+    required this.title,
+    required this.backgroundColor,
+    required this.textColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 65,
+      height: 27,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppBorderRadius.xs),
+        color: backgroundColor,
+      ),
+      child: Padding(
+        padding: EdgeInsetsGeometry.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+        child: Text(
+          title,
+          textAlign: TextAlign.center,
+          style: AppTextStyles.buttonSm.copyWith(color: textColor),
+        ),
+      ),
+    );
+  }
+}
+
+
+/// ===============================
 /// 체크인/체크아웃 라인
+/// TODO: 위젯으로 분리
+/// ===============================
 class _DateRow extends StatelessWidget {
-  final String label;
-  final String value;
+  final String checkInDate;
+  final String checkOutDate;
   final Color labelColor;
   final Color valueColor;
 
   const _DateRow({
-    required this.label,
-    required this.value,
+    required this.checkInDate,
+    required this.checkOutDate,
     required this.labelColor,
     required this.valueColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 2,
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: labelColor,
-              fontWeight: FontWeight.w600,
+    return Expanded(
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "체크인",
+                  style: AppTextStyles.bodyXs.copyWith(color: labelColor),
+                ),
+                Text(
+                  checkInDate,
+                  style: AppTextStyles.bodyMd.copyWith(color: valueColor),
+                  textAlign: TextAlign.right,
+                )
+              ],
             ),
           ),
-        ),
-        Expanded(
-          flex: 5,
-          child: Text(
-            value,
-            style: TextStyle(
-              fontSize: 13,
-              color: valueColor,
-              fontWeight: FontWeight.w600,
+
+
+          const SizedBox(width: AppSpacing.md),
+          const SizedBox(
+            height: AppSpacing.xxl,
+            child: VerticalDivider(
+              width: AppBorderWidth.md,
+              thickness: AppBorderWidth.md,
+              color: AppColors.gray3,
             ),
-            textAlign: TextAlign.right,
           ),
-        ),
-      ],
+          const SizedBox(width: AppSpacing.md),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "체크아웃",
+                  style: AppTextStyles.bodyXs.copyWith(color: labelColor),
+                ),
+                Text(
+                  checkOutDate,
+                  style: AppTextStyles.bodyMd.copyWith(color: valueColor),
+                  textAlign: TextAlign.right,
+                )
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
