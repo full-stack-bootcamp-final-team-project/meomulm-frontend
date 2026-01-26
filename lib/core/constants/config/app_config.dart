@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 /// =====================
 /// 화면 크기 분기점(Breakpoints)
 /// =====================
@@ -21,6 +23,8 @@ class AppDurations {
   static const slow = Duration(milliseconds: 500);
   static const snackbar = Duration(milliseconds: 1200);
 }
+
+
 /// =====================
 /// AppBar 관련 레이아웃 상수
 /// =====================
@@ -30,4 +34,16 @@ class AppBarDimensions {
   static const double appBarHeight = 70;
   static const double searchBarHeight = 48;
   static const double dividerHeight = 1;
+}
+
+
+/// =====================
+/// Bottom Button Bar 관련 레이아웃 상수
+/// =====================
+class ButtonButtonBarDimensions {
+  ButtonButtonBarDimensions._();
+
+  static const double bottomButtonBarPadding = 20;
+  static const double bottomButtonBarHeight = 50;
+  static const double bottomButtonBarWidthPercentage = 0.9;
 }

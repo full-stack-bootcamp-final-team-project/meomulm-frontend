@@ -524,7 +524,7 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _navIcon(context, AppIcons.home, RoutePaths.home, color: AppColors.main),
-          _navIcon(context, AppIcons.search, RoutePaths.searchAccommodation),
+          _navIcon(context, AppIcons.search, RoutePaths.accommodationSearch),
           _navIcon(context, AppIcons.map, RoutePaths.map),
           _navIcon(context, AppIcons.favorite, '${RoutePaths.myPage}${RoutePaths.favorite}'),
           _navIcon(context, AppIcons.person, RoutePaths.myPage),
