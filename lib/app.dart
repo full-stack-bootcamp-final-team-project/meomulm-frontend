@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'core/constants/config/env_config.dart';
@@ -19,6 +20,7 @@ class MeomulmApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => AccommodationProvider()),
         ChangeNotifierProvider.value(value: authProvider),
       ],
       child: Consumer<ThemeProvider>(

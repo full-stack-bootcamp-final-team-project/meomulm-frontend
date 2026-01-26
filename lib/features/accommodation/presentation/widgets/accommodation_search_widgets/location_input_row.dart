@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:meomulm_frontend/core/widgets/search/row_container.dart';
 
 class LocationInputRow extends StatelessWidget {
@@ -14,7 +16,10 @@ class LocationInputRow extends StatelessWidget {
     return RowContainer(
       child: Row(
         children: [
-          const Icon(Icons.location_on_outlined, color: Colors.grey),
+          const Icon(
+              Icons.location_on_outlined,
+              color: AppColors.gray2
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
@@ -24,10 +29,7 @@ class LocationInputRow extends StatelessWidget {
                 border: InputBorder.none,
                 isDense: true,
               ),
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
+              style: AppTextStyles.inputTextLg,
             ),
           ),
         ],

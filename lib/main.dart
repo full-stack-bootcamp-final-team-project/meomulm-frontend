@@ -15,9 +15,9 @@ Future<void> main() async {
 
   if (EnvConfig.isDevelopment) EnvConfig.printEnvInfo();
 
-  if (!kIsWeb) {
-    await KakaoMapSdk.instance.initialize(EnvConfig.kakaoNativeKey);
-  }
+  // if (!kIsWeb) {
+  //   await KakaoMapSdk.instance.initialize(EnvConfig.kakaoNativeKey);
+  // }
 
 
   // AuthProvider 생성 및 저장된 사용자 로드

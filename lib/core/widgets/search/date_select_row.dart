@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'row_container.dart';
 
 class DateSelectRow extends StatelessWidget {
@@ -18,16 +20,16 @@ class DateSelectRow extends StatelessWidget {
       child: RowContainer(
         child: Row(
           children: [
-            const Icon(Icons.calendar_month_outlined, color: Colors.grey),
+            const Icon(
+                Icons.calendar_month_outlined,
+                color: AppColors.gray2
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 dateText,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: AppTextStyles.inputTextLg,
               ),
             ),
           ],

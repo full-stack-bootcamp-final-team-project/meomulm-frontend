@@ -27,7 +27,7 @@ class AccommodationDetailScreen extends StatelessWidget {
 
     return Consumer<AccommodationProvider>(
         builder: (context, provider, child) {
-          final id = provider.currentId ?? 'unknown';
+          final id = provider.accommodationId ?? 'unknown';
           return Scaffold(
             backgroundColor: Colors.white,
             body: Stack(

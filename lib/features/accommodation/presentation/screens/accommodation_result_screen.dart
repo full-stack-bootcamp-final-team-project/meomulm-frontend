@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget_second.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_result_widgets/hotel_card.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_result_widgets/result_topBar.dart';
 
@@ -12,7 +13,8 @@ class AccommodationResultScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const ResultTopBar(),
+      // appBar: const ResultTopBar(),
+      appBar: const SearchBarAppBar(),
       body: Column(
         children: [
           const SizedBox(height: 20),

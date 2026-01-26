@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/bottom_button_field.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_search_widgets/search_box.dart';
+import 'package:provider/provider.dart';
 
 class AccommodationSearchScreen extends StatefulWidget {
   const AccommodationSearchScreen({super.key});
@@ -12,35 +15,41 @@ class AccommodationSearchScreen extends StatefulWidget {
 }
 
 class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
-  String location = '';
-  DateTimeRange? dateRange;
-  int guestCount = 2;
+  String tempAccommodationName = '';
+  DateTimeRange? tempDateRange;
+  int tempGuestCount = 2;
+
+  @override
+  void initState() {
+    super.initState();
+    final provider = context.read<AccommodationProvider>();
+    tempAccommodationName = provider.accommodationName ?? '';
+    tempDateRange = provider.dateRange;
+    tempGuestCount = provider.guestCount;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
       appBar: AppBarWidget(title: "숙소 검색"),
       body: Column(
         children: [
-          const SizedBox(height: 24),
+          const SizedBox(height: 30),
 
           SearchBox(
-            width: size.width * 0.9,
-            location: location,
-            dateRange: dateRange,
-            guestCount: guestCount,
-            onLocationChanged: (v) => setState(() => location = v),
-            onDateChanged: (v) => setState(() => dateRange = v),
-            onGuestChanged: (v) => setState(() => guestCount = v),
+            location: tempAccommodationName,
+            dateRange: tempDateRange,
+            guestCount: tempGuestCount,
+            onChangedLocation: (v) => setState(() => tempAccommodationName = v),
+            onChangedDateRange: (v) => setState(() => tempDateRange = v),
+            onChangedGuestCount: (v) => setState(() => tempGuestCount = v),
           ),
 
           const Spacer(),
 
           BottomButtonField(
             buttonName: "검색하기",
-              onPressed: _onSearch,
+            onPressed: _onSearch,
           ),
         ],
       ),
@@ -48,10 +57,18 @@ class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
   }
 
   void _onSearch() {
-    debugPrint('지역: $location');
-    debugPrint('날짜: $dateRange');
-    debugPrint('인원: $guestCount');
+    final provider = context.read<AccommodationProvider>();
+    provider.setAccommodationSearch(
+      accommodationName: tempAccommodationName,
+      dateRange: tempDateRange,
+      guestCount: tempGuestCount,
+    );
 
-    // Navigator.push(...)
+    // debug print
+    debugPrint('숙소명, 지역: ${provider.accommodationName}');
+    debugPrint('날짜: ${provider.dateRange}');
+    debugPrint('인원: ${provider.guestCount}');
+
+    context.push("/accommodation-result");
   }
 }
