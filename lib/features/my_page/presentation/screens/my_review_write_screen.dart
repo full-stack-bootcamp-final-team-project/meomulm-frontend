@@ -119,12 +119,12 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
 
                   // 등록 버튼
                   LargeButton(
-                      label: ButtonLabels.register, 
+                      label: ButtonLabels.register,
                       onPressed: () {
                         // TODO: 버튼 클릭 시 백엔드 연결하는 함수 구현
                         // TODO: 백엔드 응답 ok(200)일 때 나의 리뷰 스크린으로 이동
                         // TODO: 등록 완료 시 SnackBar 띄우기
-                      }, 
+                      },
                       enabled: false // TODO: 별점 등록 및 리뷰 입력 시 true 로 변경하는 함수 구현 후 호출
                   ),
                 ],
@@ -146,88 +146,88 @@ class _ReservationInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: AppCardStyles.card,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // 숙소 사진 영역
-                Container(
-                  width: 48,
-                  height: 48,
-                  // TODO: 백엔드에서 불러온 숙소 사진으로 변경하기
-                  decoration: BoxDecoration(
-                    color: AppColors.gray5,
-                    borderRadius: BorderRadius.circular(AppBorderRadius.xs),
-                  ),
-                  child: const Center(
-                    child: Icon(Icons.image, color: AppColors.gray3),
-                  ),
-                ),
-
-                const SizedBox(width: AppSpacing.lg),
-
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "롯데 호텔 명동",  // TODO: 추후 백엔드 데이터로 교체
-                        style: AppTextStyles.cardTitle,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-
-                      const SizedBox(height: AppSpacing.xs),
-
-                      Text(
-                        "스탠다드 룸 · 1박",  // TODO: 추후 백엔드 데이터로 교체
-                        style: AppTextStyles.subTitle.copyWith(color: AppColors.gray2),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: AppSpacing.md),
-
-            Padding(
-              padding: const EdgeInsets.only(left: AppSpacing.md),
-              child: Row(
+        decoration: AppCardStyles.card,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: _MiniDateBlock(
-                        label: "체크인",
-                        value: "12.14 (수) 15:00"  // TODO: 추후 백엔드 데이터로 교체
+                  // 숙소 사진 영역
+                  Container(
+                    width: 48,
+                    height: 48,
+                    // TODO: 백엔드에서 불러온 숙소 사진으로 변경하기
+                    decoration: BoxDecoration(
+                      color: AppColors.gray5,
+                      borderRadius: BorderRadius.circular(AppBorderRadius.xs),
                     ),
-                  ),
-
-                  SizedBox(
-                    height: 32,
-                    child: VerticalDivider(
-                      width: AppBorderWidth.md,
-                      thickness: AppBorderWidth.md,
-                      color: AppColors.gray4,
+                    child: const Center(
+                      child: Icon(Icons.image, color: AppColors.gray3),
                     ),
                   ),
 
                   const SizedBox(width: AppSpacing.lg),
 
                   Expanded(
-                      child: _MiniDateBlock(
-                          label: "체크아웃",
-                          value: "12.25 (목) 11:00"  // TODO: 추후 백엔드 데이터로 교체
-                      )
-                  )
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "롯데 호텔 명동",  // TODO: 추후 백엔드 데이터로 교체
+                          style: AppTextStyles.cardTitle,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                        const SizedBox(height: AppSpacing.xs),
+
+                        Text(
+                          "스탠다드 룸 · 1박",  // TODO: 추후 백엔드 데이터로 교체
+                          style: AppTextStyles.subTitle.copyWith(color: AppColors.gray2),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ],
-        ),
-      )
+
+              const SizedBox(height: AppSpacing.md),
+
+              Padding(
+                padding: const EdgeInsets.only(left: AppSpacing.md),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _MiniDateBlock(
+                          label: "체크인",
+                          value: "12.14 (수) 15:00"  // TODO: 추후 백엔드 데이터로 교체
+                      ),
+                    ),
+
+                    SizedBox(
+                      height: 32,
+                      child: VerticalDivider(
+                        width: AppBorderWidth.md,
+                        thickness: AppBorderWidth.md,
+                        color: AppColors.gray4,
+                      ),
+                    ),
+
+                    const SizedBox(width: AppSpacing.lg),
+
+                    Expanded(
+                        child: _MiniDateBlock(
+                            label: "체크아웃",
+                            value: "12.25 (목) 11:00"  // TODO: 추후 백엔드 데이터로 교체
+                        )
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        )
     );
   }
 }

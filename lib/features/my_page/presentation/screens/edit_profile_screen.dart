@@ -97,10 +97,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.xxl,
-                  AppSpacing.lg,
-                  AppSpacing.xxl,
-                  AppSpacing.xl,
+                AppSpacing.xxl,
+                AppSpacing.lg,
+                AppSpacing.xxl,
+                AppSpacing.xl,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -140,33 +140,33 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   Row(
                     children: [
                       Expanded(
-                        flex: 2,
-                        child: TextFieldWidget(
-                          label: "생년월일",
-                          style: AppInputStyles.disabled,
-                          decoration: AppInputDecorations.disabled(),
-                          initialValue: _birthYearFromDb,
-                        )
+                          flex: 2,
+                          child: TextFieldWidget(
+                            label: "생년월일",
+                            style: AppInputStyles.disabled,
+                            decoration: AppInputDecorations.disabled(),
+                            initialValue: _birthYearFromDb,
+                          )
                       ),
                       SizedBox(width: AppSpacing.sm),
                       Expanded(
-                        flex: 1,
-                        child: TextFieldWidget(
-                          label: " ",
-                          style: AppInputStyles.disabled,
-                          decoration: AppInputDecorations.disabled(),
-                          initialValue: _birthMonthFromDb,
-                        )
+                          flex: 1,
+                          child: TextFieldWidget(
+                            label: " ",
+                            style: AppInputStyles.disabled,
+                            decoration: AppInputDecorations.disabled(),
+                            initialValue: _birthMonthFromDb,
+                          )
                       ),
                       SizedBox(width: AppSpacing.sm),
                       Expanded(
-                        flex: 1,
-                        child: TextFieldWidget(
-                          label: " ",
-                          style: AppInputStyles.disabled,
-                          decoration: AppInputDecorations.disabled(),
-                          initialValue: _birthDayFromDb,
-                        )
+                          flex: 1,
+                          child: TextFieldWidget(
+                            label: " ",
+                            style: AppInputStyles.disabled,
+                            decoration: AppInputDecorations.disabled(),
+                            initialValue: _birthDayFromDb,
+                          )
                       ),
                     ],
                   ),

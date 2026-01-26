@@ -44,14 +44,14 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
       barrierDismissible: true,
       builder: (context) {
         return SimpleModal(
-            onConfirm: () {
-              // TODO: 버튼 클릭 시 예약 취소하는 함수 구현 후 호출 (백엔드 연결)
-            },
-            content: Text(
-              DialogMessages.cancelBookingContent,
-              textAlign: TextAlign.center,
-            ),
-            confirmLabel: ButtonLabels.confirm,
+          onConfirm: () {
+            // TODO: 버튼 클릭 시 예약 취소하는 함수 구현 후 호출 (백엔드 연결)
+          },
+          content: Text(
+            DialogMessages.cancelBookingContent,
+            textAlign: TextAlign.center,
+          ),
+          confirmLabel: ButtonLabels.confirm,
         );
       },
     );
@@ -77,53 +77,53 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
       appBar: AppBarWidget(title: TitleLabels.myBookings),
       body: Center(
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: maxWidth),
-          child: Column(
-            children: [
-              TabBar(
-                controller: _tabController,
-                labelColor: AppColors.menuSelected,
-                unselectedLabelColor: AppColors.gray3,
-                indicatorColor: AppColors.menuSelected,
-                indicatorWeight: 2,
-                tabs: const [
-                  Tab(text: '이용전'),
-                  Tab(text: '이용후'),
-                  Tab(text: '취소됨'),
-                ],
-              ),
-
-              const Divider(
-                  height: AppBorderWidth.md,
-                  thickness: AppBorderWidth.sm,
-                  color: AppColors.gray5
-              ),
-
-              Expanded(
-                child: TabBarView(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: Column(
+              children: [
+                TabBar(
                   controller: _tabController,
-                  children: [
-                    ReservationBeforeTab(
-                      onCancelTap: _showCancelDialog,
-                      onChangeTap: _showChangeDialog, // ✅ 여기서 예약 변경 모달 호출
-                    ),
-                    ReservationAfterTab(
-                      onReviewTap: (mode) {
-                        if (mode == ReviewMode.write) {
-                          // TODO: 리뷰 입력 페이지로 이동
-                          context.push('${RoutePaths.myPage}${RoutePaths.myReviewWrite}');
-                        } else {
-                          // TODO: 리뷰 확인 페이지로 이동
-                          context.push('${RoutePaths.myPage}${RoutePaths.myReview}');
-                        }
-                      },
-                    ),
-                    const ReservationCanceledTab(),
+                  labelColor: AppColors.menuSelected,
+                  unselectedLabelColor: AppColors.gray3,
+                  indicatorColor: AppColors.menuSelected,
+                  indicatorWeight: 2,
+                  tabs: const [
+                    Tab(text: '이용전'),
+                    Tab(text: '이용후'),
+                    Tab(text: '취소됨'),
                   ],
                 ),
-              ),
-            ],
-          )
+
+                const Divider(
+                    height: AppBorderWidth.md,
+                    thickness: AppBorderWidth.sm,
+                    color: AppColors.gray5
+                ),
+
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      ReservationBeforeTab(
+                        onCancelTap: _showCancelDialog,
+                        onChangeTap: _showChangeDialog, // ✅ 여기서 예약 변경 모달 호출
+                      ),
+                      ReservationAfterTab(
+                        onReviewTap: (mode) {
+                          if (mode == ReviewMode.write) {
+                            // TODO: 리뷰 입력 페이지로 이동
+                            context.push('${RoutePaths.myPage}${RoutePaths.myReviewWrite}');
+                          } else {
+                            // TODO: 리뷰 확인 페이지로 이동
+                            context.push('${RoutePaths.myPage}${RoutePaths.myReview}');
+                          }
+                        },
+                      ),
+                      const ReservationCanceledTab(),
+                    ],
+                  ),
+                ),
+              ],
+            )
         ),
       ),
     );
@@ -385,75 +385,75 @@ class ReservationCardBase extends StatelessWidget {
     final valueColor = isCanceled ? AppColors.gray2 : AppColors.black;
 
     return Container(
-      decoration: AppCardStyles.card,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            headerLeft,
-            const SizedBox(height: AppSpacing.md),
-            const Divider(height: AppBorderWidth.md, thickness: AppBorderWidth.md,),
-            const SizedBox(height: AppSpacing.md),
+        decoration: AppCardStyles.card,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              headerLeft,
+              const SizedBox(height: AppSpacing.md),
+              const Divider(height: AppBorderWidth.md, thickness: AppBorderWidth.md,),
+              const SizedBox(height: AppSpacing.md),
 
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 숙소 이미지 영역
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(  // TODO: 백엔드에서 받아온 이미지로 변경하기
-                    color: AppColors.gray5,
-                    borderRadius: BorderRadius.circular(6),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 숙소 이미지 영역
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(  // TODO: 백엔드에서 받아온 이미지로 변경하기
+                      color: AppColors.gray5,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: const Center(
+                      child: Icon(AppIcons.image, color: AppColors.gray3),
+                    ),
                   ),
-                  child: const Center(
-                    child: Icon(AppIcons.image, color: AppColors.gray3),
-                  ),
-                ),
 
-                const SizedBox(width: AppSpacing.md),
+                  const SizedBox(width: AppSpacing.md),
 
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        hotelName,
-                        style: AppTextStyles.cardTitle,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        roomInfo,
-                        style: AppTextStyles.subTitle,
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          hotelName,
+                          style: AppTextStyles.cardTitle,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(
+                          roomInfo,
+                          style: AppTextStyles.subTitle,
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
 
-            const SizedBox(height: AppSpacing.lg),
-
-            LayoutBuilder(
-              builder: (context, constraints) {
-                return _DateRow(
-                    checkInDate: checkInValue,
-                    checkOutDate: checkOutValue,
-                    labelColor: labelColor,
-                    valueColor: valueColor
-                );
-              },
-            ),
-
-            if (bottomAction != null) ...[
               const SizedBox(height: AppSpacing.lg),
-              bottomAction!,
+
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  return _DateRow(
+                      checkInDate: checkInValue,
+                      checkOutDate: checkOutValue,
+                      labelColor: labelColor,
+                      valueColor: valueColor
+                  );
+                },
+              ),
+
+              if (bottomAction != null) ...[
+                const SizedBox(height: AppSpacing.lg),
+                bottomAction!,
+              ],
             ],
-          ],
-        ),
-      )
+          ),
+        )
     );
   }
 }
@@ -495,14 +495,14 @@ class ReservationCardBefore extends StatelessWidget {
           final isNarrow = constraints.maxWidth < 360;  // 설정되어 있는 mobile 브레이크포인트로 설정하면 이상해서 일단 이렇게 설정함.
 
           Widget changeBtn() => OptionButton(
-              // label: ButtonLabels.changeBooking, -> 현재 공통 상수에는 "예약 변경"으로 되어 있어서 일단 임시로 바꿔둠
-              label: "예약자 정보 변경",
-              onPressed: onChangeTap,
+            // label: ButtonLabels.changeBooking, -> 현재 공통 상수에는 "예약 변경"으로 되어 있어서 일단 임시로 바꿔둠
+            label: "예약자 정보 변경",
+            onPressed: onChangeTap,
           );
 
           Widget cancelBtn() => OptionCancelButton(
-              label: ButtonLabels.cancelBooking,
-              onPressed: onCancelTap,
+            label: ButtonLabels.cancelBooking,
+            onPressed: onCancelTap,
           );
 
           if (isNarrow) {
