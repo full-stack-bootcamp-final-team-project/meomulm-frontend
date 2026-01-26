@@ -187,11 +187,11 @@ class _MypageChangePasswordScreenState extends State<MypageChangePasswordScreen>
           child: SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(
-              AppSpacing.xxl,
-              AppSpacing.lg,
-              AppSpacing.xxl,
-              AppSpacing.xl,
-            ),
+                AppSpacing.xxl,
+                AppSpacing.lg,
+                AppSpacing.xxl,
+                AppSpacing.xl,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -232,11 +232,11 @@ class _MypageChangePasswordScreenState extends State<MypageChangePasswordScreen>
                       const SizedBox(width: AppSpacing.sm),
 
                       SmallButton(
-                        label: ButtonLabels.confirm,
-                        onPressed: () {
-                          // TODO: 버튼 클릭 시 기존 비밀번호와 입력값 일치 여부 확인 함수 구현 후 호출
-                        },
-                        enabled: true
+                          label: ButtonLabels.confirm,
+                          onPressed: () {
+                            // TODO: 버튼 클릭 시 기존 비밀번호와 입력값 일치 여부 확인 함수 구현 후 호출
+                          },
+                          enabled: true
                       ),
                     ],
                   ),
@@ -284,7 +284,7 @@ class _MypageChangePasswordScreenState extends State<MypageChangePasswordScreen>
                     onPressed: () {
                       // TODO: 버튼 클릭 시 백엔드와 연결하는 함수 구현 후 호출 (service)
                     },
-                    enabled: false, // TODO: 유효성 검사 후 true로 변경하는 함수 구현 후 호출 
+                    enabled: false, // TODO: 유효성 검사 후 true로 변경하는 함수 구현 후 호출
                   ),
                 ],
               ),

@@ -25,11 +25,11 @@ class MypageScreen extends StatelessWidget {
       barrierDismissible: true,
       builder: (_) {
         return SimpleModal(
-            onConfirm: () {
-              // TODO: 로그인 기능 구현
-            },
-            content: Text(DialogMessages.logoutContent),
-            confirmLabel: ButtonLabels.confirm,
+          onConfirm: () {
+            // TODO: 로그인 기능 구현
+          },
+          content: Text(DialogMessages.logoutContent),
+          confirmLabel: ButtonLabels.confirm,
         );
       },
     );
@@ -105,8 +105,8 @@ class MypageScreen extends StatelessWidget {
                           ),
                           SizedBox(height: AppSpacing.xs),
                           Text(
-                            '홍길동',  // TODO: 회원 이름으로 바꾸기
-                            style: AppTextStyles.bodyLg
+                              '홍길동',  // TODO: 회원 이름으로 바꾸기
+                              style: AppTextStyles.bodyLg
                           ),
                         ],
                       ),
@@ -301,11 +301,11 @@ class _MenuItem extends StatelessWidget {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
       title: Text(
-        title,
-        style: AppTextStyles.appBarTitle.copyWith(
-          fontSize: 18,
-          color: textColor != null ? textColor : null,
-        )
+          title,
+          style: AppTextStyles.appBarTitle.copyWith(
+            fontSize: 18,
+            color: textColor != null ? textColor : null,
+          )
       ),
       onTap: onTap,
     );
