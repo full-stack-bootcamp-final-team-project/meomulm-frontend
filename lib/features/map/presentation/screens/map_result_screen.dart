@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
 
-/*
-지도 검색 결과 스크린
- */
 class MapResultScreen extends StatelessWidget {
   const MapResultScreen({super.key});
 
@@ -12,10 +9,8 @@ class MapResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar:SearchBarAppBar(
-
         dateText: DatePeopleTextUtil.todayToTomorrow(),
         peopleCount: 2,
-        onFilter: () {},
       )
       ,
       body: SafeArea(

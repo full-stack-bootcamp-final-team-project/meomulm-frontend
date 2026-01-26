@@ -4,10 +4,15 @@ import 'package:flutter/material.dart';
 import '../../constants/config/app_config.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_dimensions.dart';
-
 class BottomButtonField extends StatelessWidget {
   final String buttonName;
-  const BottomButtonField({super.key, required this.buttonName});
+  final VoidCallback? onPressed;
+
+  const BottomButtonField({
+    super.key,
+    required this.buttonName,
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,24 +20,33 @@ class BottomButtonField extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(
-          vertical: ButtonButtonBarDimensions.bottomButtonBarPadding
+        vertical: ButtonButtonBarDimensions.bottomButtonBarPadding,
       ),
       decoration: const BoxDecoration(
         color: AppColors.white,
-        boxShadow: AppShadows.bottomNav
+        boxShadow: AppShadows.bottomNav,
       ),
       child: Center(
-        child: Container(
+        child: SizedBox(
           width: width * 0.9,
           height: ButtonButtonBarDimensions.bottomButtonBarHeight,
-          decoration: BoxDecoration(
-            color: AppColors.onPressed,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            buttonName,
-            style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+          child: ElevatedButton(
+            onPressed: onPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.onPressed,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              elevation: 0,
+            ),
+            child: Text(
+              buttonName,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 17,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ),
       ),
