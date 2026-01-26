@@ -67,6 +67,12 @@ class AppTextStyles {
     color: AppColors.error,
   );
 
+  static const inputSuccess = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: AppColors.error,
+  );
+
   static const inputDisable = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w500,

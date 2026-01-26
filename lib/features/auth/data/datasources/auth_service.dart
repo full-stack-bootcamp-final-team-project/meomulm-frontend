@@ -16,6 +16,7 @@ class AuthService {
     ),
   );
 
+  // 로그인
   static Future<LoginResponse> login(String userEmail, String userPassword) async {
     final loginRequest = LoginRequest(
       userEmail: userEmail,
@@ -42,6 +43,7 @@ class AuthService {
     }
   }
 
+  // 회원가입
   static Future<void> signup({
     required String userEmail,
     required String userPassword,
@@ -75,6 +77,7 @@ class AuthService {
     }
   }
 
+  // 아이디 중복 확인
 
 
 }

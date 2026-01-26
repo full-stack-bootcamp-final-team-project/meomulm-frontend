@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
+import 'package:meomulm_frontend/core/theme/app_label_style.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/utils/regex.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
 
@@ -17,15 +19,26 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _checkPasswordController =
-  TextEditingController();
+  final TextEditingController _checkPasswordController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _birthController = TextEditingController();
+
+  void _updateBirthController() {
+    if (_selectYear.isNotEmpty &&
+        _selectMonth.isNotEmpty &&
+        _selectDay.isNotEmpty) {
+      _birthController.text =
+          '$_selectYear-${_selectMonth.padLeft(2, '0')}-${_selectDay.padLeft(2, '0')}';
+    }
+  }
 
   bool _obscurePassword = true;
   bool _isLoading = false;
 
-  final List<String> _year = List.generate(2020 - 1950 + 1, (i) => (1950 + i).toString());
+  final List<String> _year = List.generate(
+    2020 - 1950 + 1,
+    (i) => (1950 + i).toString(),
+  );
   final List<String> _month = List.generate(12, (i) => (i + 1).toString());
   final List<String> _day = List.generate(31, (i) => (i + 1).toString());
   String _selectYear = '';
@@ -43,24 +56,60 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     try {
+      if (_emailController.text.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("이메일은 필수 입력 사항입니다.")));
+        return;
+      }
+      if (_passwordController.text.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("비밀빈호를 입력하세요.")));
+        return;
+      }
+      if (_checkPasswordController.text.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("비밀빈호 확인을 입력하세요.")));
+        return;
+      }
+      if (_nameController.text.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("이름은 필수 입력 사항입니다.")));
+        return;
+      }
+      if (_phoneController.text.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("연락처는 필수 입력 사항입니다.")));
+        return;
+      }
+      if (_birthController.text.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("생년월일은 필수 입력 사항입니다.")));
+        return;
+      }
       // 회원가입 요청
       final user = await AuthService.signup(
         userEmail: _emailController.text.trim(),
         userPassword: _passwordController.text.trim(),
         userName: _nameController.text.trim(),
-        userPhone: _phoneController.text
-            .trim()
-            .isNotEmpty
+        userPhone: _phoneController.text.trim().isNotEmpty
             ? _phoneController.text.trim()
             : null,
-        userBirth: _birthController.text
-            .trim()
-            .isNotEmpty
+        userBirth: _birthController.text.trim().isNotEmpty
             ? _birthController.text.trim()
             : null,
       );
 
       if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("회원가입이 완료되었습니다.")));
 
       // 회원가입 후 로그인 페이지로 이동
       context.go('/login');
@@ -84,7 +133,9 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
-  void _checkEmail() {}
+  void _checkEmail() async {}
+
+  void _checkPhone() {}
 
   @override
   Widget build(BuildContext context) {
@@ -110,24 +161,156 @@ class _SignupScreenState extends State<SignupScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // 이메일 입력 위젯
+                    Column(
+                      children: [
+                        // 이메일 입력 위젯
+                        AppLabelStyle(label: "이메일", isRequired: true),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: TextFieldWidget(
+                                style: AppInputStyles.standard,
+                                controller: _emailController,
+                                decoration: AppInputDecorations.standard(
+                                  hintText: "abc@exam.com",
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty)
+                                    return null;
+
+                                  if (!Regex.email.hasMatch(value)) {
+                                    return '유효하지 않은 이메일 형식입니다.';
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            ElevatedButton(
+                              onPressed: () => _checkEmail,
+                              child: Text("중복확인"),
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(0, 55),
+                                padding: EdgeInsets.symmetric(horizontal: 10),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                backgroundColor: AppColors.main,
+                                foregroundColor: AppColors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: AppSpacing.xl),
+
+                    // 비밀번호 입력 위젯
+                    AppLabelStyle(label: "비밀번호", isRequired: true),
+                    TextFieldWidget(
+                      style: AppInputStyles.password,
+                      controller: _passwordController,
+                      obscureText: _obscurePassword,
+                      // successText:  ? "사용가능한 비밀번호 입니다." : null,
+                      decoration: AppInputDecorations.password(
+                        hintText: "비밀번호를 입력하세요",
+                        obscureText: _obscurePassword,
+                        onToggleVisibility: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return null;
+
+                        if (!Regex.password.hasMatch(value)) {
+                          return '8~16자의 영문 대소문자, 숫자, 특수문자만 가능합니다.';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: AppSpacing.xl),
+
+                    // 비밀번호 확인 입력 위젯
+                    AppLabelStyle(label: "비밀번호 확인", isRequired: true),
+                    TextFieldWidget(
+                      style: AppInputStyles.password,
+                      controller: _checkPasswordController,
+                      obscureText: _obscurePassword,
+                      decoration: AppInputDecorations.password(
+                        hintText: "비밀번호를 다시 입력하세요",
+                        obscureText: _obscurePassword,
+                        onToggleVisibility: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return null;
+
+                        if (_passwordController.text !=
+                            _checkPasswordController.text) {
+                          return '비밀번호가 일치하지 않습니다.';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: AppSpacing.xl),
+
+                    // 이름 입력 위젯
+                    AppLabelStyle(label: "이름", isRequired: true),
+                    TextFieldWidget(
+                      style: AppInputStyles.standard,
+                      controller: _nameController,
+                      decoration: AppInputDecorations.standard(
+                        hintText: "이름을 입력하세요.",
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return null;
+
+                        if (Regex.number.hasMatch(value)) {
+                          return '숫자는 입력할 수 없습니다.';
+                        } else if (Regex.name.hasMatch(value)) {
+                          return '이름은 영어와 한글만 가능합니다.';
+                        } else {
+                          return null;
+                        }
+                      },
+                    ),
+                    SizedBox(height: AppSpacing.xl),
+
+                    // 연락처 입력 위젯
+                    AppLabelStyle(label: "연락처", isRequired: true),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: TextFieldWidget(
-                            label: "이메일",
-                            isRequired: true,
                             style: AppInputStyles.standard,
-                            controller: _emailController,
+                            controller: _phoneController,
                             decoration: AppInputDecorations.standard(
-                              hintText: "abc@exam.com",
+                              hintText: "연락처를 입력하세요.(- 제외)",
                             ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) return null;
+
+                              if (!Regex.number.hasMatch(value)) {
+                                return '숫자만 입력 가능합니다.';
+                              } else if (value.length > 11) {
+                                return '전화번호는 11자리 이상일 수 없습니다.';
+                              } else {
+                                return null;
+                              }
+                            },
                           ),
                         ),
                         SizedBox(width: 10),
                         ElevatedButton(
-                          onPressed: () => _checkEmail,
+                          onPressed: () => _checkPhone,
                           child: Text("중복확인"),
                           style: ElevatedButton.styleFrom(
                             minimumSize: Size(0, 55),
@@ -143,95 +326,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     SizedBox(height: AppSpacing.xl),
 
-                    // 비밀번호 입력 위젯
-                    TextFieldWidget(
-                      label: "비밀번호",
-                      isRequired: true,
-                      style: AppInputStyles.password,
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      decoration: AppInputDecorations.password(
-                        hintText: "비밀번호를 입력하세요",
-                        obscureText: _obscurePassword,
-                        onToggleVisibility: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                    ),
-                    SizedBox(height: AppSpacing.xl),
-
-                    // 비밀번호 확인 입력 위젯
-                    TextFieldWidget(
-                      label: "비밀번호 확인",
-                      isRequired: true,
-                      style: AppInputStyles.password,
-                      controller: _checkPasswordController,
-                      obscureText: _obscurePassword,
-                      decoration: AppInputDecorations.password(
-                        hintText: "비밀번호를 다시 입력하세요",
-                        obscureText: _obscurePassword,
-                        onToggleVisibility: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                    ),
-                    SizedBox(height: AppSpacing.xl),
-
-                    // 이름 입력 위젯
-                    TextFieldWidget(
-                      label: "이름",
-                      isRequired: true,
-                      style: AppInputStyles.standard,
-                      controller: _nameController,
-                      decoration: AppInputDecorations.standard(
-                        hintText: "이름을 입력하세요.",
-                      ),
-                      validator: (value) {
-                          if(RegExp(r'[0-9]').hasMatch(value!)){
-                            return '숫자는 입력할 수 없습니다.';
-                          } else if(RegExp(r'[^가-힣a-zA-Z]').hasMatch(value)){
-                            return '이름은 영어와 한글만 가능합니다.';
-                          } else {
-                            return null;
-                          }
-                      },
-                    ),
-                    SizedBox(height: AppSpacing.xl),
-
-                    // 연락처 입력 위젯
-                    TextFieldWidget(
-                      label: "연락처",
-                      isRequired: true,
-                      style: AppInputStyles.standard,
-                      controller: _phoneController,
-                      decoration: AppInputDecorations.standard(
-                        hintText: "연락처를 입력하세요.",
-                      ),
-                    ),
-                    SizedBox(height: AppSpacing.xl),
-
-
                     // 생년 선택 위젯
-                    Row(
-                      children: [
-                        Text(
-                          "생년월일",
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 2),
-                        const Text(
-                          "*",
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      ],
-                    ),
+                    AppLabelStyle(label: "생년월일", isRequired: true),
                     Row(
                       children: [
                         Expanded(
@@ -239,7 +335,10 @@ class _SignupScreenState extends State<SignupScreen> {
                             hint: 'YYYY',
                             items: _year,
                             value: _selectYear.isEmpty ? null : _selectYear,
-                            onChanged: (y) => setState(() => _selectYear = y!),
+                            onChanged: (y) {
+                              setState(() => _selectYear = y!);
+                              _updateBirthController();
+                            },
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -248,7 +347,10 @@ class _SignupScreenState extends State<SignupScreen> {
                             hint: 'MM',
                             items: _month,
                             value: _selectMonth.isEmpty ? null : _selectMonth,
-                            onChanged: (m) => setState(() => _selectMonth = m!),
+                            onChanged: (m) {
+                              setState(() => _selectMonth = m!);
+                              _updateBirthController();
+                            },
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -257,7 +359,10 @@ class _SignupScreenState extends State<SignupScreen> {
                             hint: 'DD',
                             items: _day,
                             value: _selectDay.isEmpty ? null : _selectDay,
-                            onChanged: (d) => setState(() => _selectDay = d!),
+                            onChanged: (d) {
+                              setState(() => _selectDay = d!);
+                              _updateBirthController();
+                            },
                           ),
                         ),
                       ],
@@ -280,10 +385,10 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                         child: _isLoading
                             ? CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        )
-                            : Text('회원가입하기'),
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              )
+                            : Text(ButtonLabels.signUp),
                       ),
                     ),
                     SizedBox(height: AppSpacing.lg),
