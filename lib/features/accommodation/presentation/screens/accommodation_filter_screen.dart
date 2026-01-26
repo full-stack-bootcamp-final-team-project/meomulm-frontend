@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/buttons/bottom_button_field.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_filter_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_filter_widgets/accommodation_filter_price.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_filter_widgets/accommodation_filter_section.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_search_widgets/bottom_button_box.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_search_widgets/custom_appBar.dart';
 import 'package:provider/provider.dart';
 
 
@@ -16,10 +15,7 @@ class AccommodationFilterScreen extends StatelessWidget {
     final provider = context.watch<AccommodationFilterProvider>();
 
     return Scaffold(
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(70),
-        child: CustomAppBar(appBarTitle: '숙소 필터'),
-      ),
+      appBar: AppBarWidget(title: "숙소 필터"),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -61,7 +57,7 @@ class AccommodationFilterScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: BottomButtonBox(
+      bottomNavigationBar: BottomButtonField(
         buttonName: '적용하기',
         onPressed: () {
           Navigator.pop(context, provider.toQuery());

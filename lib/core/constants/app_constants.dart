@@ -6,3 +6,4 @@ export 'paths/api_paths.dart';
 export 'paths/route_paths.dart';
 export 'ui/labels_constants.dart';
 export 'ui/messages_constants.dart';
+export 'ui/region_constants.dart';

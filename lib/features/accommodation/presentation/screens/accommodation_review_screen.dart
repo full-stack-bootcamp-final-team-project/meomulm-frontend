@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_review_widgets/review_card.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_search_widgets/custom_appBar.dart';
-
 
 class AccommodationReviewScreen extends StatelessWidget {
   const AccommodationReviewScreen({super.key});
@@ -11,11 +10,7 @@ class AccommodationReviewScreen extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: const PreferredSize(
-        preferredSize: Size.fromHeight(70),
-        child: CustomAppBar(appBarTitle: "숙소 리뷰"), // 여기만 제목 바꿈
-      ),
+      appBar: AppBarWidget(title: "숙소 리뷰"),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(

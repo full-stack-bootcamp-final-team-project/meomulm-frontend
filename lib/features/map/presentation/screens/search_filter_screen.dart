@@ -5,7 +5,12 @@ import 'package:go_router/go_router.dart';
 지도 검색 필터 스크린
  */
 class SearchFilterScreen extends StatefulWidget {
-  const SearchFilterScreen({super.key});
+  final Map<String, String>? regionData;
+
+  const SearchFilterScreen({
+    super.key,
+    this.regionData,
+  });
 
   @override
   State<SearchFilterScreen> createState() => _SearchFilterScreenState();
@@ -13,6 +18,18 @@ class SearchFilterScreen extends StatefulWidget {
 
 class _SearchFilterScreenState extends State<SearchFilterScreen> {
   int guests = 2;
+  String? selectedRegion;
+  String? selectedDetailRegion;
+
+  @override
+  void initState() {
+    super.initState();
+    // 전달받은 지역 데이터 초기화
+    if (widget.regionData != null) {
+      selectedRegion = widget.regionData!['region'];
+      selectedDetailRegion = widget.regionData!['detailRegion'];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +56,7 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    onPressed: () => {},
+                    onPressed: () => context.pop(),
                     icon: const Icon(Icons.arrow_back, size: 24),
                   ),
                   const Expanded(
@@ -82,6 +99,41 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
                     ),
                     child: Column(
                       children: [
+                        // 지역 정보 표시
+                        if (selectedDetailRegion != null)
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.location_on, size: 24),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      '$selectedRegion > $selectedDetailRegion',
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => context.pop(),
+                                    child: const Text(
+                                      '변경',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Color(0xFF9C95CA),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 24),
+                              const Divider(color: Color(0xFFC5C5C5)),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
+
                         Row(
                           children: const [
                             Icon(Icons.calendar_today, size: 24),
@@ -150,7 +202,10 @@ class _SearchFilterScreenState extends State<SearchFilterScreen> {
                           width: double.infinity,
                           height: 47,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              // 검색 실행 로직
+                              print('검색 실행: 지역=$selectedDetailRegion, 인원=$guests');
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF9C95CA),
                               shape: RoundedRectangleBorder(
