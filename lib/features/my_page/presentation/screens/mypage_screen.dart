@@ -9,6 +9,9 @@ import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/dialogs/simple_modal.dart';
+import 'package:meomulm_frontend/features/my_page/presentation/widgets/mypage/icon_menu_button.dart';
+import 'package:meomulm_frontend/features/my_page/presentation/widgets/mypage/menu_item.dart';
+import 'package:meomulm_frontend/features/my_page/presentation/widgets/mypage/profile_avatar.dart';
 
 /**
  * 마이페이지 스크린 - only_app_style : 수정 필요.
@@ -88,7 +91,7 @@ class MypageScreen extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _ProfileAvatar(
+                    ProfileAvatar(
                       onCameraTap: () {
                         // TODO: 카메라 아이콘 터치 시 작동하는 기능 변수 넣기
                       },
@@ -115,7 +118,7 @@ class MypageScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
 
               // =====================
               // 아이콘 메뉴
@@ -124,7 +127,7 @@ class MypageScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: _IconMenuButton(
+                    child: IconMenuButton(
                       icon: AppIcons.favoriteRounded,
                       label: TitleLabels.wishlist,
                       onTap: () {
@@ -133,7 +136,7 @@ class MypageScreen extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    child: _IconMenuButton(
+                    child: IconMenuButton(
                       icon: AppIcons.commentOutline,
                       label: TitleLabels.myReviews,
                       onTap: () {
@@ -142,7 +145,7 @@ class MypageScreen extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    child: _IconMenuButton(
+                    child: IconMenuButton(
                       icon: AppIcons.calendarMonth,
                       label: TitleLabels.myBookings,
                       onTap: () {
@@ -160,23 +163,23 @@ class MypageScreen extends StatelessWidget {
               // =====================
               // 하단 메뉴 리스트
               // =====================
-              _MenuItem(
+              MenuItem(
                 title: TitleLabels.editProfile,
                 onTap: () {
                   context.push('${RoutePaths.myPage}${RoutePaths.editProfile}'); // /profile/edit
                 },
               ),
-              _MenuItem(
+              MenuItem(
                 title: TitleLabels.mypageChangePassword,
                 onTap: () {
                   context.push('${RoutePaths.myPage}${RoutePaths.myPageChangePassword}');  // /change-password
                 },
               ),
-              _MenuItem(
+              MenuItem(
                 title: '로그아웃',
                 onTap: () => _showLogoutDialog(context),
               ),
-              _MenuItem(
+              MenuItem(
                 title: '회원탈퇴',
                 textColor: AppColors.cancelled,
                 onTap: () => _showWithdrawDialog(context),
@@ -191,123 +194,8 @@ class MypageScreen extends StatelessWidget {
 
 
 //---------------------- TODO : 이 아래 위젯으로 분리하기 ----------------------
-class _ProfileAvatar extends StatelessWidget {
-  final VoidCallback? onCameraTap;
 
-  const _ProfileAvatar({this.onCameraTap});
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 64,
-      height: 64,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              // TODO: 프로필 이미지로 영역 채우기
-              color: AppColors.gray5,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.gray4),
-            ),
-          ),
-          Positioned(
-            right: -2,
-            bottom: -2,
-            child: InkWell(
-              onTap: onCameraTap,  // TODO: 카메라 아이콘 터치 시 작동하는 기능 변수 넣기
-              borderRadius: BorderRadius.circular(999),
-              child: Container(
-                width: 22,
-                height: 22,
-                decoration: BoxDecoration(
-                  color: AppColors.gray5,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.gray4),
-                ),
-                child: const Center(
-                  child: Icon(
-                    AppIcons.camera,
-                    size: AppIcons.sizeXs,
-                    color: AppColors.gray2,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
-// =====================
-// 상단 아이콘 메뉴 버튼
-// =====================
-class _IconMenuButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
 
-  const _IconMenuButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
 
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppBorderRadius.lg),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: AppIcons.sizeLg, color: AppColors.black),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              label,
-              style: AppTextStyles.buttonMd,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// =====================
-// 메뉴 항목
-// =====================
-class _MenuItem extends StatelessWidget {
-  final String title;
-  final VoidCallback onTap;
-  final Color? textColor;
-
-  const _MenuItem({
-    required this.title,
-    required this.onTap,
-    this.textColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
-      title: Text(
-        title,
-        style: AppTextStyles.appBarTitle.copyWith(
-          fontSize: 18,
-          color: textColor != null ? textColor : null,
-        )
-      ),
-      onTap: onTap,
-    );
-  }
-}
