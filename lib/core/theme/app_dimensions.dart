@@ -106,7 +106,7 @@ class AppShadows {
     BoxShadow(
       color: Color(0x1A000000),
       offset: Offset(0, -4),
-      blurRadius: 10,
+      blurRadius: 5,
       spreadRadius: 0,
     ),
   ];

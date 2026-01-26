@@ -30,9 +30,11 @@ class RoutePaths{
   /// accommodation 라우팅 경로
   /// =====================
   // 숙소 검색 스크린 (search_accommodation_screen)
-  static const String searchAccommodation = '/search-accommodation';
+  static const String accommodationSearch = '/accommodation-search';
+  // 숙소 검색 결과 리스트 (accommodation_filter_screen)
+  static const String accommodationFilter = '/accommodation-filter';
   // 숙소 검색 결과 리스트 (accommodation_list_screen)
-  static const String accommodationList = '/accommodation-list';
+  static const String accommodationResult = '/accommodation-result';
   // 숙소 리뷰 리스트 (accommodation_review_screen)
   static const String accommodationReview = '/accommodation-review';
   // 숙소 상세 스크린 (accommodation_detail_screen)
@@ -43,6 +45,8 @@ class RoutePaths{
   /// =====================
   /// map 라우팅 경로
   /// =====================
+  // 숙소 지도 스크린 (accommodation_map_screen)
+  static const String accommodationMap ='/accommodation-map';
   // 지도 스크린 (map_search_screen)
   static const String map ='/map-search';
   // 지도 검색 스크린 (map_result_screen)

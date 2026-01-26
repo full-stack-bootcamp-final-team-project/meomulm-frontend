@@ -1,11 +1,13 @@
 import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_filter_screen.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_map_screen.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_result_screen.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_search_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/product_list_screen.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/screens/favorite_screen.dart';
 
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_detail_screen.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_list_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_review_screen.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/screens/search_accommodation_screen.dart';
 import 'package:meomulm_frontend/features/auth/presentation/screens/confirm_password_screen.dart';
 import 'package:meomulm_frontend/features/auth/presentation/screens/find_id_screen.dart';
 import 'package:meomulm_frontend/features/auth/presentation/screens/login_change_password_screen.dart';
@@ -78,34 +80,44 @@ class AppRouter {
       /// accommodation 라우팅
       /// =====================
       GoRoute(
-        path: RoutePaths.searchAccommodation,
-        name: "searchAccommodation",
-        builder: (context, state) => const SearchAccommodationScreen(),
+        path: RoutePaths.accommodationSearch,
+        name: "accommodationSearch",
+        builder: (context, state) => const AccommodationSearchScreen(),         ///-----------
       ),
       GoRoute(
-          path: RoutePaths.accommodationList,
-          name: "accommodationList",
-          builder: (context, state) => const AccommodationListScreen(),
+        path: RoutePaths.accommodationFilter,
+        name: "accommodationFilter",
+        builder: (context, state) => const AccommodationFilterScreen(),         ///-----------
       ),
       GoRoute(
-          path: RoutePaths.accommodationReview,
-          name: "accommodationReview",
-          builder: (context, state) => const AccommodationReviewScreen(),
+        path: RoutePaths.accommodationResult,
+        name: "accommodationResult",
+        builder: (context, state) => const AccommodationResultScreen(),        ///-----------
       ),
       GoRoute(
-          path: RoutePaths.accommodationDetail,
-          name: "accommodationDetail",
-          builder: (context, state) => const AccommodationDetailScreen(),
+        path: RoutePaths.accommodationReview,
+        name: "accommodationReview",
+        builder: (context, state) => const AccommodationReviewScreen(),        ///-----------
       ),
       GoRoute(
-          path: RoutePaths.productList,
-          name: "productList",
-          builder: (context, state) => const ProductListScreen(),
+        path: RoutePaths.accommodationDetail,
+        name: "accommodationDetail",
+        builder: (context, state) => const AccommodationDetailScreen(),        ///-----------
+      ),
+      GoRoute(
+        path: RoutePaths.productList,
+        name: "productList",
+        builder: (context, state) => const ProductListScreen(),
       ),
 
       /// =====================
       /// map 라우팅
       /// =====================
+      GoRoute(
+        path: RoutePaths.accommodationMap,
+        name: "accommodationMap",
+        builder: (context, state) => const AccommodationMapScreen(),            ///-----------
+      ),
       GoRoute(
         path: RoutePaths.map,
         name: "mapSearch",
