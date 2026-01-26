@@ -57,7 +57,7 @@ class AppColors {
   static const gray3 = Color(0xFFC1C1C1);
   static const gray4 = Color(0xFFD2D2D2);
   static const gray5 = Color(0xFFEDEDED);
-  static const gray6 = Color(0xFFF0F4FF); // 파란빛
+  static const gray6 = Color(0xFFF0F4FF);
   static const white = Color(0xFFFFFFFF);
   static const border = Color(0xFF888888);
 }

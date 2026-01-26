@@ -118,11 +118,11 @@ class AppRouter {
         name: "accommodationMap",
         builder: (context, state) => const AccommodationMapScreen(),            ///-----------
       ),
-      GoRoute(
-        path: RoutePaths.map,
-        name: "mapSearch",
-        builder: (context, state) => const MapSearchScreen(),
-      ),
+      // GoRoute(
+      //   path: RoutePaths.map,
+      //   name: "mapSearch",
+      //   builder: (context, state) => const MapSearchScreen(),
+      // ),
       GoRoute(
         path: RoutePaths.mapResult,
         name: "mapResult",

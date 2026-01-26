@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:kakao_map_sdk/kakao_map_sdk.dart';
+// import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 
 import 'app.dart';
 import 'core/constants/config/env_config.dart';
@@ -15,9 +15,9 @@ Future<void> main() async {
 
   if (EnvConfig.isDevelopment) EnvConfig.printEnvInfo();
 
-  if (!kIsWeb) {
-    await KakaoMapSdk.instance.initialize(EnvConfig.kakaoNativeKey);
-  }
+  // if (!kIsWeb) {
+  //   await KakaoMapSdk.instance.initialize(EnvConfig.kakaoNativeKey);
+  // }
 
 
   // AuthProvider 생성 및 저장된 사용자 로드
