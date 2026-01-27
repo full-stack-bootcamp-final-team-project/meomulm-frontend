@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meomulm_frontend/core/theme/app_colors.dart';
-import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
-import 'package:meomulm_frontend/core/widgets/search/row_container.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
 class GuestCountRow extends StatelessWidget {
   final int count;
@@ -17,61 +15,40 @@ class GuestCountRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RowContainer(
+    return SizedBox(
+      height: 52,
       child: Row(
         children: [
-          const Icon(
-              Icons.person_outline,
-              color: AppColors.gray2
-          ),
-          const SizedBox(width: 12),
-          const Text(
-            '인원',
-            style: AppTextStyles.inputTextLg,
-          ),
+          const Icon(AppIcons.person),
+          const SizedBox(width: AppSpacing.md),
+          const Text('인원', style: AppTextStyles.bodyLg),
           const Spacer(),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              _IconBtn(icon: Icons.remove, onTap: onMinus),
-              SizedBox(
-                width: 32,
-                child: Text(
-                  '$count',
-                  style: AppTextStyles.cardTitle,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              _IconBtn(icon: Icons.add, onTap: onPlus),
-            ],
+          _CountButton(icon: AppIcons.remove, onTap: onMinus),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            child: Text('$count', style: AppTextStyles.bodyLg),
           ),
+          _CountButton(icon: AppIcons.add, onTap: onPlus),
         ],
       ),
     );
   }
 }
 
-class _IconBtn extends StatelessWidget {
+class _CountButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
 
-  const _IconBtn({required this.icon, this.onTap});
+  const _CountButton({required this.icon, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 36,
-      height: 36,
-      child: Transform.translate(
-        offset: const Offset(0, 2),
-        child: IconButton(
-          padding: EdgeInsets.zero,
-          iconSize: 20,
-          icon: Icon(icon),
-          onPressed: onTap,
-        ),
-      ),
+    return IconButton(
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+      iconSize: AppIcons.sizeMd,
+      icon: Icon(icon),
+      onPressed: onTap,
     );
   }
 }

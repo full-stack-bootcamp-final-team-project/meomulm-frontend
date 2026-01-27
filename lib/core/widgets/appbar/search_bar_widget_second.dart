@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
-import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:meomulm_frontend/core/theme/app_styles.dart';
-import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 
 class SearchBarAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -25,7 +21,7 @@ class SearchBarAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return Consumer<AccommodationProvider>(
       builder: (context, provider, _) {
-        final keyword = provider.locationName ?? provider.accommodationName ?? '';
+        final keyword = provider.accommodationName ?? provider.accommodationName ?? '';
         final hasKeyword = keyword.isNotEmpty;
 
         final dateText =
@@ -66,15 +62,15 @@ class SearchBarAppBar extends StatelessWidget implements PreferredSizeWidget {
 
                         // 키워드 존재 시 클리어, 없으면 검색 버튼
                         hasKeyword
-                            ? IconButton(
-                          onPressed: () => provider.clearSearchData(),
+                        ? IconButton(
+                          onPressed: () => provider.clearAccommodationName(),
                           icon: const Icon(
                             AppIcons.cancel,
                             size: AppIcons.sizeMd,
                             color: AppColors.gray4,
                           ),
                         )
-                            : IconButton(
+                        : IconButton(
                           onPressed: () {
                             // 필요 시 검색 화면 열기
                           },

@@ -4,6 +4,8 @@ import 'package:meomulm_frontend/features/accommodation/presentation/screens/acc
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_result_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_search_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/product_list_screen.dart';
+import 'package:meomulm_frontend/features/map/presentation/screens/search/map_search_result_screen.dart';
+import 'package:meomulm_frontend/features/map/presentation/screens/search/map_search_screen.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/screens/favorite_screen.dart';
 
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_detail_screen.dart';
@@ -15,9 +17,8 @@ import 'package:meomulm_frontend/features/auth/presentation/screens/login_screen
 import 'package:meomulm_frontend/features/auth/presentation/screens/signup_screen.dart';
 import 'package:meomulm_frontend/features/home/presentation/screens/home_screen.dart';
 import 'package:meomulm_frontend/features/intro/presentation/intro_screen.dart';
-import 'package:meomulm_frontend/features/map/presentation/screens/map_result_screen.dart';
-import 'package:meomulm_frontend/features/map/presentation/screens/map_search_screen.dart';
-import 'package:meomulm_frontend/features/map/presentation/screens/search_region_screen.dart';
+import 'package:meomulm_frontend/features/map/presentation/screens/map_screen.dart';
+import 'package:meomulm_frontend/features/map/presentation/screens/search/map_search_region_screen.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/screens/edit_profile_screen.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/screens/my_reservations_screen.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/screens/my_review_screen.dart';
@@ -114,25 +115,29 @@ class AppRouter {
       /// map 라우팅
       /// =====================
       GoRoute(
-        path: RoutePaths.accommodationMap,
-        name: "accommodationMap",
-        builder: (context, state) => const AccommodationMapScreen(),            ///-----------
-      ),
-      GoRoute(
         path: RoutePaths.map,
-        name: "mapSearch",
+        name: 'map',
+        builder: (context, state) => const MapScreen(),
+      ),
+
+      GoRoute(
+        path: RoutePaths.mapSearch,
+        name: 'mapSearch',
         builder: (context, state) => const MapSearchScreen(),
       ),
+
       GoRoute(
-        path: RoutePaths.mapResult,
-        name: "mapResult",
-        builder: (context, state) => const MapResultScreen(),
+        path: RoutePaths.mapSearchRegion,
+        name: 'mapSearchRegion',
+        builder: (context, state) => const MapSearchRegionScreen(),
       ),
+
       GoRoute(
-        path: RoutePaths.searchRegion,
-        name: "searchRegion",
-        builder: (context, state) => const SearchRegionScreen(),
+        path: RoutePaths.mapSearchResult,
+        name: 'mapSearchResult',
+        builder: (context, state) => const MapSearchResultScreen(),
       ),
+
 
       /// =====================
       /// mypage 라우팅

@@ -1,34 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
 import 'package:meomulm_frontend/core/widgets/search/search_box.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_search_widgets/location_input_row.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/map_search_widgets/location_select_row.dart';
 
-class AccommodationSearchScreen extends StatefulWidget {
-  const AccommodationSearchScreen({super.key});
+class MapSearchScreen extends StatefulWidget {
+  const MapSearchScreen({super.key});
 
   @override
-  State<AccommodationSearchScreen> createState() =>
-      _AccommodationSearchScreenState();
+  State<MapSearchScreen> createState() => _MapSearchScreenState();
 }
 
-class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
+class _MapSearchScreenState extends State<MapSearchScreen> {
   String location = '';
   DateTimeRange? dateRange;
   int guestCount = 2;
-  late TextEditingController _locationController;
 
-  @override
-  void initState() {
-    super.initState();
-    _locationController = TextEditingController(text: location);
-    _locationController.addListener(_onLocationTextChanged);
-  }
+  Future<void> _openRegionSelector() async {
+    final result = await context.push<Map<String, String>>(
+      RoutePaths.mapSearchRegion,
+    );
 
-  void _onLocationTextChanged() {
-    setState(() {
-      location = _locationController.text;
-    });
+    if (result != null && result['detailRegion'] != null) {
+      setState(() {
+        location = result['detailRegion']!;
+      });
+    }
   }
 
   @override
@@ -36,14 +35,17 @@ class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: AppBarWidget(title: "숙소 검색"),
+      appBar: AppBarWidget(title: "지도 검색"),
       body: Column(
         children: [
           const SizedBox(height: 24),
 
           SearchBox(
             width: size.width * 0.9,
-            firstRow: LocationInputRow(controller: _locationController),
+            firstRow: LocationSelectRow(
+              location: location,
+              onTap: _openRegionSelector,
+            ),
             dateRange: dateRange,
             guestCount: guestCount,
             onDateChanged: (v) => setState(() => dateRange = v),
@@ -53,7 +55,7 @@ class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
           const Spacer(),
 
           BottomActionButton(
-            label: "검색하기",
+            label: "지도에서 보기",
             onPressed: _onSearch,
           ),
         ],
@@ -67,12 +69,5 @@ class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
     debugPrint('인원: $guestCount');
 
     // Navigator.push(...)
-  }
-
-  @override
-  void dispose() {
-    _locationController.removeListener(_onLocationTextChanged);
-    _locationController.dispose();
-    super.dispose();
   }
 }

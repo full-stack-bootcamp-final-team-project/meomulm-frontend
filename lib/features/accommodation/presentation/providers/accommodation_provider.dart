@@ -97,6 +97,12 @@ class AccommodationProvider extends ChangeNotifier {
 
   void clearAccommodationId() {
     _accommodationId = null;
+    notifyListeners();
+  }
+
+  void clearAccommodationName() {
+    _accommodationName = null;
+    notifyListeners();
   }
 
   void clearSearchData() {
@@ -107,5 +113,6 @@ class AccommodationProvider extends ChangeNotifier {
         end: DateTime.now().add(const Duration(days: 1))
     );
     _guestCount = 2;
+    notifyListeners();
   }
 }

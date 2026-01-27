@@ -1,5 +1,3 @@
-import 'package:flutter/cupertino.dart';
-
 /// =====================
 /// 화면 크기 분기점(Breakpoints)
 /// =====================
@@ -38,12 +36,12 @@ class AppBarDimensions {
 
 
 /// =====================
-/// Bottom Button Bar 관련 레이아웃 상수
+/// Bottom Action Button 관련 레이아웃 상수
 /// =====================
-class ButtonButtonBarDimensions {
-  ButtonButtonBarDimensions._();
+class BottomActionButtonDimensions {
+  BottomActionButtonDimensions._();
 
-  static const double bottomButtonBarPadding = 20;
-  static const double bottomButtonBarHeight = 50;
-  static const double bottomButtonBarWidthPercentage = 0.9;
+  static const double padding = 20;
+  static const double height = 50;
+  static const double widthPercentage = 0.9;
 }

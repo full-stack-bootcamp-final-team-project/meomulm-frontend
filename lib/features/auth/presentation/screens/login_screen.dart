@@ -54,22 +54,22 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
-    if(email.isEmpty){
+    if (email.isEmpty) {
       _showErrorMessage("이메일을 입력해주세요.");
       return;
     }
 
-    if(!email.contains('@')){
+    if (!email.contains('@')) {
       _showErrorMessage("올바른 이메일 형식이 아닙니다.");
       return;
     }
 
-    if(password.isEmpty){
+    if (password.isEmpty) {
       _showErrorMessage("비밀번호를 입력해주세요.");
       return;
     }
 
-    if(password.length < 8 || password.length > 16){
+    if (password.length < 8 || password.length > 16) {
       _showErrorMessage("비밀번호는 8~16자의 영문 대소문자, 숫자, 특수문자만 가능합니다.");
       return;
     }
@@ -159,27 +159,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: AppSpacing.xxl),
 
                     TextFieldWidget(
+                      hintText: "이메일를 입력하세요",
                       style: AppInputStyles.standard,
                       controller: _emailController,
-                      decoration: AppInputDecorations.standard(
-                        hintText: "이메일를 입력하세요",
-                      ),
                     ),
                     SizedBox(height: AppSpacing.lg),
-
                     TextFieldWidget(
+                      hintText: "비밀번호를 입력하세요",
                       style: AppInputStyles.password,
                       controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      decoration: AppInputDecorations.password(
-                        hintText: "비밀번호를 입력하세요",
-                        obscureText: _obscurePassword,
-                        onToggleVisibility: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
                     ),
                     SizedBox(height: AppSpacing.sm),
 
@@ -219,13 +207,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: _isLoading
                             ? CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        )
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              )
                             : Text(
-                          '${ButtonLabels.login}',
-                          style: AppTextStyles.buttonLg,
-                        ),
+                                '${ButtonLabels.login}',
+                                style: AppTextStyles.buttonLg,
+                              ),
                       ),
                     ),
                     SizedBox(height: AppSpacing.lg),
@@ -246,20 +234,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: _isLoading
                             ? CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        )
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              )
                             : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/kakao_logo.png',
-                              height: 20,
-                            ),
-                            const SizedBox(width: 20),
-                            Text('카카오로그인', style: AppTextStyles.buttonLg),
-                          ],
-                        ),
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    'assets/images/kakao_logo.png',
+                                    height: 20,
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Text('카카오로그인', style: AppTextStyles.buttonLg),
+                                ],
+                              ),
                       ),
                     ),
                     SizedBox(height: AppSpacing.lg),
@@ -280,20 +268,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: _isLoading
                             ? CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        )
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              )
                             : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/naver_logo.png',
-                              height: 20,
-                            ),
-                            const SizedBox(width: 20),
-                            Text('네이버로그인', style: AppTextStyles.buttonLg),
-                          ],
-                        ),
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    'assets/images/naver_logo.png',
+                                    height: 20,
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Text('네이버로그인', style: AppTextStyles.buttonLg),
+                                ],
+                              ),
                       ),
                     ),
                     SizedBox(height: AppSpacing.lg),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarDialog extends StatefulWidget {
@@ -13,21 +13,25 @@ class CalendarDialog extends StatefulWidget {
 
 class _CalendarDialogState extends State<CalendarDialog> {
   late DateTime focusedDay;
-  DateTime? rangeStart;
-  DateTime? rangeEnd;
+  late DateTime? rangeStart;
+  late DateTime? rangeEnd;
 
   @override
   void initState() {
     super.initState();
-    focusedDay = widget.initialRange?.start ?? DateTime.now();
-    rangeStart = widget.initialRange?.start;
-    rangeEnd = widget.initialRange?.end;
+    final now = DateTime.now();
+    final tomorrow = now.add(const Duration(days: 1));
+
+    // 기본값: 오늘 ~ 내일
+    focusedDay = widget.initialRange?.start ?? now;
+    rangeStart = widget.initialRange?.start ?? now;
+    rangeEnd = widget.initialRange?.end ?? tomorrow;
   }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final maxHeight = 520.0;
+    final maxHeight = 520;
     final maxPadding = (MediaQuery.of(context).size.height - maxHeight) / 2;
 
     return Dialog(
@@ -41,13 +45,10 @@ class _CalendarDialogState extends State<CalendarDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             const Text(
               '날짜 선택',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
+              style: AppTextStyles.cardTitle,
             ),
             const SizedBox(height: 12),
             const Divider(height: 1),
@@ -55,7 +56,7 @@ class _CalendarDialogState extends State<CalendarDialog> {
             Flexible(
               fit: FlexFit.loose,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                 child: TableCalendar(
                   firstDay: DateTime.now(),
                   lastDay: DateTime.now().add(const Duration(days: 730)),
@@ -99,9 +100,7 @@ class _CalendarDialogState extends State<CalendarDialog> {
                       if (start != null) focusedDay = start;
                     });
                   },
-                  onPageChanged: (day) {
-                    focusedDay = day;
-                  },
+                  onPageChanged: (day) => setState(() => focusedDay = day),
 
                   headerStyle: const HeaderStyle(
                     formatButtonVisible: false,
@@ -111,7 +110,7 @@ class _CalendarDialogState extends State<CalendarDialog> {
               ),
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
 
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -123,21 +122,21 @@ class _CalendarDialogState extends State<CalendarDialog> {
                         foregroundColor: AppColors.gray2,
                         side: BorderSide(color: AppColors.gray5),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppBorderRadius.lg),
                         ),
                       ),
                       onPressed: () => Navigator.pop(context),
                       child: const Text('취소'),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.onPressed,
                         foregroundColor: AppColors.white,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(AppBorderRadius.lg),
                         ),
                       ),
                       onPressed: rangeStart != null && rangeEnd != null

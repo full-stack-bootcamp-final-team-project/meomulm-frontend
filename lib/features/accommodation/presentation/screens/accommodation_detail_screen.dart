@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:meomulm_frontend/core/widgets/buttons/bottom_button_field.dart';
+import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_widgets/accommodation_image_slider.dart';
 import 'package:provider/provider.dart';
@@ -423,7 +423,7 @@ class AccommodationDetailScreen extends StatelessWidget {
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  child: BottomButtonField(buttonName: "모든 객실 보기"),
+                  child: BottomActionButton(label: "모든 객실 보기"),
                 ),
               ],
             ),

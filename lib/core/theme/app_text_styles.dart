@@ -85,16 +85,19 @@ class AppTextStyles {
   static const buttonSm = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w500,
+      color: AppColors.white
   );
 
   static const buttonMd = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
+      color: AppColors.white
   );
 
   static const buttonLg = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
+      color: AppColors.white
   );
 
   static const kakaoLg = TextStyle(
