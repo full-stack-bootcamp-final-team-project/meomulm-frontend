@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_filter_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_map_screen.dart';
@@ -83,27 +84,39 @@ class AppRouter {
       GoRoute(
         path: RoutePaths.accommodationSearch,
         name: "accommodationSearch",
-        builder: (context, state) => const AccommodationSearchScreen(),         ///-----------
+        builder: (context, state) => const AccommodationSearchScreen(),
       ),
       GoRoute(
         path: RoutePaths.accommodationFilter,
         name: "accommodationFilter",
-        builder: (context, state) => const AccommodationFilterScreen(),         ///-----------
+        builder: (context, state) => const AccommodationFilterScreen(),
       ),
       GoRoute(
         path: RoutePaths.accommodationResult,
         name: "accommodationResult",
-        builder: (context, state) => const AccommodationResultScreen(),        ///-----------
+        builder: (context, state) => const AccommodationResultScreen(),
       ),
       GoRoute(
         path: RoutePaths.accommodationReview,
         name: "accommodationReview",
-        builder: (context, state) => const AccommodationReviewScreen(),        ///-----------
+        builder: (context, state) => const AccommodationReviewScreen(),
       ),
       GoRoute(
         path: RoutePaths.accommodationDetail,
         name: "accommodationDetail",
-        builder: (context, state) => const AccommodationDetailScreen(),        ///-----------
+        builder: (context, state) {
+          // path parameter 꺼내기
+          final idString = state.pathParameters['id'];
+          final accommodationId = int.tryParse(idString ?? '');
+          if (accommodationId == null) {
+            return const Scaffold(
+              body: Center(child: Text('숙소 ID가 유효하지 않습니다')),
+            );
+          }
+          return AccommodationDetailScreen(
+            accommodationId: accommodationId,
+          );
+        },
       ),
       GoRoute(
         path: RoutePaths.productList,

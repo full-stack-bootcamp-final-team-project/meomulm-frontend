@@ -10,7 +10,11 @@ class AccommodationProvider extends ChangeNotifier {
   );
 
   int _guestCount = 2;
-  String? _accommodationId;
+
+
+  int? _selectedAccommodationId;
+  String? _selectedAccommodationName;
+
 
 
 
@@ -21,7 +25,8 @@ class AccommodationProvider extends ChangeNotifier {
   DateTime get checkIn => _dateRange.start;
   DateTime get checkOut => _dateRange.end;
   int get guestCount => _guestCount;
-  String? get accommodationId => _accommodationId;
+  int? get selectedAccommodationId => _selectedAccommodationId;
+  String? get selectedAccommodationName => _selectedAccommodationName;
 
 
 
@@ -89,16 +94,23 @@ class AccommodationProvider extends ChangeNotifier {
   }
 
 
-  void setAccommodationId(String id) {
-    _accommodationId = id;
+  void setAccommodation(int id, String name) {
+    _selectedAccommodationId = id;
+    _selectedAccommodationName = name;
     notifyListeners();
   }
 
 
-  void clearAccommodationId() {
-    _accommodationId = null;
+
+
+
+
+  void clearAccommodation() {
+    _selectedAccommodationId = null;
+    _selectedAccommodationName = null;
     notifyListeners();
   }
+
 
   void clearAccommodationName() {
     _accommodationName = null;
