@@ -148,55 +148,35 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 ),
                 const SizedBox(height: AppSpacing.xl),
 
-                // Label
-                Text('예약자 이름', style: AppTextStyles.inputLabel),
-                const SizedBox(height: AppSpacing.sm),
-
-                // 입력창
                 TextFieldWidget(
+                  label: "이름",
+                  hintText: InputMessages.emptyName,
+                  errorText: reservation.nameError,
                   controller: _nameController,
                   style: AppInputStyles.underline,
-                  decoration: AppInputDecorations.underline(
-                    hintText: InputMessages.emptyName,
-                    errorText: reservation.nameError,
-                  ),
-                  keyboardType: TextInputType.text,
                 ),
-
                 const SizedBox(height: AppSpacing.xl),
 
-                // Label
-                Text('이메일', style: AppTextStyles.inputLabel),
-                const SizedBox(height: AppSpacing.sm),
-
-                // 입력창
+                // 이메일
                 TextFieldWidget(
+                  label: "이메일",
+                  hintText: InputMessages.emptyEmail,
+                  errorText: reservation.emailError,
                   controller: _emailController,
                   style: AppInputStyles.underline,
-                  decoration: AppInputDecorations.underline(
-                    hintText: InputMessages.emptyEmail,
-                    errorText: reservation.emailError,
-                  ),
-                  keyboardType: TextInputType.text,
+                  keyboardType: TextInputType.emailAddress,
                 ),
 
                 const SizedBox(height: AppSpacing.xl),
 
-
-                // 휴대번호
-                // Label
-                Text('휴대폰 번호', style: AppTextStyles.inputLabel),
-                const SizedBox(height: AppSpacing.sm),
-
-                // 입력창
+                // 휴대폰 번호
                 TextFieldWidget(
+                  label: "휴대폰 번호",
+                  hintText: InputMessages.emptyPhone,
+                  errorText: reservation.phoneError,
                   controller: _phoneController,
                   style: AppInputStyles.underline,
-                  decoration: AppInputDecorations.underline(
-                    hintText: InputMessages.emptyPhone,
-                    errorText: reservation.phoneError,
-                  ),
-                  keyboardType: TextInputType.text,
+                  keyboardType: TextInputType.phone,
                 ),
 
                 const SizedBox(height: AppSpacing.xxxl),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
-import 'package:meomulm_frontend/core/theme/app_label_style.dart';
+import 'package:meomulm_frontend/core/widgets/input/form_label.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regex.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
@@ -19,7 +19,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _checkPasswordController = TextEditingController();
+  final TextEditingController _checkPasswordController =
+      TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _birthController = TextEditingController();
 
@@ -164,194 +165,192 @@ class _SignupScreenState extends State<SignupScreen> {
                     Column(
                       children: [
                         // 이메일 입력 위젯
-                        AppLabelStyle(label: "이메일", isRequired: true),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
                               child: TextFieldWidget(
-                                style: AppInputStyles.standard,
+                                label: "이메일",
+                                isRequired: true,
+                                hintText: "abc@exam.com",
                                 controller: _emailController,
-                                decoration: AppInputDecorations.standard(
-                                  hintText: "abc@exam.com",
-                                ),
+                                keyboardType: TextInputType.emailAddress,
                                 validator: (value) {
                                   if (value == null || value.isEmpty)
                                     return null;
 
                                   if (!Regex.email.hasMatch(value)) {
                                     return '유효하지 않은 이메일 형식입니다.';
-                                  } else {
-                                    return null;
                                   }
+                                  return null;
                                 },
                               ),
                             ),
-                            SizedBox(width: 10),
-                            ElevatedButton(
-                              onPressed: () => _checkEmail,
-                              child: Text("중복확인"),
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: Size(0, 55),
-                                padding: EdgeInsets.symmetric(horizontal: 10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
+                            const SizedBox(width: 10),
+                            SizedBox(
+                              height: 55,
+                              child: ElevatedButton(
+                                onPressed: _checkEmail,
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      AppBorderRadius.md,
+                                    ),
+                                  ),
+                                  backgroundColor: AppColors.main,
+                                  foregroundColor: AppColors.white,
                                 ),
-                                backgroundColor: AppColors.main,
-                                foregroundColor: AppColors.white,
+                                child: const Text("중복확인"),
                               ),
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                    SizedBox(height: AppSpacing.xl),
+                        const SizedBox(height: AppSpacing.xl),
 
-                    // 비밀번호 입력 위젯
-                    AppLabelStyle(label: "비밀번호", isRequired: true),
-                    TextFieldWidget(
-                      style: AppInputStyles.password,
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      // successText:  ? "사용가능한 비밀번호 입니다." : null,
-                      decoration: AppInputDecorations.password(
-                        hintText: "비밀번호를 입력하세요",
-                        obscureText: _obscurePassword,
-                        onToggleVisibility: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return null;
+                        // 비밀번호 입력 위젯
+                        TextFieldWidget(
+                          label: "비밀번호",
+                          isRequired: true,
+                          hintText: "비밀번호를 입력하세요",
+                          style: AppInputStyles.password,
+                          controller: _passwordController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return null;
 
-                        if (!Regex.password.hasMatch(value)) {
-                          return '8~16자의 영문 대소문자, 숫자, 특수문자만 가능합니다.';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: AppSpacing.xl),
+                            if (!Regex.password.hasMatch(value)) {
+                              return '8~16자의 영문 대소문자, 숫자, 특수문자만 가능합니다.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
 
-                    // 비밀번호 확인 입력 위젯
-                    AppLabelStyle(label: "비밀번호 확인", isRequired: true),
-                    TextFieldWidget(
-                      style: AppInputStyles.password,
-                      controller: _checkPasswordController,
-                      obscureText: _obscurePassword,
-                      decoration: AppInputDecorations.password(
-                        hintText: "비밀번호를 다시 입력하세요",
-                        obscureText: _obscurePassword,
-                        onToggleVisibility: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return null;
+                        // 비밀번호 확인 입력 위젯
+                        TextFieldWidget(
+                          label: "비밀번호 확인",
+                          isRequired: true,
+                          hintText: "비밀번호를 다시 입력하세요",
+                          style: AppInputStyles.password,
+                          controller: _checkPasswordController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return null;
 
-                        if (_passwordController.text !=
-                            _checkPasswordController.text) {
-                          return '비밀번호가 일치하지 않습니다.';
-                        }
-                        return null;
-                      },
-                    ),
-                    SizedBox(height: AppSpacing.xl),
+                            if (_passwordController.text !=
+                                _checkPasswordController.text) {
+                              return '비밀번호가 일치하지 않습니다.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
 
-                    // 이름 입력 위젯
-                    AppLabelStyle(label: "이름", isRequired: true),
-                    TextFieldWidget(
-                      style: AppInputStyles.standard,
-                      controller: _nameController,
-                      decoration: AppInputDecorations.standard(
-                        hintText: "이름을 입력하세요.",
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) return null;
+                        // 이름 입력 위젯
+                        TextFieldWidget(
+                          label: "이름",
+                          isRequired: true,
+                          hintText: "이름을 입력하세요.",
+                          controller: _nameController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) return null;
 
-                        if (Regex.number.hasMatch(value)) {
-                          return '숫자는 입력할 수 없습니다.';
-                        } else if (Regex.name.hasMatch(value)) {
-                          return '이름은 영어와 한글만 가능합니다.';
-                        } else {
-                          return null;
-                        }
-                      },
-                    ),
-                    SizedBox(height: AppSpacing.xl),
+                            if (Regex.number.hasMatch(value)) {
+                              return '숫자는 입력할 수 없습니다.';
+                            } else if (Regex.name.hasMatch(value)) {
+                              return '이름은 영어와 한글만 가능합니다.';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: AppSpacing.xl),
 
-                    // 연락처 입력 위젯
-                    AppLabelStyle(label: "연락처", isRequired: true),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: TextFieldWidget(
-                            style: AppInputStyles.standard,
-                            controller: _phoneController,
-                            decoration: AppInputDecorations.standard(
-                              hintText: "연락처를 입력하세요.(- 제외)",
+                        // 연락처 입력 위젯
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: TextFieldWidget(
+                                label: "연락처",
+                                isRequired: true,
+                                hintText: "연락처를 입력하세요.(- 제외)",
+                                controller: _phoneController,
+                                keyboardType: TextInputType.phone,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty)
+                                    return null;
+
+                                  if (!Regex.number.hasMatch(value)) {
+                                    return '숫자만 입력 가능합니다.';
+                                  } else if (value.length > 11) {
+                                    return '전화번호는 11자리 이상일 수 없습니다.';
+                                  }
+                                  return null;
+                                },
+                              ),
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) return null;
-
-                              if (!Regex.number.hasMatch(value)) {
-                                return '숫자만 입력 가능합니다.';
-                              } else if (value.length > 11) {
-                                return '전화번호는 11자리 이상일 수 없습니다.';
-                              } else {
-                                return null;
-                              }
-                            },
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        ElevatedButton(
-                          onPressed: () => _checkPhone,
-                          child: Text("중복확인"),
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(0, 55),
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
+                            const SizedBox(width: 10),
+                            SizedBox(
+                              height: 55,
+                              child: ElevatedButton(
+                                onPressed: _checkPhone,
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      AppBorderRadius.md,
+                                    ),
+                                  ),
+                                  backgroundColor: AppColors.main,
+                                  foregroundColor: AppColors.white,
+                                ),
+                                child: const Text("중복확인"),
+                              ),
                             ),
-                            backgroundColor: AppColors.main,
-                            foregroundColor: AppColors.white,
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
-                    SizedBox(height: AppSpacing.xl),
+                        const SizedBox(height: AppSpacing.xl),
 
-                    // 생년 선택 위젯
-                    AppLabelStyle(label: "생년월일", isRequired: true),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: dropdownField(
-                            hint: 'YYYY',
-                            items: _year,
-                            value: _selectYear.isEmpty ? null : _selectYear,
-                            onChanged: (y) {
-                              setState(() => _selectYear = y!);
-                              _updateBirthController();
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: dropdownField(
-                            hint: 'MM',
-                            items: _month,
-                            value: _selectMonth.isEmpty ? null : _selectMonth,
-                            onChanged: (m) {
-                              setState(() => _selectMonth = m!);
-                              _updateBirthController();
-                            },
-                          ),
+                        // 생년월일 선택 위젯
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            FormLabel(label: "생년월일", isRequired: true),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: dropdownField(
+                                    hint: 'YYYY',
+                                    items: _year,
+                                    value: _selectYear.isEmpty
+                                        ? null
+                                        : _selectYear,
+                                    onChanged: (y) {
+                                      setState(() => _selectYear = y!);
+                                      _updateBirthController();
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: dropdownField(
+                                    hint: 'MM',
+                                    items: _month,
+                                    value: _selectMonth.isEmpty
+                                        ? null
+                                        : _selectMonth,
+                                    onChanged: (m) {
+                                      setState(() => _selectMonth = m!);
+                                      _updateBirthController();
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                         const SizedBox(width: 8),
                         Expanded(

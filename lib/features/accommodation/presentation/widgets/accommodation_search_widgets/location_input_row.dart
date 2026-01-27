@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:meomulm_frontend/core/widgets/search/row_container.dart';
 
 class LocationInputRow extends StatelessWidget {
   final TextEditingController controller;
@@ -11,10 +10,11 @@ class LocationInputRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RowContainer(
+    return SizedBox(
+      height: 52,
       child: Row(
         children: [
-          const Icon(Icons.location_on_outlined, color: Colors.grey),
+          const Icon(Icons.search),
           const SizedBox(width: 12),
           Expanded(
             child: TextField(

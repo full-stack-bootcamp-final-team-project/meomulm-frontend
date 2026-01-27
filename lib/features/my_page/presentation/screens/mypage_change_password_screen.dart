@@ -16,10 +16,12 @@ class MypageChangePasswordScreen extends StatefulWidget {
   const MypageChangePasswordScreen({super.key});
 
   @override
-  State<MypageChangePasswordScreen> createState() => _MypageChangePasswordScreenState();
+  State<MypageChangePasswordScreen> createState() =>
+      _MypageChangePasswordScreenState();
 }
 
-class _MypageChangePasswordScreenState extends State<MypageChangePasswordScreen> {
+class _MypageChangePasswordScreenState
+    extends State<MypageChangePasswordScreen> {
   // TODO: DB에서 받아온 이메일로 변경
   final String _emailFromDb = 'abc@exam.com';
 
@@ -59,7 +61,8 @@ class _MypageChangePasswordScreenState extends State<MypageChangePasswordScreen>
   }
 
   void _recalc() {
-    final filled = _currentCtrl.text.trim().isNotEmpty &&
+    final filled =
+        _currentCtrl.text.trim().isNotEmpty &&
         _newCtrl.text.trim().isNotEmpty &&
         _confirmCtrl.text.trim().isNotEmpty;
 
@@ -116,9 +119,11 @@ class _MypageChangePasswordScreenState extends State<MypageChangePasswordScreen>
     String? newPasswordErrorText;
     String? confirmPasswordErrorText;
 
-    if (currentPw.isEmpty) currentPasswordErrorText = InputMessages.emptyPassword;
+    if (currentPw.isEmpty)
+      currentPasswordErrorText = InputMessages.emptyPassword;
     if (newPw.isEmpty) newPasswordErrorText = InputMessages.emptyPassword;
-    if (confirmPw.isEmpty) confirmPasswordErrorText = InputMessages.emptyPassword;
+    if (confirmPw.isEmpty)
+      confirmPasswordErrorText = InputMessages.emptyPassword;
 
     // TODO: 새 비밀번호 규칙 변경
     if (newPw.isNotEmpty && newPw.length < 8) {
@@ -136,7 +141,9 @@ class _MypageChangePasswordScreenState extends State<MypageChangePasswordScreen>
       _confirmErr = confirmPasswordErrorText;
     });
 
-    return currentPasswordErrorText == null && newPasswordErrorText == null && confirmPasswordErrorText == null;
+    return currentPasswordErrorText == null &&
+        newPasswordErrorText == null &&
+        confirmPasswordErrorText == null;
   }
 
   // TODO: 제출 함수 구현
@@ -167,7 +174,7 @@ class _MypageChangePasswordScreenState extends State<MypageChangePasswordScreen>
 
     // TODO: 이전 화면/마이페이지로 이동
     // context.pop();
-    context.go('/');  // 추후 마이페이지 경로로 변경
+    context.go('/'); // 추후 마이페이지 경로로 변경
   }
 
   @override
@@ -196,12 +203,10 @@ class _MypageChangePasswordScreenState extends State<MypageChangePasswordScreen>
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   TextFieldWidget(
-                    style: AppInputStyles.disabled,
-                    decoration: AppInputDecorations.disabled(),
                     label: "이메일",
                     initialValue: _emailFromDb,
+                    style: AppInputStyles.disabled,
                   ),
-
                   const SizedBox(height: AppSpacing.lg),
 
                   // 기존 비밀번호 + 확인 버튼
@@ -214,29 +219,20 @@ class _MypageChangePasswordScreenState extends State<MypageChangePasswordScreen>
                       Expanded(
                         child: TextFieldWidget(
                           style: AppInputStyles.password,
-                          obscureText: _obscure,
                           label: "기존 비밀번호",
-                          decoration: AppInputDecorations.password(
-                            hintText: '비밀번호를 입력하세요.',
-                            obscureText: _obscure,
-                            onToggleVisibility: () {
-                              setState(() {
-                                _obscure = !_obscure;
-                              });
-                            },
-                          ),
-                          errorText: "",  // TODO: 에러텍스트 표시 함수 구현 후 호출
+                          hintText: '비밀번호를 입력하세요.',
+                          errorText: "", // TODO: 에러텍스트 표시 함수 구현 후 호출
                         ),
                       ),
 
                       const SizedBox(width: AppSpacing.sm),
 
                       SmallButton(
-                          label: ButtonLabels.confirm,
-                          onPressed: () {
-                            // TODO: 버튼 클릭 시 기존 비밀번호와 입력값 일치 여부 확인 함수 구현 후 호출
-                          },
-                          enabled: true
+                        label: ButtonLabels.confirm,
+                        onPressed: () {
+                          // TODO: 버튼 클릭 시 기존 비밀번호와 입력값 일치 여부 확인 함수 구현 후 호출
+                        },
+                        enabled: true,
                       ),
                     ],
                   ),
@@ -245,36 +241,18 @@ class _MypageChangePasswordScreenState extends State<MypageChangePasswordScreen>
 
                   TextFieldWidget(
                     style: AppInputStyles.password,
-                    obscureText: _obscure,
                     label: "새 비밀번호",
-                    decoration: AppInputDecorations.password(
-                      hintText: '비밀번호를 입력하세요.',
-                      obscureText: _obscure,
-                      onToggleVisibility: () {
-                        setState(() {
-                          _obscure = !_obscure;
-                        });
-                      },
-                    ),
-                    errorText: "",  // TODO: 에러텍스트 표시 함수 구현 후 호출
+                    hintText: '비밀번호를 입력하세요.',
+                    errorText: "", // TODO: 에러텍스트 표시 함수 구현 후 호출
                   ),
 
                   const SizedBox(height: AppSpacing.lg),
 
                   TextFieldWidget(
                     style: AppInputStyles.password,
-                    obscureText: _obscure,
                     label: "비밀번호 확인",
-                    decoration: AppInputDecorations.password(
-                      hintText: '비밀번호를 다시 입력하세요.',
-                      obscureText: _obscure,
-                      onToggleVisibility: () {
-                        setState(() {
-                          _obscure = !_obscure;
-                        });
-                      },
-                    ),
-                    errorText: "",  // TODO: 에러텍스트 표시 함수 구현 후 호출
+                    hintText: '비밀번호를 다시 입력하세요.',
+                    errorText: "", // TODO: 에러텍스트 표시 함수 구현 후 호출
                   ),
 
                   const SizedBox(height: AppSpacing.xxxl),

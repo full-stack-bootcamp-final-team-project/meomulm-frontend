@@ -15,12 +15,13 @@ Future<void> main() async {
 
   if (EnvConfig.isDevelopment) EnvConfig.printEnvInfo();
 
+  // 모바일(Android/iOS) 환경에서만 Kakao Map 초기화
   if (!kIsWeb) {
     await KakaoMapSdk.instance.initialize(EnvConfig.kakaoNativeKey);
+  } else {
+    debugPrint("Web 환경: Kakao Map SDK 초기화 생략");
   }
 
-
-  // AuthProvider 생성 및 저장된 사용자 로드
   final authProvider = AuthProvider();
 
   runApp(MeomulmApp(authProvider: authProvider));

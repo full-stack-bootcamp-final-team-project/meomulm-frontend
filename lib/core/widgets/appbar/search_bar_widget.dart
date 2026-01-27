@@ -3,7 +3,7 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 
-class SearchBarAppBar extends StatelessWidget implements PreferredSizeWidget {
+class SearchBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final String? keyword;
   final String? dateText;
   final int peopleCount;
@@ -12,7 +12,7 @@ class SearchBarAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onSearch;
   final VoidCallback? onFilter;
 
-  const SearchBarAppBar({
+  const SearchBarWidget({
     super.key,
     this.keyword,
     this.dateText,

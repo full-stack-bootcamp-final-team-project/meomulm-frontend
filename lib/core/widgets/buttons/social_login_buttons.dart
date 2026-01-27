@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
-import '../../theme/app_button_styles.dart';
 
 /// =====================
 /// 소셜 로그인 버튼

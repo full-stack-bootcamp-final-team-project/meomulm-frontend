@@ -45,14 +45,19 @@ class RoutePaths{
   /// =====================
   /// map 라우팅 경로
   /// =====================
-  // 숙소 지도 스크린 (accommodation_map_screen)
-  static const String accommodationMap ='/accommodation-map';
-  // 지도 스크린 (map_search_screen)
-  static const String map ='/map-search';
-  // 지도 검색 스크린 (map_result_screen)
-  static const String mapResult = '/map-result';
-  // 숙소 지역 검색 스크린 (search_region_screen)
-  static const String searchRegion = '/search-region';
+
+// 지도 메인 스크린
+  static const String map = '/map';
+
+// 지도 검색 필터 스크린
+  static const String mapSearch = '/map-search';
+
+// 지도 검색 지역 선택 스크린
+  static const String mapSearchRegion = '/map-search/region';
+
+// 지도 검색 결과 스크린
+  static const String mapSearchResult = '/map-search/result';
+
 
   /// =====================
   /// mypage 라우팅 경로
