@@ -7,14 +7,14 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
 
-class MapSearchScreen extends StatefulWidget {
-  const MapSearchScreen({super.key});
+class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
 
   @override
-  State<MapSearchScreen> createState() => _MapSearchScreenState();
+  State<MapScreen> createState() => _MapScreenState();
 }
 
-class _MapSearchScreenState extends State<MapSearchScreen> {
+class _MapScreenState extends State<MapScreen> {
   KakaoMapController? _controller;
   bool _locationDenied = false;
 
@@ -39,10 +39,10 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SearchBarAppBar(
+      appBar: SearchBarWidget(
         dateText: DatePeopleTextUtil.todayToTomorrow(),
         peopleCount: 2,
-        onSearch: () => context.push(RoutePaths.searchRegion),
+        onSearch: () => context.push(RoutePaths.mapSearch),
       ),
       body: Stack(
         children: [
@@ -66,7 +66,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
 
               await controller.labelLayer.addPoi(
                 myLatLng,
-                style: PoiStyle(), // 기본 마커 OK
+                style: PoiStyle(),
               );
             },
           ),
@@ -76,7 +76,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
             child: Align(
               alignment: Alignment.bottomRight,
               child: Padding(
-                padding: const EdgeInsets.all(16.0), // SafeArea 안쪽 여백
+                padding: const EdgeInsets.all(16.0),
                 child: FloatingActionButton(
                   heroTag: "myLocationBtn",
                   onPressed: () async {

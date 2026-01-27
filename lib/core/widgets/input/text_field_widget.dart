@@ -1,80 +1,106 @@
 import 'package:flutter/material.dart';
-import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/theme/app_input_decorations.dart';
+import 'package:meomulm_frontend/core/theme/app_input_styles.dart';
+import 'package:meomulm_frontend/core/widgets/input/form_label.dart';
 
-class TextFieldWidget extends StatelessWidget {
-  final AppInputStyles style;
-  final InputDecoration decoration;
-
-  final TextEditingController? controller;
-  final bool obscureText;
-  final TextInputType keyboardType;
-  final bool enabled;
-  final int maxLines;
-  final ValueChanged<String>? onChanged;
-  final FormFieldValidator<String>? validator;
+class TextFieldWidget extends StatefulWidget {
   final String? label;
   final bool isRequired;
-  final String? initialValue;
+  final String? hintText;
   final String? errorText;
+
+  final TextEditingController? controller;
+  final String? initialValue;
+
+  final AppInputStyles style;
+  final TextInputType keyboardType;
+  final int maxLines;
+
+  final bool enabled;
+
+  final ValueChanged<String>? onChanged;
+  final FormFieldValidator<String>? validator;
 
   const TextFieldWidget({
     super.key,
-    required this.decoration,
-    this.style = AppInputStyles.standard,
-    this.controller,
-    this.obscureText = false,
-    this.keyboardType = TextInputType.text,
-    this.enabled = true,
-    this.maxLines = 1,
-    this.onChanged,
-    this.validator,
     this.label,
     this.isRequired = false,
+    this.hintText,
+    this.errorText,
+    this.controller,
     this.initialValue,
-    this.errorText
+    this.style = AppInputStyles.standard,
+    this.keyboardType = TextInputType.text,
+    this.maxLines = 1,
+    this.enabled = true,
+    this.onChanged,
+    this.validator,
   });
+
+  @override
+  State<TextFieldWidget> createState() => _TextFieldWidgetState();
+}
+
+class _TextFieldWidgetState extends State<TextFieldWidget> {
+  late bool _obscureText;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.style == AppInputStyles.password;
+  }
+
+  void _toggleVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
+  InputDecoration _getDecoration() {
+    switch (widget.style) {
+      case AppInputStyles.standard:
+        return AppInputDecorations.standard(
+          hintText: widget.hintText,
+          errorText: widget.errorText,
+        );
+      case AppInputStyles.underline:
+        return AppInputDecorations.underline(
+          hintText: widget.hintText,
+          errorText: widget.errorText,
+        );
+      case AppInputStyles.disabled:
+        return AppInputDecorations.disabled();
+      case AppInputStyles.password:
+        return AppInputDecorations.password(
+          hintText: widget.hintText,
+          obscureText: _obscureText,
+          onToggleVisibility: _toggleVisibility,
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        if(label != null)
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                label!,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              if (isRequired) ...[
-                const SizedBox(width: 2),
-                const Text(
-                  "*",
-                  style: TextStyle(color: Colors.red),
-                ),
-              ],
-            ],
+        if (widget.label != null)
+          FormLabel(
+            label: widget.label!,
+            isRequired: widget.isRequired,
           ),
 
-        if (label != null) const SizedBox(height: 2),
-
         TextFormField(
-          initialValue: initialValue,
-          controller: controller,
-          keyboardType: keyboardType,
-          maxLines: maxLines,
-          onChanged: onChanged,
-          validator: validator,
-
-
-          obscureText: style == AppInputStyles.password ? obscureText : false,
-          enabled: style == AppInputStyles.disabled ? false : enabled,
-
-          decoration: decoration,
+          controller: widget.controller,
+          initialValue: widget.initialValue,
+          keyboardType: widget.keyboardType,
+          maxLines: widget.maxLines,
+          obscureText: widget.style == AppInputStyles.password ? _obscureText : false,
+          enabled: widget.style == AppInputStyles.disabled ? false : widget.enabled,
+          onChanged: widget.onChanged,
+          validator: widget.validator,
+          decoration: _getDecoration(),
         ),
       ],
     );

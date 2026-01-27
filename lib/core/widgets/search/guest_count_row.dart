@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meomulm_frontend/core/widgets/search/row_container.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
 class GuestCountRow extends StatelessWidget {
   final int count;
@@ -15,48 +15,40 @@ class GuestCountRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RowContainer(
+    return SizedBox(
+      height: 52,
       child: Row(
         children: [
-          const Icon(Icons.person_outline, color: Colors.grey),
-          const SizedBox(width: 12),
-          const Text(
-            '인원',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-          ),
+          const Icon(AppIcons.person),
+          const SizedBox(width: AppSpacing.md),
+          const Text('인원', style: AppTextStyles.bodyLg),
           const Spacer(),
-          _IconBtn(icon: Icons.remove, onTap: onMinus),
-          Text(
-            '$count',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
+          _CountButton(icon: AppIcons.remove, onTap: onMinus),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            child: Text('$count', style: AppTextStyles.bodyLg),
           ),
-          _IconBtn(icon: Icons.add, onTap: onPlus),
+          _CountButton(icon: AppIcons.add, onTap: onPlus),
         ],
       ),
     );
   }
 }
 
-class _IconBtn extends StatelessWidget {
+class _CountButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
 
-  const _IconBtn({required this.icon, this.onTap});
+  const _CountButton({required this.icon, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 36,
-      height: 36,
-      child: IconButton(
-        padding: EdgeInsets.zero,
-        iconSize: 20,
-        icon: Icon(icon),
-        onPressed: onTap,
-      ),
+    return IconButton(
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+      iconSize: AppIcons.sizeMd,
+      icon: Icon(icon),
+      onPressed: onTap,
     );
   }
 }

@@ -3,18 +3,31 @@ import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/region_detail_grid.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/region_list_panel.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/map_search_region_widgets/region_detail_grid.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/map_search_region_widgets/region_list_panel.dart';
 
-class SearchRegionScreen extends StatefulWidget {
-  const SearchRegionScreen({super.key});
+class MapSearchRegionScreen extends StatefulWidget {
+  const MapSearchRegionScreen({super.key});
 
   @override
-  State<SearchRegionScreen> createState() => _SearchRegionScreenState();
+  State<MapSearchRegionScreen> createState() => _MapSearchRegionScreenState();
 }
 
-class _SearchRegionScreenState extends State<SearchRegionScreen> {
+class _MapSearchRegionScreenState extends State<MapSearchRegionScreen> {
   int selectedRegionIndex = 0;
+
+  int _calculateCrossAxisCount(double width) {
+    if (width > AppBreakpoints.tablet) return 4;
+    if (width > AppBreakpoints.mobile) return 3;
+    return 2;
+  }
+
+  void _onRegionSelected(String selectedRegion, String detailRegion) {
+    context.pop({
+      'region': selectedRegion,
+      'detailRegion': detailRegion,
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +36,12 @@ class _SearchRegionScreenState extends State<SearchRegionScreen> {
     final regions = RegionConstants.regions;
     final selectedRegion = regions[selectedRegionIndex];
     final detailList = RegionConstants.regionDetails[selectedRegion]!;
-
-    final int crossAxisCount = screenWidth > AppBreakpoints.tablet
-        ? 4
-        : screenWidth > AppBreakpoints.mobile
-        ? 3
-        : 2;
+    final crossAxisCount = _calculateCrossAxisCount(screenWidth);
 
     return Scaffold(
-      appBar: const AppBarWidget(title: TitleLabels.selectRegion),
+      appBar: const AppBarWidget(
+        title: TitleLabels.selectRegion,
+      ),
       body: Row(
         children: [
           RegionListPanel(
@@ -51,12 +61,7 @@ class _SearchRegionScreenState extends State<SearchRegionScreen> {
                 details: detailList,
                 crossAxisCount: crossAxisCount,
                 onSelect: (detailRegion) {
-                  context.go(
-                    '/search-filter',
-                    extra: {
-                      'detailRegion': detailRegion,
-                    },
-                  );
+                  _onRegionSelected(selectedRegion, detailRegion);
                 },
               ),
             ),

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
 
-class MapResultScreen extends StatelessWidget {
-  const MapResultScreen({super.key});
+class MapSearchResultScreen extends StatelessWidget {
+  const MapSearchResultScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:SearchBarAppBar(
+      appBar:SearchBarWidget(
         dateText: DatePeopleTextUtil.todayToTomorrow(),
         peopleCount: 2,
       )

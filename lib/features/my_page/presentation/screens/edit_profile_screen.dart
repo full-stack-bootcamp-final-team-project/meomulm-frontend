@@ -110,7 +110,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   TextFieldWidget(
                     label: "이메일",
                     style: AppInputStyles.disabled,
-                    decoration: AppInputDecorations.disabled(),
                     initialValue: _emailFromDb,
                   ),
 
@@ -120,7 +119,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   TextFieldWidget(
                     label: "이름",
                     style: AppInputStyles.standard,
-                    decoration: AppInputDecorations.standard(),
                     controller: _nameCtrl,
                   ),
 
@@ -130,7 +128,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   TextFieldWidget(
                     label: "연락처",
                     style: AppInputStyles.standard,
-                    decoration: AppInputDecorations.standard(),
                     controller: _phoneCtrl,
                   ),
 
@@ -144,7 +141,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: TextFieldWidget(
                             label: "생년월일",
                             style: AppInputStyles.disabled,
-                            decoration: AppInputDecorations.disabled(),
                             initialValue: _birthYearFromDb,
                           )
                       ),
@@ -154,7 +150,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: TextFieldWidget(
                             label: " ",
                             style: AppInputStyles.disabled,
-                            decoration: AppInputDecorations.disabled(),
                             initialValue: _birthMonthFromDb,
                           )
                       ),
@@ -164,7 +159,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: TextFieldWidget(
                             label: " ",
                             style: AppInputStyles.disabled,
-                            decoration: AppInputDecorations.disabled(),
                             initialValue: _birthDayFromDb,
                           )
                       ),

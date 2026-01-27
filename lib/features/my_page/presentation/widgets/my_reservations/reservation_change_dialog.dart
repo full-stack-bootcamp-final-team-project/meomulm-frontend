@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:meomulm_frontend/core/constants/ui/labels_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_input_decorations.dart';
+import 'package:meomulm_frontend/core/theme/app_input_styles.dart';
 import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:meomulm_frontend/core/widgets/dialogs/simple_modal.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
@@ -54,9 +55,9 @@ class _ReservationChangeDialogState extends State<ReservationChangeDialog> {
 
           TextFieldWidget(
             label: "예약자 이름",
-            decoration: AppInputDecorations.underline(
+            style: AppInputStyles.underline,
               hintText: "예약자 이름을 입력하세요.",
-            ),
+
             errorText: "", // TODO: 유효성검사에 따라 에러메세지 반환하는 함수 구현
           ),
 
@@ -64,18 +65,18 @@ class _ReservationChangeDialogState extends State<ReservationChangeDialog> {
 
           TextFieldWidget(
             label: "이메일",
-            decoration: AppInputDecorations.underline(
+            style: AppInputStyles.underline,
               hintText: "이메일을 입력하세요.",
-            ),
+
             errorText: "", // TODO: 유효성검사에 따라 에러메세지 반환하는 함수 구현
           ),
           const SizedBox(height: AppSpacing.xl),
 
           TextFieldWidget(
             label: "휴대폰 번호",
-            decoration: AppInputDecorations.underline(
+            style: AppInputStyles.underline,
               hintText: "휴대폰 번호를 입력하세요.",
-            ),
+
             errorText: "", // TODO: 유효성검사에 따라 에러메세지 반환하는 함수 구현
           ),
         ],
