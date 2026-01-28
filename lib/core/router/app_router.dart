@@ -33,7 +33,7 @@ import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
-    initialLocation: '/login',
+    initialLocation: '/intro',
     routes: [
       /// =====================
       /// intro 라우팅
