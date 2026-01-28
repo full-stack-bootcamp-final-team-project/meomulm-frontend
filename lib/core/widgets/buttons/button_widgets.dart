@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_button_styles.dart';
+import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 
 // =====================
 // 버튼 위젯 컴포넌트
@@ -37,6 +38,7 @@ class LargeButton extends StatelessWidget {
       ),
       child: Text(
         label,
+        style: AppTextStyles.buttonLg,
         maxLines: 1,
       ),
     );
@@ -76,6 +78,7 @@ class MediumButton extends StatelessWidget {
       ),
       child: Text(
         label,
+        style: AppTextStyles.buttonMd,
         maxLines: 1,
       ),
     );
@@ -102,7 +105,7 @@ class SmallButton extends StatelessWidget {
       style: AppButtonStyles.globalButtonStyle(enabled: enabled).copyWith(
         fixedSize: const WidgetStatePropertyAll(
           Size(
-            AppButtonStyles.buttonWidthSm,
+            double.infinity,
             AppButtonStyles.buttonHeightSm,
           ),
         ),
@@ -115,6 +118,7 @@ class SmallButton extends StatelessWidget {
       ),
       child: Text(
         label,
+        style: AppTextStyles.buttonSm,
         maxLines: 1,
       ),
     );

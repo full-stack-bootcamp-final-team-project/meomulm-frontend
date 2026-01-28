@@ -32,7 +32,15 @@ class _MypageScreenState extends State<MypageScreen> {
   void initState() {
     super.initState();
 
-    final token = context.read<AuthProvider>().token;
+    // final token = context.read<AuthProvider>().token;
+    Future.microtask(() {
+      final token = context.read<AuthProvider>().token;
+      if (token != null) {
+        context.read<UserProfileProvider>().loadUserProfile(token);
+      } else {
+        context.go(ApiPaths.loginUrl);
+      }
+    });
   }
 
   // =====================

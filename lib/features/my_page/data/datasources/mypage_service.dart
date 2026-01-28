@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:meomulm_frontend/core/constants/paths/api_paths.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/my_page/data/models/edit_profile_request_model.dart';
 import 'package:meomulm_frontend/features/my_page/data/models/user_profile_model.dart';
 
 class MypageService {
@@ -34,14 +35,14 @@ class MypageService {
   // TODO: 이미지 업로드/수정 fetch 함수
 
   // TODO: 회원정보 수정 fetch 함수
-  Future<bool> fetchEditProfile(String token, UserProfileModel user) async {
+  Future<bool> fetchEditProfile(String token, EditProfileRequestModel user) async {
     try {
       final response = await _dio.put(
-        '',
+        '/userInfo',
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
         ),
-        data: user,
+        data: user.toJson(),
       );
       return true;
     } catch (e) {
