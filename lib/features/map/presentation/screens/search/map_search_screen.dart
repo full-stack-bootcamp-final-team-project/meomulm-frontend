@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
 import 'package:meomulm_frontend/core/widgets/search/search_box.dart';
@@ -14,8 +15,11 @@ class MapSearchScreen extends StatefulWidget {
 }
 
 class _MapSearchScreenState extends State<MapSearchScreen> {
-  String location = '';
-  DateTimeRange? dateRange;
+  String region = '';
+  DateTimeRange? dateRange = DateTimeRange(
+    start: DateTime.now(),
+    end: DateTime.now().add(const Duration(days: 1)),
+  );
   int guestCount = 2;
 
   Future<void> _openRegionSelector() async {
@@ -25,7 +29,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
 
     if (result != null && result['detailRegion'] != null) {
       setState(() {
-        location = result['detailRegion']!;
+        region = result['detailRegion']!;
       });
     }
   }
@@ -38,12 +42,12 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
       appBar: AppBarWidget(title: "지도 검색"),
       body: Column(
         children: [
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
 
           SearchBox(
             width: size.width * 0.9,
             firstRow: LocationSelectRow(
-              location: location,
+              region: region,
               onTap: _openRegionSelector,
             ),
             dateRange: dateRange,
@@ -54,20 +58,27 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
 
           const Spacer(),
 
-          BottomActionButton(
-            label: "지도에서 보기",
-            onPressed: _onSearch,
-          ),
+          BottomActionButton(label: "지도에서 보기", onPressed: _onSearch),
         ],
       ),
     );
   }
 
   void _onSearch() {
-    debugPrint('지역: $location');
-    debugPrint('날짜: $dateRange');
-    debugPrint('인원: $guestCount');
+    if (region.isEmpty || dateRange == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('지역을 선택해주세요')),
+      );
+      return;
+    }
 
-    // Navigator.push(...)
+    context.push(
+      RoutePaths.mapSearchResult,
+      extra: {
+        'region': region,
+        'dateRange': dateRange,
+        'guestCount': guestCount,
+      },
+    );
   }
 }

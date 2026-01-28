@@ -15,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late LinearGradient _currentGradient;
   late final Timer _timer;
+
   //  세로 스크롤 컨트롤러
   final ScrollController _verticalScroll = ScrollController();
 
@@ -24,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _currentGradient = AppGradients.byTime();
     _timer = Timer.periodic(
       const Duration(minutes: 1),
-          (_) => _updateGradientIfNeeded(),
+      (_) => _updateGradientIfNeeded(),
     );
   }
 
@@ -64,28 +65,61 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // 광고영역 데이터 - 팀원 정보 TODO 이미지 변경 필요
   static final List<Map<String, String>> ADItems = [
-    {"title": "박세원", "url": "https://github.com/svv0003", "imageUrl": "assets/images/ad/ad_01.png"},
-    {"title": "박형빈", "url": "https://github.com/PHB-1994", "imageUrl": "assets/images/ad/ad_02.png"},
-    {"title": "유기태", "url": "https://github.com/tiradovi", "imageUrl": "assets/images/ad/ad_01.png"},
-    {"title": "오유성", "url": "https://github.com/Emma10003", "imageUrl": "assets/images/ad/ad_02.png"},
-    {"title": "조연희", "url": "https://github.com/yeonhee-cho", "imageUrl": "assets/images/ad/ad_01.png"},
-    {"title": "현윤선", "url": "https://github.com/yunseonhyun", "imageUrl": "assets/images/ad/ad_02.png"},
+    {
+      "title": "박세원",
+      "url": "https://github.com/svv0003",
+      "imageUrl": "assets/images/ad/ad_01.png",
+    },
+    {
+      "title": "박형빈",
+      "url": "https://github.com/PHB-1994",
+      "imageUrl": "assets/images/ad/ad_02.png",
+    },
+    {
+      "title": "유기태",
+      "url": "https://github.com/tiradovi",
+      "imageUrl": "assets/images/ad/ad_01.png",
+    },
+    {
+      "title": "오유성",
+      "url": "https://github.com/Emma10003",
+      "imageUrl": "assets/images/ad/ad_02.png",
+    },
+    {
+      "title": "조연희",
+      "url": "https://github.com/yeonhee-cho",
+      "imageUrl": "assets/images/ad/ad_01.png",
+    },
+    {
+      "title": "현윤선",
+      "url": "https://github.com/yunseonhyun",
+      "imageUrl": "assets/images/ad/ad_02.png",
+    },
   ];
 
   // 숙소 가데이터
   static final List<Map<String, String>> dummyItems = List.generate(
-      12,
-          (index) => {
-        "title": "라발스 호텔 부산 ${index + 1}",
-        "price": "86,660원 ~",
-        "img": "https://picsum.photos/id/${index + 10}/400/600",
-      });
+    12,
+    (index) => {
+      "title": "라발스 호텔 부산 ${index + 1}",
+      "price": "86,660원 ~",
+      "img": "https://picsum.photos/id/${index + 10}/400/600",
+    },
+  );
 
   // 스크롤
-  void _scrollByItem(ScrollController controller, double itemWidth, double spacing, bool isLeft) {
+  void _scrollByItem(
+    ScrollController controller,
+    double itemWidth,
+    double spacing,
+    bool isLeft,
+  ) {
     final step = itemWidth + spacing;
     final targetOffset = controller.offset + (isLeft ? -step : step);
-    final clampedOffset = targetOffset.clamp(0.0, controller.position.maxScrollExtent);
+    final clampedOffset = targetOffset.clamp(
+      0.0,
+      controller.position.maxScrollExtent,
+    );
     controller.animateTo(
       clampedOffset,
       duration: const Duration(milliseconds: 300),
@@ -195,7 +229,9 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       // 탭
-      bottomNavigationBar: BottomNavBarWidget(onHomeTap: _refreshHome),
+      bottomNavigationBar: SafeArea(
+        child: BottomNavBarWidget(onHomeTap: _refreshHome),
+      ),
     );
   }
 }
@@ -205,6 +241,7 @@ class _HomeScreenState extends State<HomeScreen> {
 /// 헤더 영역(로고 + 알림)
 class HeaderWidget extends StatelessWidget {
   final VoidCallback onLogoTap;
+
   const HeaderWidget({super.key, required this.onLogoTap});
 
   @override
@@ -223,11 +260,17 @@ class HeaderWidget extends StatelessWidget {
               width: 60,
               height: 48,
               fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) =>
-                  Text('머묾', style: AppTextStyles.appBarTitle.copyWith(color: Colors.white)),
+              errorBuilder: (context, error, stackTrace) => Text(
+                '머묾',
+                style: AppTextStyles.appBarTitle.copyWith(color: Colors.white),
+              ),
             ),
           ),
-          Icon(AppIcons.notifications, color: AppColors.white, size: AppIcons.sizeXxl),
+          Icon(
+            AppIcons.notifications,
+            color: AppColors.white,
+            size: AppIcons.sizeXxl,
+          ),
         ],
       ),
     );
@@ -269,31 +312,39 @@ class AdSectionWidget extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.only(left: horizontalPadding),
             child: Row(
-              children: List.generate(
-                items.length,
-                    (i) {
-                  final item = items[i];
-                  return GestureDetector(
-                    onTap: () => onItemTap(item["url"]!),
-                    child: Container(
-                      width: itemWidth,
-                      height: itemWidth * 0.43,
-                      margin: EdgeInsets.only(right: i == items.length - 1 ? 0 : itemSpacing),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppBorderRadius.xs),
-                        image: DecorationImage(
-                          image: AssetImage(item["imageUrl"]!),
-                          fit: BoxFit.cover,
-                        ),
+              children: List.generate(items.length, (i) {
+                final item = items[i];
+                return GestureDetector(
+                  onTap: () => onItemTap(item["url"]!),
+                  child: Container(
+                    width: itemWidth,
+                    height: itemWidth * 0.43,
+                    margin: EdgeInsets.only(
+                      right: i == items.length - 1 ? 0 : itemSpacing,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(AppBorderRadius.xs),
+                      image: DecorationImage(
+                        image: AssetImage(item["imageUrl"]!),
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              }),
             ),
           ),
-          ArrowButtonWidget(left: AppSpacing.md, isLeft: true, onTap: () => scrollByItem(controller, itemWidth, itemSpacing, true)),
-          ArrowButtonWidget(left: width - AppSpacing.md - AppSpacing.lg, isLeft: false, onTap: () => scrollByItem(controller, itemWidth, itemSpacing, false)),
+          ArrowButtonWidget(
+            left: AppSpacing.md,
+            isLeft: true,
+            onTap: () => scrollByItem(controller, itemWidth, itemSpacing, true),
+          ),
+          ArrowButtonWidget(
+            left: width - AppSpacing.md - AppSpacing.lg,
+            isLeft: false,
+            onTap: () =>
+                scrollByItem(controller, itemWidth, itemSpacing, false),
+          ),
         ],
       ),
     );
@@ -337,13 +388,30 @@ class HomeSectionWidget extends StatelessWidget {
             top: height * 0.1,
             child: Row(
               children: [
-                Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: AppColors.black)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.black,
+                  ),
+                ),
                 if (isHot)
                   Container(
                     margin: const EdgeInsets.only(left: AppSpacing.xs),
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xs, vertical: AppSpacing.xxs),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xs,
+                      vertical: AppSpacing.xxs,
+                    ),
                     color: AppColors.black,
-                    child: Text('HOT', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.white)),
+                    child: Text(
+                      'HOT',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.white,
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -356,18 +424,35 @@ class HomeSectionWidget extends StatelessWidget {
             child: SingleChildScrollView(
               controller: controller,
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
+              padding: const EdgeInsets.symmetric(
+                horizontal: horizontalPadding,
+              ),
               child: Row(
                 children: List.generate(
                   items.length,
-                      (i) => HomeItemCard(item: items[i], width: itemWidth, isLast: i == items.length - 1),
+                  (i) => HomeItemCard(
+                    item: items[i],
+                    width: itemWidth,
+                    isLast: i == items.length - 1,
+                  ),
                 ),
               ),
             ),
           ),
           // 세션 화살표
-          ArrowButtonWidget(left: AppSpacing.md, top: height * 0.46, isLeft: true, onTap: () => scrollByItem(controller, itemWidth, itemSpacing, true)),
-          ArrowButtonWidget(left: width - AppSpacing.md - AppSpacing.lg, top: height * 0.46, isLeft: false, onTap: () => scrollByItem(controller, itemWidth, itemSpacing, false)),
+          ArrowButtonWidget(
+            left: AppSpacing.md,
+            top: height * 0.46,
+            isLeft: true,
+            onTap: () => scrollByItem(controller, itemWidth, itemSpacing, true),
+          ),
+          ArrowButtonWidget(
+            left: width - AppSpacing.md - AppSpacing.lg,
+            top: height * 0.46,
+            isLeft: false,
+            onTap: () =>
+                scrollByItem(controller, itemWidth, itemSpacing, false),
+          ),
         ],
       ),
     );
@@ -381,7 +466,12 @@ class HomeItemCard extends StatelessWidget {
   final double width;
   final bool isLast;
 
-  const HomeItemCard({super.key, required this.item, required this.width, this.isLast = false});
+  const HomeItemCard({
+    super.key,
+    required this.item,
+    required this.width,
+    this.isLast = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -404,9 +494,17 @@ class HomeItemCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
-          Text(item['title']!, style: AppTextStyles.subTitle, maxLines: 2, overflow: TextOverflow.ellipsis),
+          Text(
+            item['title']!,
+            style: AppTextStyles.subTitle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
           const SizedBox(height: AppSpacing.sm),
-          Text(item['price']!, style: AppTextStyles.subTitle.copyWith(fontWeight: FontWeight.w600)),
+          Text(
+            item['price']!,
+            style: AppTextStyles.subTitle.copyWith(fontWeight: FontWeight.w600),
+          ),
         ],
       ),
     );
@@ -421,7 +519,13 @@ class ArrowButtonWidget extends StatelessWidget {
   final bool isLeft;
   final VoidCallback onTap;
 
-  const ArrowButtonWidget({super.key, required this.left, this.top, required this.isLeft, required this.onTap});
+  const ArrowButtonWidget({
+    super.key,
+    required this.left,
+    this.top,
+    required this.isLeft,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -438,7 +542,11 @@ class ArrowButtonWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppBorderRadius.xs),
             border: Border.all(color: AppColors.gray4),
           ),
-          child: Icon(isLeft ? AppIcons.arrowLeft : AppIcons.arrowRight, size: AppIcons.sizeSm, color: AppColors.gray1),
+          child: Icon(
+            isLeft ? AppIcons.arrowLeft : AppIcons.arrowRight,
+            size: AppIcons.sizeSm,
+            color: AppColors.gray1,
+          ),
         ),
       ),
     );
@@ -454,24 +562,40 @@ class BottomNavBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height * 0.09;
     return Container(
-      height: height / 1.3,
-      decoration: BoxDecoration(color: AppColors.white, boxShadow: AppShadows.bottomNav),
+      height: 60,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        boxShadow: AppShadows.bottomNav,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _navIcon(context, AppIcons.home, RoutePaths.home, color: AppColors.main),
+          _navIcon(
+            context,
+            AppIcons.home,
+            RoutePaths.home,
+            color: AppColors.main,
+          ),
           _navIcon(context, AppIcons.search, RoutePaths.accommodationSearch),
           _navIcon(context, AppIcons.map, RoutePaths.map),
-          _navIcon(context, AppIcons.favorite, '${RoutePaths.myPage}${RoutePaths.favorite}'),
+          _navIcon(
+            context,
+            AppIcons.favorite,
+            '${RoutePaths.myPage}${RoutePaths.favorite}',
+          ),
           _navIcon(context, AppIcons.person, RoutePaths.myPage),
         ],
       ),
     );
   }
 
-  Widget _navIcon(BuildContext context, IconData icon, String page, {Color color = AppColors.black}) {
+  Widget _navIcon(
+    BuildContext context,
+    IconData icon,
+    String page, {
+    Color color = AppColors.black,
+  }) {
     return GestureDetector(
       onTap: () {
         if (page == RoutePaths.home) {
