@@ -109,7 +109,7 @@ class _AccommodationImageSliderState extends State<AccommodationImageSlider> {
                 // ActionButtons(),
                 Consumer<AccommodationProvider>(
                   builder: (context, provider, child) {
-                    final id = provider.currentId ?? 'unknown';
+                    final id = provider.selectedAccommodationId ?? 0;
                     return ActionButtons(accommodationId: id);
                   },
                 ),

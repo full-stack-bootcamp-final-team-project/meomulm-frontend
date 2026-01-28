@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 
 class LocationInputRow extends StatelessWidget {
   final TextEditingController controller;
@@ -15,7 +17,7 @@ class LocationInputRow extends StatelessWidget {
       child: Row(
         children: [
           const Icon(Icons.search),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: TextField(
               controller: controller,
@@ -24,10 +26,7 @@ class LocationInputRow extends StatelessWidget {
                 border: InputBorder.none,
                 isDense: true,
               ),
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
+              style: AppTextStyles.inputTextLg,
             ),
           ),
         ],

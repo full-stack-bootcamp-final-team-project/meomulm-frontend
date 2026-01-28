@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:clipboard/clipboard.dart';
 
 class ActionButtons extends StatelessWidget {
-  final String accommodationId;
+  final int accommodationId;
   const ActionButtons({super.key, required this.accommodationId});
 
   @override

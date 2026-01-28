@@ -31,14 +31,14 @@ class RoutePaths{
   /// =====================
   // 숙소 검색 스크린 (search_accommodation_screen)
   static const String accommodationSearch = '/accommodation-search';
-  // 숙소 검색 결과 리스트 (accommodation_filter_screen)
+  // 숙소 필터 스크린 (accommodation_filter_screen)
   static const String accommodationFilter = '/accommodation-filter';
-  // 숙소 검색 결과 리스트 (accommodation_list_screen)
+  // 숙소 결과 스크린 (accommodation_list_screen)
   static const String accommodationResult = '/accommodation-result';
-  // 숙소 리뷰 리스트 (accommodation_review_screen)
+  // 숙소 리뷰 스크린 (accommodation_review_screen)
   static const String accommodationReview = '/accommodation-review';
   // 숙소 상세 스크린 (accommodation_detail_screen)
-  static const String accommodationDetail = '/accommodation-detail';
+  static const String accommodationDetail = '/accommodation-detail/:id';
   // 객실 목록 스크린(product_list_screen)
   static const String productList = '/product-list';
 

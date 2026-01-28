@@ -1,31 +1,103 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget_second.dart';
+import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_model.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_result_widgets/hotel_card.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_result_widgets/result_topBar.dart';
+import 'package:provider/provider.dart';
 
 
-class AccommodationResultScreen extends StatelessWidget {
+class AccommodationResultScreen extends StatefulWidget {
   const AccommodationResultScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+  State<AccommodationResultScreen> createState() => _AccommodationResultScreen();
+}
 
+class _AccommodationResultScreen extends State<AccommodationResultScreen> {
+  String tempLocation = '';
+  DateTimeRange? tempDateRange;
+  int tempGuestCount = 2;
+  List<Accommodation> accommodations = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    final provider = context.read<AccommodationProvider>();
+    tempLocation = provider.accommodationName ?? '';
+    tempDateRange = provider.dateRange;
+    tempGuestCount = provider.guestCount;
+    loadAccommodations();
+  }
+
+  Future<void> loadAccommodations() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await AccommodationApiService.getAccommodationByKeyword(
+        keyword: tempLocation,
+      );
+
+      setState(() {
+        accommodations = response;
+        isLoading = false;
+      });
+    } catch (e) {
+      debugPrint('데이터 로드 실패: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const ResultTopBar(),
+      appBar: const SearchBarAppBar(),
       body: Column(
         children: [
           const SizedBox(height: 20),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              children: const [
-                HotelCard(),
-              ],
-            ),
+
+          Expanded(  // ← 여기 Expanded로 나머지 공간 모두 채움
+            child: _buildBodyContent(),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildBodyContent() {
+    if (isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (accommodations.isEmpty) {
+      return const Center(
+        child: Text(
+          '검색 결과가 없습니다',
+          style: TextStyle(color: Colors.grey, fontSize: 16),
+        ),
+      );
+    }
+
+    // 정상적인 결과 목록
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      itemCount: accommodations.length,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: HotelCard(accommodation: accommodations[index]),
+        );
+      },
     );
   }
 }
