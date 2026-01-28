@@ -22,12 +22,16 @@ class ProfileAvatar extends StatelessWidget {
           Container(
             width: 64,
             height: 64,
-            decoration: BoxDecoration(
-              // TODO: 프로필 이미지로 영역 채우기
-              color: AppColors.gray5,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.gray4),
+            // TODO: 프로필 이미지로 영역 채우기
+            child: CircleAvatar(
+
             ),
+            // decoration: BoxDecoration(
+            //
+            //   color: AppColors.gray5,
+            //   shape: BoxShape.circle,
+            //   border: Border.all(color: AppColors.gray4),
+            // ),
           ),
           Positioned(
             right: -2,

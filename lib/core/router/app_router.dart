@@ -5,8 +5,10 @@ import 'package:meomulm_frontend/features/accommodation/presentation/screens/acc
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_result_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_search_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/product_list_screen.dart';
+import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/screens/search/map_search_result_screen.dart';
 import 'package:meomulm_frontend/features/map/presentation/screens/search/map_search_screen.dart';
+import 'package:meomulm_frontend/features/my_page/data/models/user_profile_model.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/screens/favorite_screen.dart';
 
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_detail_screen.dart';
@@ -30,9 +32,27 @@ import 'package:meomulm_frontend/features/reservation/presentation/screens/payme
 import 'package:meomulm_frontend/features/reservation/presentation/screens/payment_success_screen.dart';
 import 'package:meomulm_frontend/features/reservation/presentation/screens/reservation_screen.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
+import 'package:provider/provider.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
+    redirect: (context, state) {
+      final auth = context.read<AuthProvider>();
+      final loggedIn = auth.token != null;
+
+      final loc = state.uri.toString();
+
+      // ✅ 보호가 필요한 경로: /mypage 로 시작하는 모든 경로
+      final needsAuth = loc.startsWith('/mypage');
+
+      // 로그인 안 했는데 보호 경로 접근 → 로그인으로
+      if (!loggedIn && needsAuth) return RoutePaths.login;
+
+      // 로그인 했는데 로그인 페이지 접근 → 기본 진입 화면으로
+      if (loggedIn && loc == RoutePaths.login) return RoutePaths.myPage;
+
+      return null;
+    },
     initialLocation: '/intro',
     routes: [
       /// =====================
@@ -163,7 +183,10 @@ class AppRouter {
           GoRoute(
             path: RoutePaths.editProfile,
             name: "editProfile",
-            builder: (context, state) => const EditProfileScreen(),
+            builder: (context, state) {
+              final user = state.extra as UserProfileModel;
+              return EditProfileScreen(user: user);
+            },
           ),
           GoRoute(
             path: RoutePaths.myReservation,

@@ -9,12 +9,31 @@ import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/dialogs/simple_modal.dart';
+import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/my_page/presentation/providers/user_profile_provider.dart';
+import 'package:meomulm_frontend/features/my_page/presentation/widgets/mypage/icon_menu_button.dart';
+import 'package:meomulm_frontend/features/my_page/presentation/widgets/mypage/menu_item.dart';
+import 'package:meomulm_frontend/features/my_page/presentation/widgets/mypage/profile_avatar.dart';
+import 'package:provider/provider.dart';
 
 /**
  * 마이페이지 스크린 - only_app_style : 수정 필요.
  */
-class MypageScreen extends StatelessWidget {
+class MypageScreen extends StatefulWidget {
   const MypageScreen({super.key});
+
+  @override
+  State<MypageScreen> createState() => _MypageScreenState();
+}
+
+class _MypageScreenState extends State<MypageScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+
+    final token = context.read<AuthProvider>().token;
+  }
 
   // =====================
   // 로그아웃 확인 모달
@@ -26,7 +45,7 @@ class MypageScreen extends StatelessWidget {
       builder: (_) {
         return SimpleModal(
           onConfirm: () {
-            // TODO: 로그인 기능 구현
+            // TODO: 로그아웃 기능 구현
           },
           content: Text(DialogMessages.logoutContent),
           confirmLabel: ButtonLabels.confirm,
@@ -63,8 +82,32 @@ class MypageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // provider  가져오기
+    final provider = context.watch<UserProfileProvider>();
+
     final screenWidth = MediaQuery.of(context).size.width;
     final maxWidth = screenWidth > 600 ? screenWidth : double.infinity;
+
+    // TODO: 공통 로딩 UI가 있으면 변경하기
+    if(provider.isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator())
+      );
+    }
+
+    // 로그인되지 않은 경우 로그인 화면으로 강제 이동
+    // if(provider.user == null) {
+    //   WidgetsBinding.instance.addPostFrameCallback((_) {
+    //     context.go(RoutePaths.login);
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text("로그인 후 이용 가능합니다."))
+    //     );
+    //   });
+    //   return const SizedBox.shrink();
+    // }
+
+    // 유저 정보 가져오기
+    final user = provider.user!;
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -88,25 +131,25 @@ class MypageScreen extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _ProfileAvatar(
+                    ProfileAvatar(
                       onCameraTap: () {
                         // TODO: 카메라 아이콘 터치 시 작동하는 기능 변수 넣기
                       },
                     ),
                     const SizedBox(width: AppSpacing.md),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'gangster@exam.com', // TODO: 회원 이메일로 바꾸기
-                            style: AppTextStyles.buttonLg,
+                            user.userEmail,
+                            style: AppTextStyles.bodyXl,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          SizedBox(height: AppSpacing.xs),
+                          const SizedBox(height: AppSpacing.xs),
                           Text(
-                              '홍길동',  // TODO: 회원 이름으로 바꾸기
-                              style: AppTextStyles.bodyLg
+                            user.userName,
+                            style: AppTextStyles.bodyLg
                           ),
                         ],
                       ),
@@ -115,7 +158,7 @@ class MypageScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.lg),
 
               // =====================
               // 아이콘 메뉴
@@ -124,7 +167,7 @@ class MypageScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: _IconMenuButton(
+                    child: IconMenuButton(
                       icon: AppIcons.favoriteRounded,
                       label: TitleLabels.wishlist,
                       onTap: () {
@@ -133,20 +176,20 @@ class MypageScreen extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    child: _IconMenuButton(
+                    child: IconMenuButton(
                       icon: AppIcons.commentOutline,
                       label: TitleLabels.myReviews,
                       onTap: () {
-                        context.push('${RoutePaths.myPage}${RoutePaths.myReview}');  // /mypage/review
+                        context.push('${RoutePaths.myPage}${RoutePaths.myReview}', extra: user);  // /mypage/review
                       },
                     ),
                   ),
                   Expanded(
-                    child: _IconMenuButton(
+                    child: IconMenuButton(
                       icon: AppIcons.calendarMonth,
                       label: TitleLabels.myBookings,
                       onTap: () {
-                        context.push('${RoutePaths.myPage}${RoutePaths.myReservation}');
+                        context.push('${RoutePaths.myPage}${RoutePaths.myReservation}', extra: user);
                       },
                     ),
                   ),
@@ -160,23 +203,23 @@ class MypageScreen extends StatelessWidget {
               // =====================
               // 하단 메뉴 리스트
               // =====================
-              _MenuItem(
+              MenuItem(
                 title: TitleLabels.editProfile,
                 onTap: () {
-                  context.push('${RoutePaths.myPage}${RoutePaths.editProfile}'); // /profile/edit
+                  context.push('${RoutePaths.myPage}${RoutePaths.editProfile}', extra: user); // /profile/edit
                 },
               ),
-              _MenuItem(
+              MenuItem(
                 title: TitleLabels.mypageChangePassword,
                 onTap: () {
-                  context.push('${RoutePaths.myPage}${RoutePaths.myPageChangePassword}');  // /change-password
+                  context.push('${RoutePaths.myPage}${RoutePaths.myPageChangePassword}', extra: user);  // /change-password
                 },
               ),
-              _MenuItem(
+              MenuItem(
                 title: '로그아웃',
                 onTap: () => _showLogoutDialog(context),
               ),
-              _MenuItem(
+              MenuItem(
                 title: '회원탈퇴',
                 textColor: AppColors.cancelled,
                 onTap: () => _showWithdrawDialog(context),
@@ -185,129 +228,6 @@ class MypageScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-
-//---------------------- TODO : 이 아래 위젯으로 분리하기 ----------------------
-class _ProfileAvatar extends StatelessWidget {
-  final VoidCallback? onCameraTap;
-
-  const _ProfileAvatar({this.onCameraTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 64,
-      height: 64,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              // TODO: 프로필 이미지로 영역 채우기
-              color: AppColors.gray5,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.gray4),
-            ),
-          ),
-          Positioned(
-            right: -2,
-            bottom: -2,
-            child: InkWell(
-              onTap: onCameraTap,  // TODO: 카메라 아이콘 터치 시 작동하는 기능 변수 넣기
-              borderRadius: BorderRadius.circular(999),
-              child: Container(
-                width: 22,
-                height: 22,
-                decoration: BoxDecoration(
-                  color: AppColors.gray5,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.gray4),
-                ),
-                child: const Center(
-                  child: Icon(
-                    AppIcons.camera,
-                    size: AppIcons.sizeXs,
-                    color: AppColors.gray2,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// =====================
-// 상단 아이콘 메뉴 버튼
-// =====================
-class _IconMenuButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  const _IconMenuButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppBorderRadius.lg),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: AppIcons.sizeLg, color: AppColors.black),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              label,
-              style: AppTextStyles.buttonMd,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// =====================
-// 메뉴 항목
-// =====================
-class _MenuItem extends StatelessWidget {
-  final String title;
-  final VoidCallback onTap;
-  final Color? textColor;
-
-  const _MenuItem({
-    required this.title,
-    required this.onTap,
-    this.textColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
-      title: Text(
-          title,
-          style: AppTextStyles.appBarTitle.copyWith(
-            fontSize: 18,
-            color: textColor != null ? textColor : null,
-          )
-      ),
-      onTap: onTap,
     );
   }
 }
