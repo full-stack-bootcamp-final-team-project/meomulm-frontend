@@ -25,7 +25,7 @@ class AppButtonStyles {
   // Global Button Style (Large, Medium, Small 공통)
   static ButtonStyle globalButtonStyle({required bool enabled}) {
     return ElevatedButton.styleFrom(
-      padding: EdgeInsetsGeometry.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+      padding: EdgeInsetsGeometry.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xs),
       elevation: 0,
       backgroundColor: enabled
           ? AppColors.main
@@ -38,7 +38,6 @@ class AppButtonStyles {
       shape: RoundedRectangleBorder(
         borderRadius: AppBorderRadius.mediumRadius,
       ),
-      textStyle: AppTextStyles.buttonLg,
     );
   }
 
