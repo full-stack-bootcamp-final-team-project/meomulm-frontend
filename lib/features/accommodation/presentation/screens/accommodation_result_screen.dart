@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget_second.dart';
+import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
@@ -36,7 +36,6 @@ class _AccommodationResultScreen extends State<AccommodationResultScreen> {
     setState(() {
       isLoading = true;
     });
-
     try {
       final response = await AccommodationApiService.getAccommodationByKeyword(
         keyword: tempLocation,
@@ -49,6 +48,7 @@ class _AccommodationResultScreen extends State<AccommodationResultScreen> {
     } catch (e) {
       debugPrint('데이터 로드 실패: $e');
       setState(() {
+        accommodations = [];
         isLoading = false;
       });
     }
@@ -57,20 +57,38 @@ class _AccommodationResultScreen extends State<AccommodationResultScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.read<AccommodationProvider>();
+
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: const SearchBarAppBar(),
+      appBar: SearchBarWidget(
+        keyword: provider.accommodationName,
+        peopleCount: provider.guestCount,
+        dateText:
+        '${provider.checkIn.year}.${provider.checkIn.month}.${provider.checkIn.day} '
+            '- ${provider.checkOut.year}.${provider.checkOut.month}.${provider.checkOut.day}',
+      ),
       body: Column(
         children: [
           const SizedBox(height: 20),
 
-          Expanded(  // ← 여기 Expanded로 나머지 공간 모두 채움
-            child: _buildBodyContent(),
+          Expanded(
+            // child: isLoading
+            //   ?
+            //     Center(child: CircularProgressIndicator())
+            //   :
+            //     accommodations.isEmpty
+            //     ?
+            //       Center(child: Text("사용자가 없습니다."))   // 로딩상태는 아니지만 로딩 결과 존재하는 유저가 없을 때
+            //     :
+            //       _buildBodyContent(),
+            child: _buildBodyContent()
           ),
         ],
       ),
     );
   }
+
 
   Widget _buildBodyContent() {
     if (isLoading) {

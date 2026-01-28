@@ -38,7 +38,7 @@ class RoutePaths{
   // 숙소 리뷰 스크린 (accommodation_review_screen)
   static const String accommodationReview = '/accommodation-review';
   // 숙소 상세 스크린 (accommodation_detail_screen)
-  static const String accommodationDetail = '/accommodation-detail/:id';
+  static const String accommodationDetail = '/accommodation-detail';
   // 객실 목록 스크린(product_list_screen)
   static const String productList = '/product-list';
 

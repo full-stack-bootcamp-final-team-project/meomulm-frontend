@@ -1,6 +1,4 @@
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_image_model.dart';
-// import 'package:meomulm_frontend/features/accommodation/data/models/product_facility_model.dart';
-// import 'package:meomulm_frontend/features/accommodation/data/models/product_image_model.dart';
 
 class Accommodation {
   final int? accommodationId;
@@ -37,10 +35,9 @@ class Accommodation {
             : null,
       );
     } catch (e, stackTrace) {
-      // 디버깅 편의를 위해 stackTrace도 함께 출력 가능
       print('Accommodation.fromJson 실패: $e');
       print(stackTrace);
-      rethrow;  // 또는 throw 커스텀 예외로 변경 가능
+      rethrow;
     }
   }
 

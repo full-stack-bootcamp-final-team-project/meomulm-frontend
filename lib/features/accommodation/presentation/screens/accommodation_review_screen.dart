@@ -1,61 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_review.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/review_summary.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_review_widgets/review_card.dart';
 
-class AccommodationReviewScreen extends StatelessWidget {
-  const AccommodationReviewScreen({super.key});
+class AccommodationReviewScreen extends StatefulWidget {
+  final int accommodationId;
+  const AccommodationReviewScreen({super.key, required this.accommodationId});
+
+  @override
+  State<AccommodationReviewScreen> createState() => _AccommodationReviewScreenState();
+}
+
+class _AccommodationReviewScreenState extends State<AccommodationReviewScreen> {
+  bool isLoading = true;
+  ReviewSummary? summary;
+  List<AccommodationReview> reviews = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAllReviewData(widget.accommodationId);
+  }
+
+  Future<void> _loadAllReviewData(int id) async {
+    setState(() => isLoading = true);
+    try {
+      final results = await Future.wait([
+        AccommodationApiService.getReviewSummary(id),
+        AccommodationApiService.getReviewsByAccommodationId(id),
+      ]);
+
+      setState(() {
+        summary = results[0] as ReviewSummary?;
+        reviews = results[1] as List<AccommodationReview>;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() => isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBarWidget(title: "숙소 리뷰"),
-      body: SafeArea(
+      backgroundColor: Colors.white,
+      appBar: const AppBarWidget(title: "숙소 리뷰"),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
               const SizedBox(height: 32),
-
-              // 상단 전체 평점 (노란 별 + 4.5 + 평가 수)
-              _buildOverallreviewRating(),
-
+              // 상단 요약 (실제 데이터 반영)
+              _buildOverallReviewRating(
+                summary?.averageRating ?? 0.0,
+                summary?.totalCount ?? 0,
+              ),
               const SizedBox(height: 32),
-
-              // 구분선 (끝까지)
-              // const Divider(thickness: 1, height: 1, color: Color(0xFFC1C1C1)),
-
+              const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
               const SizedBox(height: 20),
 
-              // 리뷰 리스트 (90% 너비)
+              // 리뷰 리스트
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-                child: Column(
-                  children: const [
-                    ReviewCard(
-                      reviewerName: '김도영',
-                      reviewDate: '2025.12.28',
-                      reviewRating: 4.5,
-                      reviewText: '완전 별로입니다.',
-                    ),
-                    SizedBox(height: 16),
-                    ReviewCard(
-                      reviewerName: '김도영',
-                      reviewDate: '2025.12.28',
-                      reviewRating: 3.0,
-                      reviewText: '완전 별로입니다.',
-                    ),
-                    SizedBox(height: 16),
-                    ReviewCard(
-                      reviewerName: '박지현',
-                      reviewDate: '2025.11.30',
-                      reviewRating: 5.0,
-                      reviewText: '최고예요!!',
-                    ),
-                  ],
+                child: reviews.isEmpty
+                    ? const Center(child: Text("첫 리뷰를 작성해 주세요!"))
+                    : ListView.separated(
+                  shrinkWrap: true, // ScrollView 안에서 사용하기 위함
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: reviews.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 16),
+                  itemBuilder: (context, index) {
+                    final item = reviews[index];
+                    return ReviewCard(
+                      reviewerName: item.userName ?? '익명',
+                      reviewDate: item.createdAt.split('T')[0], // 날짜 형식 처리
+                      reviewRating: item.rating.toDouble(),
+                      reviewText: item.reviewContent,
+                    );
+                  },
                 ),
               ),
-
               const SizedBox(height: 40),
             ],
           ),
@@ -64,18 +94,16 @@ class AccommodationReviewScreen extends StatelessWidget {
     );
   }
 
-  // 전체 평점 위젯 (노란 별 + 4.5 + 평가 수)
-  Widget _buildOverallreviewRating() {
-    const double overallreviewRating = 4.5;
-
+  Widget _buildOverallReviewRating(double rating, int count) {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: List.generate(5, (index) {
-            if (index < overallreviewRating.floor()) {
+            double diff = rating - index;
+            if (diff >= 1) {
               return const Icon(Icons.star, color: Colors.amber, size: 40);
-            } else if (index < overallreviewRating) {
+            } else if (diff >= 0.5) {
               return const Icon(Icons.star_half, color: Colors.amber, size: 40);
             } else {
               return const Icon(Icons.star_border, color: Colors.amber, size: 40);
@@ -83,14 +111,14 @@ class AccommodationReviewScreen extends StatelessWidget {
           }),
         ),
         const SizedBox(height: 8),
-        const Text(
-          '4.5',
-          style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+        Text(
+          rating.toStringAsFixed(1),
+          style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
-        const Text(
-          '311개 평가',
-          style: TextStyle(fontSize: 16, color: Color(0xFF8B8B8B)),
+        Text(
+          '$count개 평가',
+          style: const TextStyle(fontSize: 16, color: Color(0xFF8B8B8B)),
         ),
       ],
     );

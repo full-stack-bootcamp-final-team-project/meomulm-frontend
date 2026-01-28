@@ -117,15 +117,25 @@ class AppRouter {
         builder: (context, state) => const AccommodationResultScreen(),
       ),
       GoRoute(
-        path: RoutePaths.accommodationReview,
+        path: '${RoutePaths.accommodationReview}/:id',
         name: "accommodationReview",
-        builder: (context, state) => const AccommodationReviewScreen(),
+        builder: (context, state) {
+          final idString = state.pathParameters['id'];
+          final accommodationId = int.tryParse(idString ?? '');
+          if (accommodationId == null) {
+            return const Scaffold(
+              body: Center(child: Text('숙소 ID가 유효하지 않습니다')),
+            );
+          }
+          return AccommodationReviewScreen(
+            accommodationId: accommodationId,
+          );
+        },
       ),
       GoRoute(
-        path: RoutePaths.accommodationDetail,
+        path: '${RoutePaths.accommodationDetail}/:id',
         name: "accommodationDetail",
         builder: (context, state) {
-          // path parameter 꺼내기
           final idString = state.pathParameters['id'];
           final accommodationId = int.tryParse(idString ?? '');
           if (accommodationId == null) {
