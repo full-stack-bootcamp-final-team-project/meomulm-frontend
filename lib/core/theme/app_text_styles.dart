@@ -139,6 +139,12 @@ class AppTextStyles {
     color: AppColors.black,
   );
 
+  static const bodyXl = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    color: AppColors.black,
+  );
+
   static const textError = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.bold,

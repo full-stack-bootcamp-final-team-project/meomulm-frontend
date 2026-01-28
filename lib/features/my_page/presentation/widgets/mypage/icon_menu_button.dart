@@ -33,7 +33,7 @@ class IconMenuButton extends StatelessWidget {
             const SizedBox(height: AppSpacing.sm),
             Text(
               label,
-              style: AppTextStyles.buttonMd,
+              style: AppTextStyles.bodyMd,
               textAlign: TextAlign.center,
             ),
           ],
