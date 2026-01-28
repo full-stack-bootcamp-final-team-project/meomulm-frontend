@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
 class LocationSelectRow extends StatelessWidget {
-  final String location;
+  final String region;
   final VoidCallback onTap;
 
   const LocationSelectRow({
     super.key,
-    required this.location,
+    required this.region,
     required this.onTap,
   });
 
@@ -18,19 +19,15 @@ class LocationSelectRow extends StatelessWidget {
         height: 52,
         child: Row(
           children: [
-            const Icon(Icons.location_on_outlined),
-            const SizedBox(width: 12),
+            const Icon(AppIcons.locationOn),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(
-                location.isEmpty ? '지역 선택' : location,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: location.isEmpty ? Colors.grey : Colors.black,
-                ),
+                region.isEmpty ? '지역 선택' : region,
+                style: AppTextStyles.bodyLg,
               ),
             ),
-            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+            const Icon(AppIcons.arrowRight),
           ],
         ),
       ),

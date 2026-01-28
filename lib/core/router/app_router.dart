@@ -168,9 +168,15 @@ class AppRouter {
       GoRoute(
         path: RoutePaths.mapSearchResult,
         name: 'mapSearchResult',
-        builder: (context, state) => const MapSearchResultScreen(),
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>;
+          return MapSearchResultScreen(
+            region: extra['region'] as String,
+            dateRange: extra['dateRange'] as DateTimeRange,
+            guestCount: extra['guestCount'] as int,
+          );
+        },
       ),
-
 
       /// =====================
       /// mypage 라우팅

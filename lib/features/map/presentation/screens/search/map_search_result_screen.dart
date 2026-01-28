@@ -1,183 +1,207 @@
+// map_search_result_screen.dart
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:kakao_map_sdk/kakao_map_sdk.dart';
+import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
+import 'package:meomulm_frontend/features/map/data/models/accommodation.dart';
+import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/map_search_result_widgets/map_search_result_card.dart';
+import 'package:provider/provider.dart';
 
-class MapSearchResultScreen extends StatelessWidget {
-  const MapSearchResultScreen({super.key});
+class MapSearchResultScreen extends StatefulWidget {
+  final String region;
+  final DateTimeRange dateRange;
+  final int guestCount;
+
+  const MapSearchResultScreen({
+    super.key,
+    required this.region,
+    required this.dateRange,
+    required this.guestCount,
+  });
+
+  @override
+  State<MapSearchResultScreen> createState() => _MapSearchResultScreenState();
+}
+
+class _MapSearchResultScreenState extends State<MapSearchResultScreen> {
+  KakaoMapController? _controller;
+  LatLng? _regionCenter;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeSearch();
+  }
+
+  Future<void> _initializeSearch() async {
+    // 지역명으로 좌표 가져오기
+    _regionCenter = await _getRegionCoordinates(widget.region);
+
+    if (!mounted || _regionCenter == null) return;
+
+    // 해당 지역 좌표로 숙소 검색
+    await context.read<MapProvider>().searchByLocation(
+      latitude: _regionCenter!.latitude,
+      longitude: _regionCenter!.longitude,
+    );
+
+    setState(() => _isInitialized = true);
+  }
+
+  Future<LatLng?> _getRegionCoordinates(String region) async {
+    // TODO: 지역명 -> 좌표 변환 로직
+    // 1. 백엔드에 지역명으로 좌표 요청 API가 있다면 사용
+    // 2. 또는 카카오 Geocoding API 사용
+    // 3. 임시로 하드코딩 (예시)
+
+    final regionCoordinates = {
+      '서울': const LatLng(37.5665, 126.9780),
+      '부산': const LatLng(35.1796, 129.0756),
+      '제주': const LatLng(33.4996, 126.5312),
+      // ... 다른 지역들
+    };
+
+    // 지역명에서 키워드 추출 (예: "서울특별시 강남구" -> "서울")
+    for (var key in regionCoordinates.keys) {
+      if (region.contains(key)) {
+        return regionCoordinates[key];
+      }
+    }
+
+    // 기본값 (서울)
+    return const LatLng(37.5665, 126.9780);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:SearchBarWidget(
+      appBar: SearchBarWidget(
+        keyword: widget.region,
         dateText: DatePeopleTextUtil.todayToTomorrow(),
-        peopleCount: 2,
-      )
-      ,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.network(
-                'https://static-maps.yandex.ru/1.x/'
-                    '?ll=126.9780,37.5729'
-                    '&z=13'
-                    '&size=650,450'
-                    '&l=map',
-                fit: BoxFit.cover,
-              ),
-            ),
-
-
-            Positioned(
-              left: 16,
-              right: 16,
-              bottom: 24,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 12,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
+        peopleCount: widget.guestCount,
+        onClear: () => context.push(RoutePaths.map),
+      ),
+      body: Consumer<MapProvider>(
+        builder: (context, provider, child) {
+          return Stack(
+            children: [
+              KakaoMap(
+                option: KakaoMapOption(
+                  position: _regionCenter ?? const LatLng(37.5665, 126.9780),
+                  zoomLevel: 14,
+                  mapType: MapType.normal,
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: SizedBox(
-                          height: 180,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 2,
-                                child: ClipRRect(
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(16),
-                                    bottomLeft: Radius.circular(16),
-                                  ),
-                                  child: Image.network(
-                                    'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop',
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
+                onMapReady: (controller) async {
+                  _controller = controller;
 
-                              const SizedBox(width: 2),
+                  if (_isInitialized) {
+                    _addAccommodationMarkers(provider.accommodations);
+                  }
+                },
+              ),
 
-                              Expanded(
-                                flex: 1,
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                      child: ClipRRect(
-                                        borderRadius: const BorderRadius.only(
-                                          topRight: Radius.circular(16),
-                                        ),
-                                        child: Image.network(
-                                          'https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=200&h=150&fit=crop',
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                        ),
-                                      ),
-                                    ),
+              // 로딩
+              if (provider.isLoading)
+                const Center(child: CircularProgressIndicator()),
 
-                                    const SizedBox(height: 2),
+              // 에러
+              if (provider.error != null)
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(provider.error!),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _initializeSearch,
+                        child: const Text('다시 시도'),
+                      ),
+                    ],
+                  ),
+                ),
 
-                                    Expanded(
-                                      child: ClipRRect(
-                                        borderRadius: const BorderRadius.only(
-                                          bottomRight: Radius.circular(16),
-                                        ),
-                                        child: Image.network(
-                                          'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=200&h=150&fit=crop',
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+              // 숙소 개수
+              if (!provider.isLoading && provider.accommodations.isNotEmpty)
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
                         ),
-                      ),
+                      ],
                     ),
+                    child: Text(
+                      '${widget.region} 반경 5km 내 ${provider.accommodations.length}개 숙소',
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
 
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 15,
-                        right: 15,
-                        bottom: 15,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            '롯데 호텔 명동',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          const Text(
-                            '중구 · 을지로 남대문 도보 6분',
-                            style: TextStyle(fontSize: 13, color: Colors.grey),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: const [
-                              Text(
-                                '230,000원',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+              // 하단 숙소 리스트
+              if (provider.accommodations.isNotEmpty)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: _buildAccommodationList(provider.accommodations),
                 ),
-              ),
-            ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 
-            Positioned(
-              right: 28,
-              bottom: 340,
-              child: Container(
-                width: 44,
-                height: 44,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 6,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.my_location, color: Color(0xFF8E84DD)),
-                  onPressed: () {},
-                ),
-              ),
-            ),
-          ],
+  Future<void> _addAccommodationMarkers(
+    List<Accommodation> accommodations,
+  ) async {
+    if (_controller == null) return;
+
+    for (var acc in accommodations) {
+      await _controller!.labelLayer.addPoi(
+        LatLng(acc.accommodationLatitude, acc.accommodationLongitude),
+        style: PoiStyle(
+          // 숙소 마커 스타일
         ),
+      );
+    }
+  }
+
+  Widget _buildAccommodationList(List<Accommodation> accommodations) {
+    return Container(
+      height: 180,
+      margin: const EdgeInsets.only(bottom: 16),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: accommodations.length,
+        itemBuilder: (context, index) {
+          final acc = accommodations[index];
+          return MapSearchResultCard(
+            accommodation: acc,
+            onTap: () async {
+              await _controller?.moveCamera(
+                CameraUpdate.newCenterPosition(
+                  LatLng(acc.accommodationLatitude, acc.accommodationLongitude),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
