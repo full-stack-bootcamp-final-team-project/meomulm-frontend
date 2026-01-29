@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/widgets/input/form_label.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
-import 'package:meomulm_frontend/core/utils/regex.dart';
+// import 'package:meomulm_frontend/core/utils/regex.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
 
@@ -179,9 +179,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                   if (value == null || value.isEmpty)
                                     return null;
 
-                                  if (!Regex.email.hasMatch(value)) {
-                                    return '유효하지 않은 이메일 형식입니다.';
-                                  }
+                                  // if (!Regex.email.hasMatch(value)) {
+                                  //   return '유효하지 않은 이메일 형식입니다.';
+                                  // }
                                   return null;
                                 },
                               ),
@@ -220,9 +220,9 @@ class _SignupScreenState extends State<SignupScreen> {
                           validator: (value) {
                             if (value == null || value.isEmpty) return null;
 
-                            if (!Regex.password.hasMatch(value)) {
-                              return '8~16자의 영문 대소문자, 숫자, 특수문자만 가능합니다.';
-                            }
+                            // if (!Regex.password.hasMatch(value)) {
+                            //   return '8~16자의 영문 대소문자, 숫자, 특수문자만 가능합니다.';
+                            // }
                             return null;
                           },
                         ),
@@ -256,11 +256,11 @@ class _SignupScreenState extends State<SignupScreen> {
                           validator: (value) {
                             if (value == null || value.isEmpty) return null;
 
-                            if (Regex.number.hasMatch(value)) {
-                              return '숫자는 입력할 수 없습니다.';
-                            } else if (Regex.name.hasMatch(value)) {
-                              return '이름은 영어와 한글만 가능합니다.';
-                            }
+                            // if (Regex.number.hasMatch(value)) {
+                            //   return '숫자는 입력할 수 없습니다.';
+                            // } else if (Regex.name.hasMatch(value)) {
+                            //   return '이름은 영어와 한글만 가능합니다.';
+                            // }
                             return null;
                           },
                         ),
@@ -281,11 +281,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                   if (value == null || value.isEmpty)
                                     return null;
 
-                                  if (!Regex.number.hasMatch(value)) {
-                                    return '숫자만 입력 가능합니다.';
-                                  } else if (value.length > 11) {
-                                    return '전화번호는 11자리 이상일 수 없습니다.';
-                                  }
+                                  // if (!Regex.number.hasMatch(value)) {
+                                  //   return '숫자만 입력 가능합니다.';
+                                  // } else if (value.length > 11) {
+                                  //   return '전화번호는 11자리 이상일 수 없습니다.';
+                                  // }
                                   return null;
                                 },
                               ),

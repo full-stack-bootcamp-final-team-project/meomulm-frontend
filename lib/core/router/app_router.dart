@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_filter_screen.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_map_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_result_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_search_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/product_list_screen.dart';
@@ -19,7 +18,7 @@ import 'package:meomulm_frontend/features/auth/presentation/screens/login_change
 import 'package:meomulm_frontend/features/auth/presentation/screens/login_screen.dart';
 import 'package:meomulm_frontend/features/auth/presentation/screens/signup_screen.dart';
 import 'package:meomulm_frontend/features/home/presentation/screens/home_screen.dart';
-import 'package:meomulm_frontend/features/intro/presentation/intro_screen.dart';
+import 'package:meomulm_frontend/features/intro/presentation/screens/intro_screen.dart';
 import 'package:meomulm_frontend/features/map/presentation/screens/map_screen.dart';
 import 'package:meomulm_frontend/features/map/presentation/screens/search/map_search_region_screen.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/screens/edit_profile_screen.dart';
