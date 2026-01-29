@@ -47,7 +47,7 @@ class ActionButtons extends StatelessWidget {
         FlutterClipboard.copy(address).then((_) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('주소가 복사되었습니다'),
+              content: const Text('링크가 복사되었습니다'),
               duration: const Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               backgroundColor: Colors.black87,

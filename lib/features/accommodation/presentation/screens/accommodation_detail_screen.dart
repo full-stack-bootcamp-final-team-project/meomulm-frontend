@@ -66,6 +66,10 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
     final data = accommodation!;
     final screenWidth = MediaQuery.of(context).size.width;
 
+    debugPrint("lat: ${data.accommodationLatitude}");
+    debugPrint("long: ${data.accommodationLongitude}");
+
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -112,8 +116,13 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
                         const CustomDivider(),
                         PolicySection(),
                         const CustomDivider(),
-                        LocationSection(address: data.accommodationAddress, mapHeight: screenWidth * (2 / 5)),
-                        const SizedBox(height: 100),
+                        LocationSection(
+                          address: data.accommodationAddress,
+                          mapHeight: screenWidth * (2 / 5),
+                          latitude: data.accommodationLatitude,
+                          longitude: data.accommodationLongitude
+                        ),
+                        const SizedBox(height: 70),
                       ],
                     ),
                   ),

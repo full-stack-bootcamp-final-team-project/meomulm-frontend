@@ -162,7 +162,7 @@ class _AccommodationImageSliderState extends State<AccommodationImageSlider> {
           // 2. 상단 버튼 바 (뒤로가기, 좋아요, 공유)
           Positioned(
             top: MediaQuery.of(context).padding.top + 8,
-            left: 16,
+            left: 6,
             right: 16,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -245,12 +245,12 @@ class _AccommodationImageSliderState extends State<AccommodationImageSlider> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: Container(
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.2),
-            shape: BoxShape.circle,
-          ),
+          // decoration: BoxDecoration(
+          //   color: Colors.black.withOpacity(0.2),
+          //   shape: BoxShape.circle,
+          // ),
           child: IconButton(
-            icon: Icon(icon, color: Colors.white, size: 28),
+            icon: Icon(icon, color: Colors.grey[800], size: 28, fontWeight: FontWeight.bold),
             onPressed: onPressed,
           ),
         ),
