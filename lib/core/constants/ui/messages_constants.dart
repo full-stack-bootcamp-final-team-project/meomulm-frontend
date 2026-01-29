@@ -19,13 +19,11 @@ class InputMessages {
 
   // 이메일
   static const invalidEmail = '유효하지 않은 이메일 형식입니다.';
-  static const validEmail = '사용 가능한 이메일입니다.';
   static const emptyEmail = '이메일은 필수 입력 사항입니다.';
   static const duplicateEmail = '이미 존재하는 이메일입니다.';
 
   // 비밀번호
   static const invalidPassword = '8~16자의 영문 대소문자, 숫자, 특수문자만 가능합니다.';
-  static const validPassword = '사용 가능한 비밀번호입니다.';
   static const mismatchPassword = '비밀번호가 일치하지 않습니다.';
   static const matchPassword = '비밀번호가 일치합니다.';
   static const emptyPassword = '비밀번호를 입력하세요.';
