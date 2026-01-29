@@ -217,7 +217,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // 분리된 폼 필드 위젯
+                    // 분리된 폼 필드 위젯 ~!
                     SignupFormFields(
                       emailController: _emailController,
                       passwordController: _passwordController,
