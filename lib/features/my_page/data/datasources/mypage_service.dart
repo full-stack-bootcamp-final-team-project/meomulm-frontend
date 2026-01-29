@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:meomulm_frontend/core/constants/paths/api_paths.dart';
-import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/my_page/data/models/edit_profile_request_model.dart';
 import 'package:meomulm_frontend/features/my_page/data/models/user_profile_model.dart';
 
@@ -16,7 +15,10 @@ class MypageService {
       ),
   );
 
-  Future<UserProfileModel> fetchUserProfile(String token) async {
+  /*
+  유저 정보 조회
+   */
+  Future<UserProfileModel> loadUserProfile(String token) async {
     try {
       final response = await _dio.get(
         '',
@@ -34,8 +36,10 @@ class MypageService {
 
   // TODO: 이미지 업로드/수정 fetch 함수
 
-  // TODO: 회원정보 수정 fetch 함수
-  Future<bool> fetchEditProfile(String token, EditProfileRequestModel user) async {
+  /*
+  회원정보 수정
+   */
+  Future<bool> uploadEditProfile(String token, EditProfileRequestModel user) async {
     try {
       final response = await _dio.put(
         '/userInfo',
@@ -50,4 +54,5 @@ class MypageService {
       throw Exception('회원정보 수정에 실패했습니다.');
     }
   }
+
 }

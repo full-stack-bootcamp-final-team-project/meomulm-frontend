@@ -6,13 +6,14 @@ import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_icons.dart';
 import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:meomulm_frontend/core/widgets/layouts/star_rating_widget.dart';
-import 'package:meomulm_frontend/features/my_page/data/models/review_model.dart';
+import 'package:meomulm_frontend/features/my_page/data/models/review_request_model.dart';
+import 'package:meomulm_frontend/features/my_page/data/models/review_response_model.dart';
 
 /// ===============================
-/// 카드 UI (쓰레기통 아이콘만 클릭 가능)
+/// 리뷰 카드 UI
 /// ===============================
 class ReviewCard extends StatelessWidget {
-  final ReviewModel item;
+  final ReviewResponseModel item;
   final VoidCallback onDeleteTap;
 
   const ReviewCard({
@@ -35,14 +36,14 @@ class ReviewCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      item.hotelName,
+                      item.accommodationName,
                       style: AppTextStyles.cardTitle,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   Material(
                     child: InkWell(
-                      onTap: onDeleteTap,  // TODO: 아이콘 삭제 시 삭제되는 기능 구현 후 호출
+                      onTap: onDeleteTap,
                       borderRadius: BorderRadius.circular(AppBorderRadius.sm),
                       hoverColor: AppColors.cancelledLight.withValues(alpha: 0.3),
                       highlightColor: AppColors.cancelledLight.withValues(alpha: 0.3),
@@ -67,11 +68,11 @@ class ReviewCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                      item.dateText,
+                      item.createdAt,
                       style: AppTextStyles.inputPlaceholder.copyWith(color: AppColors.gray2)
                   ),
                   const SizedBox(width: AppSpacing.sm),
-                  StarRatingWidget(rating: item.rating),
+                  StarRatingWidget(rating: (item.rating * 1.0 / 2.0)),
                 ],
               ),
 
@@ -86,7 +87,7 @@ class ReviewCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppBorderRadius.md),
                 ),
                 child: Text(
-                  item.content,
+                  item.reviewContent,
                   style: AppTextStyles.inputTextMd.copyWith(height: 1.35),
                 ),
               ),
