@@ -29,16 +29,35 @@ class _AccommodationResultScreen extends State<AccommodationResultScreen> {
     tempLocation = provider.accommodationName ?? '';
     tempDateRange = provider.dateRange;
     tempGuestCount = provider.guestCount;
-    loadAccommodations();
+
+    // 검색어가 비어있으면 로딩하지 않음
+    if (tempLocation.trim().isEmpty) {
+      setState(() {
+        isLoading = false;
+        accommodations = [];
+      });
+    } else {
+      loadAccommodations();
+    }
   }
 
   Future<void> loadAccommodations() async {
+    // 검색어가 비어있으면 조기 반환
+    if (tempLocation.trim().isEmpty) {
+      setState(() {
+        isLoading = false;
+        accommodations = [];
+      });
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
+
     try {
       final response = await AccommodationApiService.getAccommodationByKeyword(
-        keyword: tempLocation,
+        keyword: tempLocation.trim(),
       );
 
       setState(() {
@@ -71,18 +90,8 @@ class _AccommodationResultScreen extends State<AccommodationResultScreen> {
       body: Column(
         children: [
           const SizedBox(height: 20),
-
           Expanded(
-            // child: isLoading
-            //   ?
-            //     Center(child: CircularProgressIndicator())
-            //   :
-            //     accommodations.isEmpty
-            //     ?
-            //       Center(child: Text("사용자가 없습니다."))   // 로딩상태는 아니지만 로딩 결과 존재하는 유저가 없을 때
-            //     :
-            //       _buildBodyContent(),
-            child: _buildBodyContent()
+              child: _buildBodyContent()
           ),
         ],
       ),
@@ -91,17 +100,67 @@ class _AccommodationResultScreen extends State<AccommodationResultScreen> {
 
 
   Widget _buildBodyContent() {
+    // 로딩 중
     if (isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
       );
     }
 
+    // 검색어가 비어있을 때
+    if (tempLocation.trim().isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_off,
+              size: 64,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              '검색어를 입력해주세요',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // 검색 결과가 없을 때
     if (accommodations.isEmpty) {
-      return const Center(
-        child: Text(
-          '검색 결과가 없습니다',
-          style: TextStyle(color: Colors.grey, fontSize: 16),
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.hotel_outlined,
+              size: 64,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              '검색 결과가 없습니다',
+              style: TextStyle(
+                color: Colors.grey[600],
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '다른 검색어로 시도해보세요',
+              style: TextStyle(
+                color: Colors.grey[400],
+                fontSize: 14,
+              ),
+            ),
+          ],
         ),
       );
     }

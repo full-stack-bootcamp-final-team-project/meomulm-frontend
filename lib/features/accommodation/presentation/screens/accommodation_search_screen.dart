@@ -24,12 +24,13 @@ class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
   @override
   void initState() {
     super.initState();
-    _locationController = TextEditingController(text: tempLocation);
-    _locationController.addListener(_onLocationTextChanged);
     final provider = context.read<AccommodationProvider>();
     tempLocation = provider.accommodationName ?? '';
     tempDateRange = provider.dateRange;
     tempGuestCount = provider.guestCount ?? 2;
+
+    _locationController = TextEditingController(text: tempLocation);
+    _locationController.addListener(_onLocationTextChanged);
   }
 
   void _onLocationTextChanged() {
@@ -69,20 +70,33 @@ class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
   }
 
   void _onSearch() {
+    // 검색어 유효성 검사
+    final trimmedLocation = tempLocation.trim();
+
+    if (trimmedLocation.isEmpty) {
+      // 검색어가 비어있을 때 스낵바 표시
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('숙소명 또는 지역을 입력해주세요'),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
     final provider = context.read<AccommodationProvider>();
     provider.setAccommodationSearch(
-      accommodationName: tempLocation,
+      accommodationName: trimmedLocation,
       dateRange: tempDateRange,
       guestCount: tempGuestCount,
     );
 
-    debugPrint('지역: $tempLocation');
+    debugPrint('지역: $trimmedLocation');
     debugPrint('날짜: $tempDateRange');
     debugPrint('인원: $tempGuestCount');
 
     context.push("/accommodation-result");
-
-
   }
 
   @override

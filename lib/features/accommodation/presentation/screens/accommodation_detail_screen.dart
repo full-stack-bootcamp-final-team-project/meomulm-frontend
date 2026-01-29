@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
@@ -75,7 +74,10 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AccommodationImageSlider(
-                  imageUrls: data.accommodationImages.map((img) => img.imageUrl).toList(),
+                  imageUrls: data.accommodationImages
+                      .map((img) => img.accommodationImageUrl)
+                      .where((url) => url.isNotEmpty)
+                      .toList(),
                   initialIndex: 0,
                 ),
                 Transform.translate(
@@ -103,7 +105,7 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
                           },
                         ),
                         const CustomDivider(),
-                        FacilitySection(labels: data.serviceLabels), // 수정됨
+                        FacilitySection(labels: data.serviceLabels),
                         const CustomDivider(),
                         InfoSection(contact: data.accommodationPhone),
                         const CustomDivider(),

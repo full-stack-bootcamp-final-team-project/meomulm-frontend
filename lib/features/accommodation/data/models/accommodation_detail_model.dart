@@ -66,6 +66,14 @@ class AccommodationDetail {
     );
   }
 
+  // 이미지 URL 추출 헬퍼 getter
+  List<String> get imageUrls {
+    return accommodationImages
+        .map((img) => img.accommodationImageUrl)
+        .where((url) => url.isNotEmpty)
+        .toList();
+  }
+
   // UI에서 편의시설 리스트를 뽑아내기 위한 헬퍼 메서드
   List<String> get serviceLabels {
     final services = <String>[];
@@ -83,21 +91,28 @@ class AccommodationDetail {
 }
 
 class AccommodationImage {
-  final int imageId;
-  final String imageUrl;
+  final int accommodationImageId;
+  final int accommodationId;
+  final String accommodationImageUrl;
 
-  AccommodationImage({required this.imageId, required this.imageUrl});
+  AccommodationImage({
+    required this.accommodationImageId,
+    required this.accommodationId,
+    required this.accommodationImageUrl,
+  });
 
   factory AccommodationImage.fromJson(Map<String, dynamic> json) {
     return AccommodationImage(
-      imageId: json['imageId'] ?? 0,
-      imageUrl: json['imageUrl'] ?? '',
+      accommodationImageId: json['accommodationImageId'] ?? 0,
+      accommodationId: json['accommodationId'] ?? 0,
+      accommodationImageUrl: json['accommodationImageUrl'] ?? '',
     );
   }
 }
 
 
 /*
+백엔드 응답 예시:
 {
   "accommodationId": 1301,
   "accommodationName": "호텔 라포레130 카라반 캠핑장",
@@ -115,6 +130,12 @@ class AccommodationImage {
   "hasShopping": true,
   "hasBusiness": false,
   "hasFnb": false,
-  "accommodationImages": null
+  "accommodationImages": [
+    {
+      "accommodationImageId": 0,
+      "accommodationId": 0,
+      "accommodationImageUrl": "https://gocamping.or.kr/upload/camp/101284/thumb/thumb_720_0058qul7fhbRIxuG2Vsa3iWY.jpg"
+    }
+  ]
 }
 */
