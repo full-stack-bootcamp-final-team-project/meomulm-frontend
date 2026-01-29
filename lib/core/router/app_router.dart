@@ -216,7 +216,10 @@ class AppRouter {
           GoRoute(
             path: RoutePaths.myReviewWrite,
             name: "myReviewWrite",
-            builder: (context, state) => const MyReviewWriteScreen(),
+            builder: (context, state) {
+              final accommodationId = state.extra as int;
+              return MyReviewWriteScreen(accommodationId: accommodationId);
+            },
           ),
           GoRoute(
             path: RoutePaths.myPageChangePassword,
