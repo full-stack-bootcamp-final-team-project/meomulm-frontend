@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/utils/keyboard_converter.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
@@ -52,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleLogin() async {
     final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
+    var password = _passwordController.text.trim();
 
     if (email.isEmpty) {
       _showErrorMessage("이메일을 입력해주세요.");
@@ -67,6 +68,17 @@ class _LoginScreenState extends State<LoginScreen> {
     if (password.isEmpty) {
       _showErrorMessage("비밀번호를 입력해주세요.");
       return;
+    }
+
+    // 비밀번호에 한글이 있으면 영어로 변환
+    if (KeyboardConverter.containsKorean(password)) {
+      password = KeyboardConverter.convertToEnglish(password);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("비밀번호가 한글 키보드로 입력되어 자동 변환되었습니다."),
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
 
     if (password.length < 8 || password.length > 16) {
@@ -207,13 +219,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: _isLoading
                             ? CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              )
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        )
                             : Text(
-                                '${ButtonLabels.login}',
-                                style: AppTextStyles.buttonLg,
-                              ),
+                          '${ButtonLabels.login}',
+                          style: AppTextStyles.buttonLg,
+                        ),
                       ),
                     ),
                     SizedBox(height: AppSpacing.lg),
@@ -234,20 +246,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: _isLoading
                             ? CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              )
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        )
                             : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    'assets/images/kakao_logo.png',
-                                    height: 20,
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Text('카카오로그인', style: AppTextStyles.buttonLg),
-                                ],
-                              ),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/kakao_logo.png',
+                              height: 20,
+                            ),
+                            const SizedBox(width: 20),
+                            Text('카카오로그인', style: AppTextStyles.buttonLg),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: AppSpacing.lg),
@@ -268,20 +280,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: _isLoading
                             ? CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              )
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        )
                             : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    'assets/images/naver_logo.png',
-                                    height: 20,
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Text('네이버로그인', style: AppTextStyles.buttonLg),
-                                ],
-                              ),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/naver_logo.png',
+                              height: 20,
+                            ),
+                            const SizedBox(width: 20),
+                            Text('네이버로그인', style: AppTextStyles.buttonLg),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: AppSpacing.lg),
