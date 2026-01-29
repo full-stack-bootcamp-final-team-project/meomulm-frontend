@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/features/my_page/data/datasources/mypage_service.dart';
 import 'package:meomulm_frontend/features/my_page/data/models/user_profile_model.dart';
-
+/// ===============================
+/// 유저 정보 관련 상태관리
+/// ===============================
 class UserProfileProvider with ChangeNotifier {
   final MypageService _mypageService = MypageService();
   UserProfileModel? _user;
@@ -19,7 +21,7 @@ class UserProfileProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      _user = await _mypageService.fetchUserProfile(token);
+      _user = await _mypageService.loadUserProfile(token);
     } catch (e) {
       _errorMessage = e.toString();
     } finally {

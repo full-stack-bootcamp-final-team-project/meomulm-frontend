@@ -68,6 +68,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  // TODO: 이름 유효성검사
+
   Future<void> _isDuplicatePhone() async {
     // TODO: 연락처 중복확인 메서드 구현
   }
@@ -85,10 +87,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     final request = EditProfileRequestModel(userName: name, userPhone: phone);
 
-    // TODO: 회원정보 수정 API 호출 - service
-    // 예) await userService.updateProfile(name: name, phone: phone);
     try {
-      await MypageService().fetchEditProfile(token, request);
+      await MypageService().uploadEditProfile(token, request);
       context.read<UserProfileProvider>().loadUserProfile(token);  // 성공 시 다시 조회해서 갱신
       context.pop(true);
     } catch (e) {

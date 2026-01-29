@@ -8,8 +8,13 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/dialogs/simple_modal.dart';
 import 'package:meomulm_frontend/core/widgets/layouts/star_rating_widget.dart';
-import 'package:meomulm_frontend/features/my_page/data/models/review_model.dart';
+import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/my_page/data/datasources/review_service.dart';
+import 'package:meomulm_frontend/features/my_page/data/models/review_request_model.dart';
+import 'package:meomulm_frontend/features/my_page/data/models/review_response_model.dart';
+import 'package:meomulm_frontend/features/my_page/presentation/providers/review_provider.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_review/review_card.dart';
+import 'package:provider/provider.dart';
 
 /*
  * 마이페이지 - 내 리뷰 스크린 - only_app_style : 수정 필요.
@@ -22,31 +27,78 @@ class MyReviewScreen extends StatefulWidget {
 }
 
 class _MyReviewScreenState extends State<MyReviewScreen> {
-  // TODO: 더미 데이터 - API 연동 시 이 리스트 교체
-  final List<ReviewModel> _reviews = [
-    ReviewModel(
-      hotelName: '롯데 호텔 명동',
-      dateText: '2025.12.31',
-      rating: 4.0,
-      content: '방 컨디션이 매우 좋았습니다!\n재방문 의사 있습니다(단, 추워요)',
-    ),
-    ReviewModel(
-      hotelName: '신라스테이 역삼',
-      dateText: '2025.12.22',
-      rating: 3.0,
-      content: '방은 깨끗해요. 다만 살짝 습한 감이요',
-    ),
-  ];
+  List<ReviewResponseModel> reviews = [];
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    loadReviews();
+  }
+
+  // 리뷰 조회
+  Future<void> loadReviews() async {
+    setState(() => isLoading = true);
+    
+    try {
+      final reviewService = ReviewService();
+      final token = context.read<AuthProvider>().token;
+      if(token == null) {
+        // TODO: 로그인 만료 처리
+        return;
+      }
+      final result = await reviewService.loadReviews(token);
+      setState(() {
+        reviews = result;
+        isLoading = false;
+      });
+    } catch (e) {
+      // TODO: 공통 에러 페이지가 있으면 교체
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("오류: $e")),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  // 리뷰 삭제
+  Future<void> deleteReviews(int reviewId) async {
+    setState(() => isLoading = true);
+
+    try {
+      final reviewService = ReviewService();
+      final token = context.read<AuthProvider>().token;
+      if(token == null) {
+        // TODO: 로그인 만료 처리
+        return;
+      }
+      final result = await reviewService.deleteReview(token, reviewId);
+      // 결과가 true일 경우에만 수행
+      // TODO: provider 사용할 건지 결정 (미사용 시 삭제)
+      if(result && mounted) {
+        context.read<ReviewProvider>().removeReview(reviewId);
+      }
+    } catch (e) {
+      // TODO: 공통 에러 페이지가 있으면 교체
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
 
   // 리뷰 삭제 다이얼로그
   Future<void> _confirmDelete(int index) async {
+    final reviewId = reviews[index].reviewId;
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: true,
       builder: (context) {
         return SimpleModal(
-          onConfirm: () {
-            // TODO: 리뷰 삭제 로직 구현
+          onConfirm: () async {
+            await deleteReviews(reviewId);
+            context.pop(true);
           },
           content: Text(DialogMessages.deleteReview),
           confirmLabel: ButtonLabels.confirm,
@@ -54,14 +106,12 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
       },
     );
 
-    if (result == true) {
-      setState(() {
-        _reviews.removeAt(index);
-      });
-
-      // TODO: 서버에 삭제 요청(API) 연결
-      // 예) await reviewService.deleteReview(_reviews[index].reviewId);
-    }
+    // TODO: provider 사용할 건지 결정 (미사용 시 복구)
+    // if (result == true) {
+    //   setState(() {
+    //     reviews.removeAt(index);
+    //   });
+    // }
   }
 
   @override
@@ -76,7 +126,7 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),
-          child: _reviews.isEmpty
+          child: reviews.isEmpty
               ? ListView(
             padding: const EdgeInsets.all(16),
             children: const [
@@ -93,10 +143,10 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
           )
               : ListView.separated(
             padding: const EdgeInsets.all(16),
-            itemCount: _reviews.length,
+            itemCount: reviews.length,
             separatorBuilder: (_, __) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
-              final item = _reviews[index];
+              final item = reviews[index];
               return ReviewCard(
                 item: item,
                 onDeleteTap: () => _confirmDelete(index),
