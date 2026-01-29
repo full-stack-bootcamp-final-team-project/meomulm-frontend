@@ -50,7 +50,7 @@ class RegexpUtils {
   }
 
   // 전화번호 검증
-   static String? validatePhone(String? phone) {
+  static String? validatePhone(String? phone) {
     if (phone == null || phone.isEmpty) {
       return null;
     }

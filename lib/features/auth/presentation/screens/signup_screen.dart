@@ -5,8 +5,8 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/keyboard_converter.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
-import 'package:meomulm_frontend/features/auth/presentation/widgets/signup_form_fields..dart';
-import 'package:meomulm_frontend/features/auth/presentation/widgets/birth_date_selector.dart';
+import 'package:meomulm_frontend/features/auth/presentation/widget/birth_date_selector.dart';
+import 'package:meomulm_frontend/features/auth/presentation/widget/signup_form_fields.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -204,35 +204,35 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void _checkEmail() async {
-      final email = _emailController.text.trim();
+    final email = _emailController.text.trim();
 
-      final checkEmail = RegexpUtils.validateEmail(email);
+    final checkEmail = RegexpUtils.validateEmail(email);
 
-      if(checkEmail != null){
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(checkEmail)),
-        );
-      }
+    if(checkEmail != null){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(checkEmail)),
+      );
+    }
 
-      try {
-        final isAvailable = await AuthService.checkEmailDuplicate(email);
+    try {
+      final isAvailable = await AuthService.checkEmailDuplicate(email);
 
-        setState(() {
-          _isEmailChecked = isAvailable;
-        });
+      setState(() {
+        _isEmailChecked = isAvailable;
+      });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(isAvailable ? '사용 가능한 이메일입니다.' : '이미 사용 중인 이메일입니다.'),
-            backgroundColor: isAvailable ? Colors.green : AppColors.error,
-          ),
-        );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isAvailable ? '사용 가능한 이메일입니다.' : '이미 사용 중인 이메일입니다.'),
+          backgroundColor: isAvailable ? Colors.green : AppColors.error,
+        ),
+      );
 
-      } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('이메일 중복 확인에 실패했습니다.')));
-      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('이메일 중복 확인에 실패했습니다.')));
+    }
   }
 
   void _checkPhone() async {

@@ -46,7 +46,7 @@ class InputMessages {
 /// =====================
 class SnackBarMessages {
   SnackBarMessages._();
-  
+
   static const String signupCompleted = '회원가입이 완료되었습니다.';
   static const String loginCompleted = '로그인이 완료되었습니다.';
   static const String passwordChanged = '비밀번호가 변경되었습니다.';
