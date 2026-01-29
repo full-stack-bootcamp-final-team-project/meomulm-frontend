@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class CommonBackButton extends StatelessWidget {
   /// 버튼 배경색
@@ -13,7 +14,7 @@ class CommonBackButton extends StatelessWidget {
 
   const CommonBackButton({
     super.key,
-    this.backgroundColor = const Color(0xFF303030),
+    this.backgroundColor = Colors.black87,
     this.iconColor = Colors.white,
     this.onTap,
   });
@@ -26,7 +27,7 @@ class CommonBackButton extends StatelessWidget {
         child: Align(
           alignment: Alignment.topLeft,
           child: GestureDetector(
-            onTap: onTap,
+            onTap: onTap ?? () => context.pop(),
             child: Container(
               width: 36,
               height: 36,

@@ -75,7 +75,10 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AccommodationImageSlider(
-                  imageUrls: data.accommodationImages.map((img) => img.imageUrl).toList(),
+                  imageUrls: data.accommodationImages
+                      .map((img) => img.accommodationImageUrl)
+                      .where((url) => url.isNotEmpty)
+                      .toList(),
                   initialIndex: 0,
                 ),
                 Transform.translate(
