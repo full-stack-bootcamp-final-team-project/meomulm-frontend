@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import '../models/login_request_model.dart';
@@ -17,7 +16,8 @@ class AuthService {
   );
 
   // 로그인
-  static Future<LoginResponse> login(String userEmail, String userPassword) async {
+  static Future<LoginResponse> login(String userEmail,
+      String userPassword) async {
     final loginRequest = LoginRequest(
       userEmail: userEmail,
       userPassword: userPassword,
@@ -32,6 +32,7 @@ class AuthService {
       if (res.statusCode == 200) {
         return LoginResponse.fromJson(res.data);
       } else {
+        print("로그인 실패");
         throw Exception('로그인 실패: ${res.statusCode}');
       }
     } on DioException catch (e) {
@@ -68,6 +69,7 @@ class AuthService {
       if (res.statusCode != 200 && res.statusCode != 201) {
         throw Exception('회원가입 실패: ${res.statusCode}');
       }
+
     } on DioException catch (e) {
       if (e.response != null) {
         throw Exception('회원가입 실패: ${e.response?.statusMessage}');
@@ -78,6 +80,49 @@ class AuthService {
   }
 
   // 아이디 중복 확인
+  static Future<bool> checkEmailDuplicate(String email) async {
+    try {
+      final res = await _dio.get(
+        '${ApiPaths.authUrl}/checkEmail',
+        queryParameters: {'email': email},
+      );
 
+      return res.data;
+    } on DioException catch (e) {
+      throw Exception('이메일 중복 확인 실패 : $e');
+    }
+  }
+
+  // 전화번호 중복 확인
+  static Future<bool> checkPhoneDuplicate(String phone) async {
+    try {
+      final res = await _dio.get(
+        '${ApiPaths.authUrl}/checkPhone',
+        queryParameters: {'phone': phone},
+      );
+
+      return res.data;
+    } on DioException catch (e) {
+      throw Exception('전화번호 중복 확인 실패 : $e');
+    }
+  }
+
+  // 아이디 찾기
+  static Future<String?> userEmailCheck(String userName,
+      String userPhone) async {
+    try {
+      final res = await _dio.get(
+          '${ApiPaths.findIdUrl}',
+          queryParameters: {
+            'userName': userName,
+            'userPhone': userPhone
+          }
+      );
+      return res.data;
+    } catch(e) {
+      print("이메일 조회 실패 $e");
+      return null;
+    }
+  }
 
 }
