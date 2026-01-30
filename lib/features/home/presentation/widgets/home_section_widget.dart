@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/home/presentation/widgets/home_arrow_button_widget.dart';
 import 'package:meomulm_frontend/features/home/presentation/widgets/home_item_card.dart';
+
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
 
 /// 이 외 세션 영역(숙소 리스트)
 class HomeSectionWidget extends StatelessWidget {
   final double width, height;
   final String title;
   final bool isHot;
-  final List<Map<String, String>> items;
+  final List<SearchAccommodationResponseModel> items;
   final ScrollController controller;
   final void Function(ScrollController, double, double, bool) scrollByItem;
 
@@ -29,6 +32,10 @@ class HomeSectionWidget extends StatelessWidget {
     const itemSpacing = AppSpacing.lg;
     final itemWidth = (width - horizontalPadding * 2 - itemSpacing * 3) / 4;
 
+    final hasItems = items.isNotEmpty;
+    final message = title == '최근 본 숙소'
+        ? EmptyMessages.recentAccommodationsEmpty
+        : EmptyMessages.accommodations;
     return SizedBox(
       height: height + AppSpacing.xxxl,
       child: Stack(
@@ -50,12 +57,14 @@ class HomeSectionWidget extends StatelessWidget {
               ],
             ),
           ),
+
           // 세션 내용 영역
           Positioned(
             top: 40,
             left: 0,
             right: 0,
-            child: SingleChildScrollView(
+            child:  hasItems
+                ? SingleChildScrollView(
               controller: controller,
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: horizontalPadding),
@@ -63,14 +72,31 @@ class HomeSectionWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: List.generate(
                   items.length,
-                      (i) => HomeItemCard(item: items[i], width: itemWidth, isLast: i == items.length - 1),
+                      (i) => HomeItemCard(
+                      item: items[i],
+                      width: itemWidth,
+                      isLast: i == items.length - 1
+                  ),
+                ),
+              ),
+            )
+                : SizedBox(
+              height: height * 0.7,
+              child: Center(
+                child: Text(
+                  message,
+                  style: AppTextStyles.bodyMd.copyWith(
+                    color: AppColors.gray2,
+                  ),
                 ),
               ),
             ),
           ),
           // 세션 화살표
-          ArrowButtonWidget(left: AppSpacing.md, top: height * 0.4, isLeft: true, onTap: () => scrollByItem(controller, itemWidth, itemSpacing, true)),
-          ArrowButtonWidget(left: width - AppSpacing.md - AppSpacing.lg, top: height * 0.4, isLeft: false, onTap: () => scrollByItem(controller, itemWidth, itemSpacing, false)),
+          if (hasItems) ...[
+            ArrowButtonWidget(left: AppSpacing.md, top: height * 0.4, isLeft: true, onTap: () => scrollByItem(controller, itemWidth, itemSpacing, true)),
+            ArrowButtonWidget(left: width - AppSpacing.md - AppSpacing.lg, top: height * 0.4, isLeft: false, onTap: () => scrollByItem(controller, itemWidth, itemSpacing, false)),
+          ],
         ],
       ),
     );

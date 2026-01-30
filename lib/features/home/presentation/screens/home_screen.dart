@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
+import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/home/presentation/widgets/bottom_nav_bar_widget.dart';
 import 'package:meomulm_frontend/features/home/presentation/widgets/home_ad_section_widget.dart';
 import 'package:meomulm_frontend/features/home/presentation/widgets/home_section_widget.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../widgets/home_header_widget.dart';
@@ -16,10 +19,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool isLoading = true;
+
   late LinearGradient _currentGradient;
   late final Timer _timer;
+
   //  세로 스크롤 컨트롤러
   final ScrollController _verticalScroll = ScrollController();
+
+  // 스크롤 컨트롤러
+  static final ScrollController _adScroll = ScrollController();
+  static final ScrollController _recentScroll = ScrollController();
+  static final ScrollController _seoulScroll = ScrollController();
+  static final ScrollController _jejuScroll = ScrollController();
+  static final ScrollController _busanScroll = ScrollController();
 
   @override
   void initState() {
@@ -29,6 +42,17 @@ class _HomeScreenState extends State<HomeScreen> {
       const Duration(minutes: 1),
           (_) => _updateGradientIfNeeded(),
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = context.read<AuthProvider>();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final auth = context.read<AuthProvider>();
+
+        context.read<HomeProvider>().loadHome(
+          token: auth.isLoggedIn ? auth.token : null,
+        );
+      });
+    });
   }
 
   // 새로 고침(홈 -> 홈 가는 버튼 클릭 시)
@@ -39,11 +63,12 @@ class _HomeScreenState extends State<HomeScreen> {
       duration: const Duration(milliseconds: 400),
       curve: Curves.easeOutCubic,
     );
-    _adScroll.jumpTo(0);
-    _recentScroll.jumpTo(0);
-    _seoulScroll.jumpTo(0);
-    _jejuScroll.jumpTo(0);
-    _busanScroll.jumpTo(0);
+
+    if (_adScroll.hasClients) _adScroll.jumpTo(0);
+    if (_recentScroll.hasClients) _recentScroll.jumpTo(0);
+    if (_seoulScroll.hasClients) _seoulScroll.jumpTo(0);
+    if (_jejuScroll.hasClients) _jejuScroll.jumpTo(0);
+    if (_busanScroll.hasClients) _busanScroll.jumpTo(0);
 
     setState(() {
       _currentGradient = AppGradients.byTime();
@@ -57,32 +82,6 @@ class _HomeScreenState extends State<HomeScreen> {
       setState(() => _currentGradient = newGradient);
     }
   }
-
-  // 스크롤 컨트롤러
-  static final ScrollController _adScroll = ScrollController();
-  static final ScrollController _recentScroll = ScrollController();
-  static final ScrollController _seoulScroll = ScrollController();
-  static final ScrollController _jejuScroll = ScrollController();
-  static final ScrollController _busanScroll = ScrollController();
-
-  // 광고영역 데이터 - 팀원 정보 TODO 이미지 변경 필요
-  static final List<Map<String, String>> ADItems = [
-    {"title": "박세원", "url": "https://github.com/svv0003", "imageUrl": "assets/images/ad/ad_01.png"},
-    {"title": "박형빈", "url": "https://github.com/PHB-1994", "imageUrl": "assets/images/ad/ad_02.png"},
-    {"title": "유기태", "url": "https://github.com/tiradovi", "imageUrl": "assets/images/ad/ad_01.png"},
-    {"title": "오유성", "url": "https://github.com/Emma10003", "imageUrl": "assets/images/ad/ad_02.png"},
-    {"title": "조연희", "url": "https://github.com/yeonhee-cho", "imageUrl": "assets/images/ad/ad_01.png"},
-    {"title": "현윤선", "url": "https://github.com/yunseonhyun", "imageUrl": "assets/images/ad/ad_02.png"},
-  ];
-
-  // 숙소 가데이터
-  static final List<Map<String, String>> dummyItems = List.generate(
-      12,
-          (index) => {
-        "title": "라발스 호텔 부산 ${index + 1}",
-        "price": "86,660원 ~",
-        "img": "https://picsum.photos/id/${index + 10}/400/600",
-      });
 
   // 스크롤
   void _scrollByItem(ScrollController controller, double itemWidth, double spacing, bool isLeft) {
@@ -104,9 +103,27 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  // 광고영역 데이터 - 팀원 정보 TODO 이미지 변경 필요
+  static final List<Map<String, String>> ADItems = [
+    {"title": "박세원", "url": "https://github.com/svv0003", "imageUrl": "assets/images/ad/ad_01.png"},
+    {"title": "박형빈", "url": "https://github.com/PHB-1994", "imageUrl": "assets/images/ad/ad_02.png"},
+    {"title": "유기태", "url": "https://github.com/tiradovi", "imageUrl": "assets/images/ad/ad_01.png"},
+    {"title": "오유성", "url": "https://github.com/Emma10003", "imageUrl": "assets/images/ad/ad_02.png"},
+    {"title": "조연희", "url": "https://github.com/yeonhee-cho", "imageUrl": "assets/images/ad/ad_01.png"},
+    {"title": "현윤선", "url": "https://github.com/yunseonhyun", "imageUrl": "assets/images/ad/ad_02.png"},
+  ];
+
   // 뷰
   @override
   Widget build(BuildContext context) {
+    final homeProvider = context.watch<HomeProvider>();
+
+    if (homeProvider.isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.white,
       body: LayoutBuilder(
@@ -147,12 +164,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   onItemTap: _openExternalUrl,
                                   scrollByItem: _scrollByItem,
                                 ),
+                                // 최근 본 숙소
                                 HomeSectionWidget(
                                   width: width,
                                   height: sectionHeight,
                                   title: "최근 본 숙소",
                                   isHot: false,
-                                  items: dummyItems,
+                                  items: homeProvider.recentList,
                                   controller: _recentScroll,
                                   scrollByItem: _scrollByItem,
                                 ),
@@ -161,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   height: sectionHeight,
                                   title: "서울",
                                   isHot: true,
-                                  items: dummyItems,
+                                  items: homeProvider.seoulList,
                                   controller: _seoulScroll,
                                   scrollByItem: _scrollByItem,
                                 ),
@@ -170,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   height: sectionHeight,
                                   title: "제주",
                                   isHot: true,
-                                  items: dummyItems,
+                                  items: homeProvider.jejuList,
                                   controller: _jejuScroll,
                                   scrollByItem: _scrollByItem,
                                 ),
@@ -179,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   height: sectionHeight,
                                   title: "부산",
                                   isHot: true,
-                                  items: dummyItems,
+                                  items: homeProvider.busanList,
                                   controller: _busanScroll,
                                   scrollByItem: _scrollByItem,
                                 ),
