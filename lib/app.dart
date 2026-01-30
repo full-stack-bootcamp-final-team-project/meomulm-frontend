@@ -7,7 +7,9 @@ import 'package:provider/provider.dart';
 import 'core/constants/config/env_config.dart';
 import 'core/providers/theme_provider.dart';
 import 'core/router/app_router.dart';
+import 'features/accommodation/data/datasources/home_accommodation_service.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
+import 'features/home/presentation/providers/home_provider.dart';
 import 'features/map/data/datasources/map_service.dart';
 
 class MeomulmApp extends StatelessWidget {
@@ -27,7 +29,7 @@ class MeomulmApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider(create: (_) => UserProfileProvider()),
         ChangeNotifierProvider(create: (_) => MapProvider()),
-
+        ChangeNotifierProvider(create: (_) => HomeProvider(HomeAccommodationService())),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
