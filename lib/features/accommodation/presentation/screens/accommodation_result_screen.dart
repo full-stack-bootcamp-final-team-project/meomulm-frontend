@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_result_widgets/hotel_card.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_result_widgets/result_topBar.dart';
@@ -19,7 +19,7 @@ class _AccommodationResultScreen extends State<AccommodationResultScreen> {
   String tempLocation = '';
   DateTimeRange? tempDateRange;
   int tempGuestCount = 2;
-  List<Accommodation> accommodations = [];
+  List<SearchAccommodationResponseModel> accommodations = [];
   bool isLoading = true;
 
   @override

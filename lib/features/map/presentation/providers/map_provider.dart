@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/map/data/datasources/map_service.dart';
 
 class MapProvider extends ChangeNotifier {
   final MapService _service = MapService();
 
-  List<Accommodation> _accommodations = [];
+  List<SearchAccommodationResponseModel> _accommodations = [];
   bool _isLoading = false;
   String? _error;
 
   // =====================
   // getters
   // =====================
-  List<Accommodation> get accommodations => _accommodations;
+  List<SearchAccommodationResponseModel> get accommodations => _accommodations;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -32,7 +32,6 @@ class MapProvider extends ChangeNotifier {
     required double latitude,
     required double longitude,
   }) async {
-    // 🔥 중복 요청 방지
     if (_isLoading) return;
 
     _isLoading = true;

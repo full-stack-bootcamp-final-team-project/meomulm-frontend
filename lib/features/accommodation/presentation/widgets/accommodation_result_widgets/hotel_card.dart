@@ -4,7 +4,7 @@ import 'package:intl/intl.dart'; // 천 단위 콤마용 (pubspec.yaml에 intl �
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 
-import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -280,7 +280,7 @@ class _EmptyImagePlaceholder extends StatelessWidget {
 
 
 class HotelCard extends StatelessWidget {
-  final Accommodation accommodation;
+  final SearchAccommodationResponseModel accommodation;
 
   const HotelCard({
     super.key,
@@ -398,7 +398,7 @@ class HotelCard extends StatelessWidget {
 
 
 class _HotelImages extends StatelessWidget {
-  final Accommodation accommodation;
+  final SearchAccommodationResponseModel accommodation;
 
   const _HotelImages({required this.accommodation});
 
