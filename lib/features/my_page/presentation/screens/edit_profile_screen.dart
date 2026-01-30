@@ -7,11 +7,14 @@ import 'package:meomulm_frontend/core/constants/ui/labels_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_input_decorations.dart';
 import 'package:meomulm_frontend/core/theme/app_input_styles.dart';
+import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
+import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/my_page/data/datasources/edit_profile_service.dart';
 import 'package:meomulm_frontend/features/my_page/data/datasources/mypage_service.dart';
 import 'package:meomulm_frontend/features/my_page/data/models/edit_profile_request_model.dart';
 import 'package:meomulm_frontend/features/my_page/data/models/user_profile_model.dart';
@@ -31,15 +34,17 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  // TODO: 백엔드에서 불러온 생년월일 분리
-  final String _birthYearFromDb = "2000";
-  final String _birthMonthFromDb = "11";
-  final String _birthDayFromDb = "22";
+  final editProfileService = EditProfileService();
+  bool isLoading = false;
 
   late final TextEditingController _nameCtrl;
   late final TextEditingController _phoneCtrl;
 
-  bool _canSubmit = false;
+  // FocusNode 생성
+  final FocusNode _nameFocusNode = FocusNode();
+  final FocusNode _phoneFocusNode = FocusNode();
+
+  bool isSubmittable = false;
 
   @override
   void initState() {
@@ -62,30 +67,58 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   // 제출 가능여부 확인
   void _recalc() {
-    final isSubmittable =
-        _nameCtrl.text.trim().isNotEmpty && _phoneCtrl.text.trim().isNotEmpty;
+    final nameText = _nameCtrl.text.trim();
+    final phoneText = _phoneCtrl.text.trim();
+
+    final isFilled =
+        nameText.isNotEmpty && phoneText.isNotEmpty;
+
+    final isRegexpPassed =
+        RegexpUtils.validateName(nameText) == null &&
+        RegexpUtils.validatePhone(phoneText) == null;
+
+    final _canSubmit = isFilled && isRegexpPassed;
+
     // 제출 가능 여부 확인해서 상태 변경
-    if (isSubmittable != _canSubmit) {
-      setState(() => _canSubmit = isSubmittable);
+    if (_canSubmit != isSubmittable) {
+      setState(() => isSubmittable = _canSubmit);
     }
   }
 
-  // TODO: 이름 유효성검사
-
+  // 연락처 중복 확인 함수
   Future<void> _isDuplicatePhone() async {
-    // TODO: 연락처 중복확인 메서드 구현
+    setState(() => isLoading = true);
+    try {
+      final request = _phoneCtrl.text.trim();
+      final response = await editProfileService.checkPhoneDuplicate(request);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(response ? '사용 가능한 전화번호입니다.' : '이미 존재하는 전화번호입니다'),
+          behavior: SnackBarBehavior.floating,
+          duration: AppDurations.snackbar,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('중복 확인 실패'),
+          behavior: SnackBarBehavior.floating,
+          duration: AppDurations.snackbar,
+        ),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
 
   Future<void> _onSubmit() async {
-    if (!_canSubmit) return;
+    if (!isSubmittable) return;
 
     final name = _nameCtrl.text.trim();
     final phone = _phoneCtrl.text.trim();
     final token = context.read<AuthProvider>().token;
-    if (token == null) {
-      // TODO: 로그인 만료 처리
-      return;
-    }
+    if (token == null) return;
 
     final request = EditProfileRequestModel(userName: name, userPhone: phone);
 
@@ -144,13 +177,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                     const SizedBox(height: AppSpacing.lg),
 
-                    // 이름
-                    TextFieldWidget(
+                    CustomTextField(
                       label: "이름",
-                      style: AppInputStyles.standard,
+                      hintText: "이름을 입력하세요.",
                       controller: _nameCtrl,
+                      focusNode: _nameFocusNode,
                       validator: (value) {
-                        if (value == null || value.isEmpty)
+                        if(value == null || value.isEmpty)
                           return InputMessages.emptyName;
                         return null;
                       },
@@ -159,32 +192,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     const SizedBox(height: AppSpacing.lg),
 
                     // 연락처
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: TextFieldWidget(
-                            label: "연락처",
-                            style: AppInputStyles.standard,
-                            controller: _phoneCtrl,
-                            validator: (value) {
-                              if (value == null || value.isEmpty)
-                                return InputMessages.emptyPhone;
-                              // TODO: 중복확인 통과 여부 메서드 구현 후 해당하는 메세지 return
-                              // if()
-                              return null;
-                            },
-                          ),
+                    buildFieldWithButton(
+                        field: CustomTextField(
+                          label: "연락처",
+                          hintText: "연락처를 입력하세요. (- 제외)",
+                          controller: _phoneCtrl,
+                          focusNode: _phoneFocusNode,
+                          validator: (phone) => RegexpUtils.validatePhone(phone),
                         ),
-                        SizedBox(width: AppSpacing.sm),
-                        SmallButton(
-                          label: "중복확인",
-                          onPressed: () {
-                            // TODO: 버튼 클릭 시 현재 회원이 아닌 회원 중 중복값이 있는지 확인하는 함수 구현 (백엔드 연결)
-                          },
-                          enabled: true,
-                        ),
-                      ],
+                        onPressed: _isDuplicatePhone,
+                        label: "중복확인",
                     ),
 
                     const SizedBox(height: AppSpacing.lg),
@@ -197,7 +214,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: TextFieldWidget(
                             label: "생년월일",
                             style: AppInputStyles.disabled,
-                            initialValue: _birthYearFromDb,
+                            initialValue: widget.user.birthYear,
                           ),
                         ),
                         SizedBox(width: AppSpacing.sm),
@@ -206,7 +223,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: TextFieldWidget(
                             label: " ",
                             style: AppInputStyles.disabled,
-                            initialValue: _birthMonthFromDb,
+                            initialValue: widget.user.birthMonth,
                           ),
                         ),
                         SizedBox(width: AppSpacing.sm),
@@ -215,7 +232,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           child: TextFieldWidget(
                             label: " ",
                             style: AppInputStyles.disabled,
-                            initialValue: _birthDayFromDb,
+                            initialValue: widget.user.birthDay,
                           ),
                         ),
                       ],

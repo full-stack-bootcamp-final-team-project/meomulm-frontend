@@ -1,5 +1,11 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:meomulm_frontend/core/router/app_router.dart';
@@ -10,6 +16,8 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/dialogs/simple_modal.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/my_page/data/datasources/cloudinary_service.dart';
+import 'package:meomulm_frontend/features/my_page/data/datasources/mypage_service.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/providers/user_profile_provider.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/widgets/mypage/icon_menu_button.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/widgets/mypage/menu_item.dart';
@@ -27,12 +35,14 @@ class MypageScreen extends StatefulWidget {
 }
 
 class _MypageScreenState extends State<MypageScreen> {
+  final cloudinaryUploader = CloudinaryUploader();
+  final mypageService = MypageService();
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
 
-    // final token = context.read<AuthProvider>().token;
     Future.microtask(() {
       final token = context.read<AuthProvider>().token;
       if (token != null) {
@@ -83,10 +93,93 @@ class _MypageScreenState extends State<MypageScreen> {
     );
   }
 
-  // =====================
-  // TODO: 카메라 버튼 클릭 시 기능
-  // =====================
+  // 카메라 클릭 시 이미지 선택
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final XFile? picked = await picker.pickImage(source: ImageSource.gallery);
 
+    if(picked == null) return;
+    final original = File(picked.path);
+    // TODO: 디버깅 후 삭제
+    print("이미지 선택 완료: $original");
+
+    final cropped = await _profileImageCrop(original);
+    if(cropped == null) return;
+
+    _uploadProfileImage(cropped);
+  }
+
+  // 이미지 크롭 함수
+  Future<File?> _profileImageCrop(File file) async {
+    // TODO: 디버깅 후 삭제
+    print("이미지 크롭 함수 호출됨");
+
+    // 크롬 환경에서 실행하는 경우 이미지 크롭 건너뛰기
+    if (kIsWeb) {
+      return file;
+    }
+
+    final cropped = await ImageCropper().cropImage(
+      sourcePath: file.path,
+      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),  // 이미지 비율
+      compressFormat: ImageCompressFormat.jpg,
+      compressQuality: 85,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: '이미지 편집',
+          lockAspectRatio: true,  // 이미지 비율 고정
+          hideBottomControls: false,
+        ),
+        IOSUiSettings(
+          title: '이미지 편집',
+          aspectRatioLockEnabled: true,
+        ),
+      ],
+    );
+
+    if(cropped == null) return null;
+    return File(cropped.path);
+  }
+
+  // 프로필 업로드 함수 호출
+  Future<void> _uploadProfileImage(File file) async {
+    // TODO: 디버깅 후 삭제
+    print("프로필 업로드 함수 호출됨");
+
+    final token = context.read<AuthProvider>().token;
+    if(token == null) return;
+
+    setState(() => isLoading = true);
+
+    try {
+      // TODO: 디버깅 후 삭제
+      print("클라우디너리 업로드 fetch 함수 호출");
+      // Cloudinary 업로드
+      final imageUrl = await cloudinaryUploader.uploadImage(file);
+
+      // TODO: 디버깅 후 삭제
+      print("백엔드 fetch 함수 호출");
+      // 백엔드에 저장
+      await mypageService.uploadProfileImage(token, imageUrl);
+
+      // TODO: 디버깅 후 삭제
+      print("프로필 재로드 함수 호출");
+      // 프로필 다시 불러오기
+      await context.read<UserProfileProvider>().loadUserProfile(token);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('프로필 이미지가 변경되었습니다.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('프로필 이미지 업로드 실패: $e')),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,17 +195,6 @@ class _MypageScreenState extends State<MypageScreen> {
         body: Center(child: CircularProgressIndicator())
       );
     }
-
-    // 로그인되지 않은 경우 로그인 화면으로 강제 이동
-    // if(provider.user == null) {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     context.go(RoutePaths.login);
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text("로그인 후 이용 가능합니다."))
-    //     );
-    //   });
-    //   return const SizedBox.shrink();
-    // }
 
     // 유저 정보 가져오기
     final user = provider.user!;
@@ -140,11 +222,11 @@ class _MypageScreenState extends State<MypageScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     ProfileAvatar(
-                      onCameraTap: () {
-                        // TODO: 카메라 아이콘 터치 시 작동하는 기능 변수 넣기
-                      },
+                      onCameraTap: _pickImage,
+                      profileImageUrl: user.userProfileImage ?? '',
+                      isLoading: isLoading,
                     ),
-                    const SizedBox(width: AppSpacing.md),
+                    const SizedBox(width: AppSpacing.xl),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
