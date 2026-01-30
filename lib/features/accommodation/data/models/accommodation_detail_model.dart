@@ -66,6 +66,14 @@ class AccommodationDetail {
     );
   }
 
+  // 이미지 URL 추출 헬퍼 getter
+  List<String> get imageUrls {
+    return accommodationImages
+        .map((img) => img.accommodationImageUrl)
+        .where((url) => url.isNotEmpty)
+        .toList();
+  }
+
   // UI에서 편의시설 리스트를 뽑아내기 위한 헬퍼 메서드
   List<String> get serviceLabels {
     final services = <String>[];
@@ -83,15 +91,21 @@ class AccommodationDetail {
 }
 
 class AccommodationImage {
-  final int imageId;
-  final String imageUrl;
+  final int accommodationImageId;
+  final int accommodationId;
+  final String accommodationImageUrl;
 
-  AccommodationImage({required this.imageId, required this.imageUrl});
+  AccommodationImage({
+    required this.accommodationImageId,
+    required this.accommodationId,
+    required this.accommodationImageUrl,
+  });
 
   factory AccommodationImage.fromJson(Map<String, dynamic> json) {
     return AccommodationImage(
-      imageId: json['imageId'] ?? 0,
-      imageUrl: json['imageUrl'] ?? '',
+      accommodationImageId: json['accommodationImageId'] ?? 0,
+      accommodationId: json['accommodationId'] ?? 0,
+      accommodationImageUrl: json['accommodationImageUrl'] ?? '',
     );
   }
 }

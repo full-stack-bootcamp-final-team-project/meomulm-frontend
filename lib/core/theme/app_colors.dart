@@ -40,12 +40,12 @@ class AppColors {
   // Button Colors
   static const disabled = Color(0xFFDEDDEA);
   static const onPressed = Color(0xFF6F63C0);
+
   // Social Login Button Colors
   static const kakaoBg = Color(0xFFFEE500);
   static const kakaoIcon = Color(0xFF000000);
   static const naverBg = Color(0xFF03A94D);
   static const naverIcon = Color(0xFFFFFFFF);
-
 
   // backdrop Colors
   static const backdrop = Color(0x99161616);
