@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:meomulm_frontend/features/map/data/models/accommodation.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_model.dart';
 
 class MapSearchResultCard extends StatelessWidget {
   final Accommodation accommodation;
@@ -30,24 +30,6 @@ class MapSearchResultCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // 이미지
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(12),
-                bottomLeft: Radius.circular(12),
-              ),
-              child: Image.network(
-                accommodation.mainImageUrl,
-                width: 100,
-                height: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  width: 100,
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.image_not_supported),
-                ),
-              ),
-            ),
 
             // 정보
             Expanded(
@@ -58,7 +40,7 @@ class MapSearchResultCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      accommodation.accommodationName,
+                      accommodation.accommodationName!,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -68,7 +50,7 @@ class MapSearchResultCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      accommodation.accommodationAddress,
+                      accommodation.accommodationAddress!,
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey[600],
@@ -78,7 +60,7 @@ class MapSearchResultCard extends StatelessWidget {
                     ),
                     const Spacer(),
                     Text(
-                      '${accommodation.minPrice.toStringAsFixed(0)}원~',
+                      '${accommodation.minPrice}원~',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,

@@ -7,4 +7,4 @@ export 'paths/route_paths.dart';
 export 'ui/labels_constants.dart';
 export 'ui/messages_constants.dart';
 export 'ui/regexp_constants.dart';
-export 'ui/region_constants.dart';
+export 'ui/map_constants.dart';

@@ -10,36 +10,33 @@ class BottomActionButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
 
-  const BottomActionButton({
-    super.key,
-    required this.label,
-    this.onPressed,
-  });
+  const BottomActionButton({super.key, required this.label, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        boxShadow: AppShadows.bottomNav,
-      ),
-      child: Center(
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width * BottomActionButtonDimensions.widthPercentage,
-          height: 56,
-          child: ElevatedButton(
-            onPressed: onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.main,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppBorderRadius.md),
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+        decoration: const BoxDecoration(
+          color: AppColors.white,
+          boxShadow: AppShadows.bottomNav,
+        ),
+        child: Center(
+          child: SizedBox(
+            width:
+                MediaQuery.of(context).size.width *
+                BottomActionButtonDimensions.widthPercentage,
+            height: 56,
+            child: ElevatedButton(
+              onPressed: onPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.main,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppBorderRadius.md),
+                ),
+                elevation: 0,
               ),
-              elevation: 0,
-            ),
-            child: Text(
-              label,
-              style: AppTextStyles.buttonLg
+              child: Text(label, style: AppTextStyles.buttonLg),
             ),
           ),
         ),
