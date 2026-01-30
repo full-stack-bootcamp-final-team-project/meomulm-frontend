@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_button_styles.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 
 // =====================
@@ -123,6 +125,39 @@ class SmallButton extends StatelessWidget {
       ),
     );
   }
+}
+
+
+
+// input과 나란히 있는 버튼
+Widget buildFieldWithButton({
+  required Widget field,
+  required VoidCallback onPressed,
+  required String label,
+}) {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Expanded(child: field),
+      const SizedBox(width: 10),
+      Container(
+        margin: const EdgeInsets.only(top: 22),
+        height: 50,
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppBorderRadius.md),
+            ),
+            backgroundColor: AppColors.main,
+            foregroundColor: AppColors.white,
+          ),
+          child: Text(label),
+        ),
+      ),
+    ],
+  );
 }
 
 // Option Button
