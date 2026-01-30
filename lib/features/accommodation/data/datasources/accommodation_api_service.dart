@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_detail_model.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_review.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/review_summary.dart';
 
@@ -19,7 +19,7 @@ class AccommodationApiService {
     ),
   );
 
-  static Future<List<Accommodation>> getAccommodationByKeyword({
+  static Future<List<SearchAccommodationResponseModel>> getAccommodationByKeyword({
     required String keyword,    // 사용자가 검색한 숙소명/지역
   }) async {
     try {
@@ -37,7 +37,7 @@ class AccommodationApiService {
           // [확인] 각 숙소 데이터가 들어올 때 이미지가 어떻게 생겼는지 출력
           // print('숙소명: ${json['accommodationName']} / 이미지데이터: ${json['accommodationImages']}');
 
-          return Accommodation.fromJson(json);
+          return SearchAccommodationResponseModel.fromJson(json);
         }).toList();
       } else if (res.statusCode == 404) {
         return [];

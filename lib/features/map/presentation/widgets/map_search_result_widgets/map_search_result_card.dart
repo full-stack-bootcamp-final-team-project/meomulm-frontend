@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 
 class MapSearchResultCard extends StatelessWidget {
-  final Accommodation accommodation;
+  final SearchAccommodationResponseModel accommodation;
   final VoidCallback onTap;
 
   const MapSearchResultCard({

@@ -5,10 +5,12 @@ import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_model.dart';
+import 'package:meomulm_frontend/features/map/data/datasources/location_service.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
+import 'package:meomulm_frontend/features/map/presentation/utils/map_marker_manager.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/accommodation_counter.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/error_message.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/loading_overlay.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/location_denied_message.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/my_location_button.dart';
 import 'package:provider/provider.dart';
@@ -21,11 +23,14 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  // Services & Managers
+  final LocationService _locationService = LocationService();
+  MapMarkerManager? _markerManager;
+
+  // State
   KakaoMapController? _controller;
-  bool _locationDenied = false;
   Position? _currentPosition;
-  final List<Poi> _accommodationPois = [];
-  Poi? _myLocationPoi;
+  bool _locationDenied = false;
 
   @override
   void initState() {
@@ -33,32 +38,30 @@ class _MapScreenState extends State<MapScreen> {
     _initializeLocation();
   }
 
+  // 초기 위치 설정 및 숙소 검색
+
   Future<void> _initializeLocation() async {
-    final pos = await _getSafePosition();
-    if (pos == null) return;
+    final position = await _locationService.getCurrentPosition();
 
-    setState(() => _currentPosition = pos);
-    await _searchAccommodationsByPosition(pos);
-  }
+    if (!mounted) return;
 
-  Future<Position?> _getSafePosition() async {
-    var permission = await Geolocator.checkPermission();
-
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
+    if (position == null) {
       setState(() => _locationDenied = true);
-      return null;
+      return;
     }
 
-    return Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
+    _currentPosition = position;
+
+    await _searchAccommodationsByPosition(position);
+
+    if (mounted) {
+      setState(() {
+        _locationDenied = false;
+      });
+    }
   }
 
+  // 위치 기반 숙소 검색
   Future<void> _searchAccommodationsByPosition(Position position) async {
     if (!mounted) return;
 
@@ -68,64 +71,51 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Future<void> _clearAllMarkers() async {
-    // 숙소 마커 제거
-    for (final poi in _accommodationPois) {
-      await poi.remove();
-    }
-    _accommodationPois.clear();
-
-    // 내 위치 마커 제거
-    await _myLocationPoi?.remove();
-    _myLocationPoi = null;
-  }
-
-  Future<void> _addMyLocationMarker() async {
-    if (_controller == null || _currentPosition == null) return;
-
-    _myLocationPoi = await _controller!.labelLayer.addPoi(
-      LatLng(
-        _currentPosition!.latitude,
-        _currentPosition!.longitude,
-      ),
-      style: PoiStyle(),
-    );
-  }
-
-  Future<void> _addAccommodationMarkers(List<Accommodation> accommodations) async {
+  // 카메라를 특정 위치로 이동
+  Future<void> _moveCameraToPosition(Position position) async {
     if (_controller == null) return;
 
-    await _clearAllMarkers();
-    await _addMyLocationMarker();
-
-    // 숙소 마커 추가
-    for (final acc in accommodations) {
-      if (acc.accommodationLatitude == null ||
-          acc.accommodationLongitude == null) continue;
-
-      final poi = await _controller!.labelLayer.addPoi(
-        LatLng(
-          acc.accommodationLatitude!,
-          acc.accommodationLongitude!,
-        ),
-        style: PoiStyle(),
-      );
-
-      _accommodationPois.add(poi);
-    }
+    await _controller!.moveCamera(
+      CameraUpdate.newCenterPosition(
+        LatLng(position.latitude, position.longitude),
+      ),
+    );
   }
 
-  Future<void> _moveToMyLocation() async {
-    final pos = await _getSafePosition();
-    if (pos == null) return;
+  // 내 위치로 이동하고 재검색
+  Future<void> _moveToMyLocationAndSearch() async {
+    final position = await _locationService.getCurrentPosition();
+    if (position == null) {
+      setState(() => _locationDenied = true);
+      return;
+    }
 
-    final myLatLng = LatLng(pos.latitude, pos.longitude);
+    setState(() {
+      _currentPosition = position;
+      _locationDenied = false;
+    });
 
-    await _controller?.moveCamera(
-      CameraUpdate.newCenterPosition(myLatLng),
+    await _moveCameraToPosition(position);
+    await _searchAccommodationsByPosition(position);
+  }
+
+  // 마커 업데이트
+  Future<void> _updateMarkers(MapProvider provider) async {
+    if (_markerManager == null) return;
+
+    await _markerManager!.updateMarkers(
+      myPosition: _currentPosition,
+      accommodations: provider.accommodations,
     );
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final provider = context.watch<MapProvider>();
 
-    await _searchAccommodationsByPosition(pos);
+    if (_markerManager != null && !provider.isLoading) {
+      _updateMarkers(provider);
+    }
   }
 
   @override
@@ -138,23 +128,16 @@ class _MapScreenState extends State<MapScreen> {
       ),
       body: Consumer<MapProvider>(
         builder: (context, provider, child) {
-          // 숙소 데이터가 로드되면 마커 추가
-          if (_controller != null && !provider.isLoading) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _addAccommodationMarkers(provider.accommodations);
-            });
-          }
-
           return Stack(
             children: [
               _buildKakaoMap(provider),
-              if (provider.isLoading) _buildLoadingIndicator(),
+              if (provider.isLoading) const LoadingOverlay(),
               if (provider.error != null && !provider.isLoading)
                 ErrorMessage(message: provider.error!),
               if (!provider.isLoading && provider.accommodations.isNotEmpty)
                 AccommodationCounter(count: provider.accommodations.length),
               if (_locationDenied) const LocationDeniedMessage(),
-              MyLocationButton(onPressed: _moveToMyLocation),
+              MyLocationButton(onPressed: _moveToMyLocationAndSearch),
             ],
           );
         },
@@ -171,30 +154,13 @@ class _MapScreenState extends State<MapScreen> {
       ),
       onMapReady: (controller) async {
         _controller = controller;
+        _markerManager = MapMarkerManager(controller);
 
-        final pos = await _getSafePosition();
-        if (pos == null) return;
-
-        final myLatLng = LatLng(pos.latitude, pos.longitude);
-
-        await controller.moveCamera(
-          CameraUpdate.newCenterPosition(myLatLng),
-        );
-
-        // 숙소가 이미 로드된 경우 마커 추가
-        if (provider.accommodations.isNotEmpty) {
-          await _addAccommodationMarkers(provider.accommodations);
+        if (_currentPosition != null) {
+          await _moveCameraToPosition(_currentPosition!);
         }
       },
-    );
-  }
 
-  Widget _buildLoadingIndicator() {
-    return Container(
-      color: Colors.black.withOpacity(0.3),
-      child: const Center(
-        child: CircularProgressIndicator(),
-      ),
     );
   }
 }
