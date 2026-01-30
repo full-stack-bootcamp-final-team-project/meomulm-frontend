@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
-import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
-import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
+import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
+import 'package:meomulm_frontend/features/auth/data/datasources/kakao_login_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/auth/presentation/widget/login/login_button_fields.dart';
+import 'package:meomulm_frontend/features/auth/presentation/widget/login/login_input_fields.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,7 +24,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  bool _obscurePassword = true;
   bool _isLoading = false;
   bool _saveCheckBox = false;
 
@@ -29,6 +31,12 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _loadSaveEmail();
+
+    _emailController.addListener(() {
+      if (_saveCheckBox) {
+        _saveOrRemoveEmail(_emailController.text);
+      }
+    });
   }
 
   void _loadSaveEmail() async {
@@ -54,24 +62,29 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
+    final emailRegexp = RegexpUtils.validateEmail(email);
+    final passwordRegexp = RegexpUtils.validatePassword(password);
 
-    if (email.isEmpty) {
-      _showErrorMessage("이메일을 입력해주세요.");
+
+    if(emailRegexp != null){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(emailRegexp),
+          duration: const Duration(seconds: 2),
+          backgroundColor: AppColors.error,
+        ),
+      );
       return;
     }
 
-    if (!email.contains('@')) {
-      _showErrorMessage("올바른 이메일 형식이 아닙니다.");
-      return;
-    }
-
-    if (password.isEmpty) {
-      _showErrorMessage("비밀번호를 입력해주세요.");
-      return;
-    }
-
-    if (password.length < 8 || password.length > 16) {
-      _showErrorMessage("비밀번호는 8~16자의 영문 대소문자, 숫자, 특수문자만 가능합니다.");
+    if(passwordRegexp != null){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(passwordRegexp),
+          duration: const Duration(seconds: 2),
+          backgroundColor: AppColors.error,
+        ),
+      );
       return;
     }
 
@@ -83,23 +96,28 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       final loginResponse = await AuthService.login(email, password);
 
+      _saveOrRemoveEmail(email);
+
       await context.read<AuthProvider>().login(loginResponse.token);
 
-      context.go('/home');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(SnackBarMessages.loginCompleted),
+          backgroundColor: AppColors.success,
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      context.push('${RoutePaths.home}');
+
     } catch (e) {
       if (!mounted) return;
-
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     content: Text('${ButtonLabels.login}에 실패했습니다'),
-      //     backgroundColor: AppColors.error,
-      //     duration: Duration(seconds: 2),
-      //   ),
-      // );
-      SnackMessenger.showMessage(
-          context,
-          "${ButtonLabels.login}에 실패했습니다.",
-          type: ToastType.error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('아아디 또는 비밀번호가 일치하지 않습니다.'),
+          backgroundColor: AppColors.error,
+          duration: Duration(seconds: 2),
+        ),
       );
     } finally {
       if (mounted) {
@@ -110,19 +128,67 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _showErrorMessage(String message) {
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(
-    //     content: Text(message),
-    //     backgroundColor: AppColors.error,
-    //     duration: Duration(seconds: 2),
-    //   ),
-    // );
-    SnackMessenger.showMessage(
-        context,
-        "${message}",
-        type: ToastType.error
-    );
+  Future<void> _kakaoLogin() async {
+    print('========== 카카오 로그인 시작 ==========');
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      print('1. 카카오 계정 로그인 시도...');
+      OAuthToken token = await UserApi.instance.loginWithKakaoAccount();
+
+      print('2. ✅ 카카오 로그인 성공!');
+      print('   액세스 토큰 앞 20자: ${token.accessToken.substring(0, 20)}...');
+
+      print('3. 백엔드로 토큰 전송 중...');
+      final kakaoService = KakaoLoginService();
+      final response = await kakaoService.sendTokenToBackend(token.accessToken);
+
+      print('4. ✅ 백엔드 응답 성공');
+      print('   응답 데이터: $response');
+
+      if (!mounted) {
+        print('5. ❌ 위젯이 unmount됨');
+        return;
+      }
+
+      print('5. JWT 토큰으로 로그인 처리...');
+      await context.read<AuthProvider>().login(response['token']);
+
+      print('6. ✅ 인증 완료, 홈으로 이동');
+      if (!mounted) return;
+      context.push('/home');
+
+      print('========== 카카오 로그인 완료 ==========');
+
+    } catch (e, stackTrace) {
+      print('========== ❌ 카카오 로그인 실패 ==========');
+      print('에러: $e');
+      print('스택 트레이스: $stackTrace');
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('카카오 로그인 실패: ${e.toString()}'),
+          backgroundColor: AppColors.error,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+      print('========== finally 블록 실행 ==========');
+    }
+  }
+
+  void _naverLogin() {
+
   }
 
   @override
@@ -133,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => context.go('/home'),
+          onPressed: () => context.push('${RoutePaths.home}'),
         ),
       ),
       body: SafeArea(
@@ -146,41 +212,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset('assets/images/login_logo.png', height: 80),
-                    SizedBox(height: 50),
-
-                    // 로그인 바
-                    Row(
-                      children: [
-                        Expanded(child: Divider()),
-                        Padding(
-                          padding: EdgeInsetsGeometry.symmetric(horizontal: 12),
-                          child: Text(
-                            "${ButtonLabels.login}",
-                            style: TextStyle(
-                              color: AppColors.gray2,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                        Expanded(child: Divider()),
-                      ],
+                    LoginInputFields(
+                      emailController: _emailController,
+                      passwordController: _passwordController,
                     ),
-
-                    SizedBox(height: AppSpacing.xxl),
-
-                    TextFieldWidget(
-                      hintText: "이메일를 입력하세요",
-                      style: AppInputStyles.standard,
-                      controller: _emailController,
-                    ),
-                    SizedBox(height: AppSpacing.lg),
-                    TextFieldWidget(
-                      hintText: "비밀번호를 입력하세요",
-                      style: AppInputStyles.password,
-                      controller: _passwordController,
-                    ),
-                    SizedBox(height: AppSpacing.sm),
 
                     // 체크박스
                     Row(
@@ -202,160 +237,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(height: AppSpacing.sm),
 
-                    // 로그인 버튼
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _handleLogin,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.main,
-                          foregroundColor: Colors.white,
-                          disabledBackgroundColor: AppColors.gray4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: AppBorderRadius.mediumRadius,
-                          ),
-                        ),
-                        child: _isLoading
-                            ? CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        )
-                            : Text(
-                          '${ButtonLabels.login}',
-                          style: AppTextStyles.buttonLg,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: AppSpacing.lg),
-
-                    // 카카오로그인 버튼
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _handleLogin,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.kakaoBg,
-                          foregroundColor: AppColors.black,
-                          disabledBackgroundColor: AppColors.gray4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: AppBorderRadius.mediumRadius,
-                          ),
-                        ),
-                        child: _isLoading
-                            ? CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        )
-                            : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/kakao_logo.png',
-                              height: 20,
-                            ),
-                            const SizedBox(width: 20),
-                            Text('카카오로그인', style: AppTextStyles.buttonLg),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: AppSpacing.lg),
-
-                    // 네이버로그인 버튼
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: _isLoading ? null : _handleLogin,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.naverBg,
-                          foregroundColor: AppColors.white,
-                          disabledBackgroundColor: AppColors.gray4,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: AppBorderRadius.mediumRadius,
-                          ),
-                        ),
-                        child: _isLoading
-                            ? CircularProgressIndicator(
-                          color: Colors.white,
-                          strokeWidth: 2,
-                        )
-                            : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/naver_logo.png',
-                              height: 20,
-                            ),
-                            const SizedBox(width: 20),
-                            Text('네이버로그인', style: AppTextStyles.buttonLg),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: AppSpacing.lg),
-
-                    // 아이디 찾기 / 비밀번호 찾기 버튼 (색상이랑 사이즈 맞추려면 styles 추가해야함)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        TextButton(
-                          onPressed: () => context.go('/find-id'),
-                          style: TextButton.styleFrom(
-                            overlayColor: Colors.transparent,
-                          ),
-                          child: Text(
-                            "${ButtonLabels.findId}",
-                            style: TextStyle(
-                              color: AppColors.main,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 1),
-                        Text(
-                          "|",
-                          style: TextStyle(color: AppColors.main, fontSize: 14),
-                        ),
-                        SizedBox(width: 1),
-                        TextButton(
-                          onPressed: () => context.go('/confirm-password'),
-                          style: TextButton.styleFrom(
-                            overlayColor: Colors.transparent,
-                          ),
-                          child: Text(
-                            "${ButtonLabels.changePassword}",
-                            style: TextStyle(
-                              color: AppColors.main,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 50),
-
-                    // 회원가입 링크
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '계정이 없으신가요?',
-                          style: TextStyle(color: AppColors.main),
-                        ),
-                        TextButton(
-                          onPressed: _isLoading
-                              ? null
-                              : () => context.go('/signup'),
-                          style: TextButton.styleFrom(
-                            overlayColor: Colors.transparent,
-                          ),
-                          child: Text('회원가입하기', style: AppTextStyles.bodyMd),
-                        ),
-                      ],
-                    ),
+                    LoginButtonFields(
+                        isLoading: _isLoading,
+                        onLogin: _handleLogin,
+                        onKakaoLogin: _kakaoLogin,
+                        onNaverLogin: _naverLogin
+                    )
                   ],
                 ),
               ),

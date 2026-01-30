@@ -3,8 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
+import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
-import 'package:meomulm_frontend/features/auth/presentation/widget/change_password_form_fields.dart';
+import 'package:meomulm_frontend/features/auth/presentation/widget/change_password/change_password_form_fields.dart';
 
 class LoginChangePasswordScreen extends StatefulWidget {
   final int userId;
@@ -39,6 +40,7 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
         SnackBar(
           content: Text(passwordRegexp),
           duration: const Duration(seconds: 2),
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -49,6 +51,7 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
         SnackBar(
           content: Text(checkPasswordRegexp),
           duration: const Duration(seconds: 2),
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -63,7 +66,7 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
                   content: Text("비밀번호가 변경되었습니다."),
                   backgroundColor: AppColors.success)
           );
-          context.go('${RoutePaths.login}');
+          context.push('${RoutePaths.login}');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -82,23 +85,14 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
     }
   }
 
+  void _moveLogin() {
+    context.push('${RoutePaths.login}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () => context.go('${RoutePaths.login}'),
-          icon: Icon(Icons.arrow_back),
-        ),
-        centerTitle: true,
-        title: const Text(
-          TitleLabels.loginChangePassword,
-          style: AppTextStyles.appBarTitle,
-        ),
-      ),
+      appBar: AppBarWidget(title: TitleLabels.loginChangePassword, onBack: _moveLogin),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
@@ -137,35 +131,6 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PasswordField extends StatelessWidget {
-  final String hint;
-
-  const _PasswordField({required this.hint});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 46,
-      child: TextField(
-        obscureText: true,
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: const TextStyle(fontSize: 12, color: Color(0xFFB1B1B1)),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFFCACACA)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFF5A7EFF)),
-          ),
         ),
       ),
     );

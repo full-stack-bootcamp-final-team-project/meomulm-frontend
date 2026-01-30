@@ -5,8 +5,9 @@ import 'package:meomulm_frontend/core/theme/app_button_styles.dart';
 import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
-import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
+import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
+import 'package:meomulm_frontend/features/auth/presentation/widget/find_id/find_id_input_fields.dart';
 
 class FindIdScreen extends StatefulWidget {
   const FindIdScreen({super.key});
@@ -19,6 +20,9 @@ class _FindIdScreenState extends State<FindIdScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
+  final FocusNode _nameFocusNode = FocusNode();
+  final FocusNode _phoneFocusNode = FocusNode();
+
   void _checkUser() async {
     final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
@@ -30,6 +34,7 @@ class _FindIdScreenState extends State<FindIdScreen> {
         SnackBar(
           content: Text(nameRegexp),
           duration: const Duration(seconds: 2),
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -40,6 +45,7 @@ class _FindIdScreenState extends State<FindIdScreen> {
         SnackBar(
           content: Text(phoneRegexp),
           duration: const Duration(seconds: 2),
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -140,68 +146,26 @@ class _FindIdScreenState extends State<FindIdScreen> {
     }
   }
 
+  void _moveLogin() {
+    context.push(RoutePaths.login);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        leading: IconButton(
-          onPressed: () => context.go('/login'),
-          icon: Icon(Icons.arrow_back),
-        ),
-        title:  Text(TitleLabels.findId,
-          style: AppTextStyles.appBarTitle,
-        ),
-        centerTitle: true,
-      ),
+      appBar: AppBarWidget(title: TitleLabels.findId, onBack: _moveLogin),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 32),
-
-              // 이름 입력
-              TextFieldWidget(
-                label: "이름",
-                hintText: "이름을 입력하세요",
-                controller: _nameController,
-              ),
-
-              const SizedBox(height: 20),
-
-              // 전화번호 입력
-              TextFieldWidget(
-                label: "전화번호",
-                hintText: "전화번호를 입력하세요",
-                controller: _phoneController,
-              ),
-
-              SizedBox(height: 40),
-
-              // 아이디 찾기 버튼
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: _checkUser,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.gray6,
-                    foregroundColor: AppColors.gray2,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(color: AppColors.gray4),
-                    ),
-                  ),
-                  child: const Text(ButtonLabels.findId, style: AppTextStyles.inputTextMd),
-                ),
-              ),
-              const SizedBox(height: 40),
+              FindIdInputFields(
+                  nameController: _nameController,
+                  phoneController: _phoneController,
+                  nameFocusNode: _nameFocusNode,
+                  phoneFocusNode: _phoneFocusNode,
+                  onFindId: _checkUser)
             ],
           ),
         ),
