@@ -1,8 +1,8 @@
-class LoginRequest {
+class LoginRequestModel {
   final String userEmail;
   final String userPassword;
 
-  LoginRequest({
+  LoginRequestModel({
     required this.userEmail,
     required this.userPassword,
   });
@@ -14,8 +14,8 @@ class LoginRequest {
     };
   }
 
-  factory LoginRequest.fromJson(Map<String, dynamic> json) {
-    return LoginRequest(
+  factory LoginRequestModel.fromJson(Map<String, dynamic> json) {
+    return LoginRequestModel(
       userEmail: json['userEmail'] as String,
       userPassword: json['userPassword'] as String,
     );

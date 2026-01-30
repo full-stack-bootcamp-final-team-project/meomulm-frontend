@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_button_styles.dart';
 import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
@@ -151,9 +152,8 @@ class _FindIdScreenState extends State<FindIdScreen> {
           onPressed: () => context.go('/login'),
           icon: Icon(Icons.arrow_back),
         ),
-        title: const Text(
-          '아이디 찾기',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        title:  Text(TitleLabels.findId,
+          style: AppTextStyles.appBarTitle,
         ),
         centerTitle: true,
       ),
@@ -188,6 +188,7 @@ class _FindIdScreenState extends State<FindIdScreen> {
                 width: double.infinity,
                 height: 52,
                 child: ElevatedButton(
+                  onPressed: _checkUser,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.gray6,
                     foregroundColor: AppColors.gray2,
@@ -197,11 +198,9 @@ class _FindIdScreenState extends State<FindIdScreen> {
                       side: BorderSide(color: AppColors.gray4),
                     ),
                   ),
-                  onPressed: _checkUser,
-                  child: const Text('아이디 찾기', style: AppTextStyles.inputTextMd),
+                  child: const Text(ButtonLabels.findId, style: AppTextStyles.inputTextMd),
                 ),
               ),
-
               const SizedBox(height: 40),
             ],
           ),
