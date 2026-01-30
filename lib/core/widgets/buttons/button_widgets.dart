@@ -141,8 +141,8 @@ Widget buildFieldWithButton({
       Expanded(child: field),
       const SizedBox(width: 10),
       Container(
-        margin: const EdgeInsets.only(top: 22),
-        height: 50,
+        margin: const EdgeInsets.only(top: 23),
+        height: 55,
         child: ElevatedButton(
           onPressed: onPressed,
           style: ElevatedButton.styleFrom(

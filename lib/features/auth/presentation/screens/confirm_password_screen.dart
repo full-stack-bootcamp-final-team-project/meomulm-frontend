@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
-import 'package:meomulm_frontend/core/router/app_router.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
-import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
+import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
-import 'package:meomulm_frontend/features/auth/presentation/widget/birth_date_selector.dart';
+import 'package:meomulm_frontend/features/auth/presentation/widget/signup/birth_date_selector.dart';
 
 class ConfirmPasswordScreen extends StatefulWidget {
   const ConfirmPasswordScreen({super.key});
@@ -19,6 +19,8 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _birthController = TextEditingController();
 
+  final FocusNode _emailFocusNode = FocusNode();
+
   void _confirmPassword() async {
     final email = _emailController.text.trim();
     final birth = _birthController.text.trim();
@@ -29,6 +31,7 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
         SnackBar(
           content: Text(emailRegexp),
           duration: const Duration(seconds: 2),
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -39,6 +42,7 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
         SnackBar(
           content: Text(InputMessages.emptyBirth),
           duration: const Duration(seconds: 2),
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -55,7 +59,7 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
               content: Text("본인인증에 성공했습니다. 비밀번호 변경 페이지로 이동합니다."),
             backgroundColor: AppColors.success)
           );
-          context.go('${RoutePaths.loginChangePassword}/${userId}', extra: userId);
+          context.push('${RoutePaths.loginChangePassword}/${userId}', extra: userId);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -76,35 +80,29 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
 
   }
 
+  void _moveLogin() {
+    context.push('${RoutePaths.login}');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () => context.go('/login'),
-          icon: Icon(Icons.arrow_back),
-        ),
-        centerTitle: true,
-        title: Text(
-          TitleLabels.verifyIdentity,
-          style: AppTextStyles.appBarTitle,
-        ),
-      ),
+      appBar: AppBarWidget(title: TitleLabels.verifyIdentity, onBack: _moveLogin),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 24),
-
             // 이메일 입력
-            TextFieldWidget(
+            CustomTextField(
               label: "이메일",
-              hintText: "이메일을 입력하세요.",
+              isRequired: true,
+              hintText: "abc@exam.com",
               controller: _emailController,
+              focusNode: _emailFocusNode,
+              keyboardType: TextInputType.emailAddress,
+              validator: (email) => RegexpUtils.validateEmail(email),
             ),
             const SizedBox(height: 24),
 
@@ -125,10 +123,9 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
                   elevation: 0,
                   backgroundColor: AppColors.gray6,
                   foregroundColor: AppColors.gray2,
-                  disabledBackgroundColor: const Color(0xFFF3F6FF),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
-                    side: const BorderSide(color: Color(0xFFCACACA)),
+                    side: BorderSide(color: AppColors.gray4),
                   ),
                 ),
                 child: const Text(

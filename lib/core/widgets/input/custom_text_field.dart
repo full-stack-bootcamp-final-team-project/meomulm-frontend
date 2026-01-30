@@ -39,6 +39,7 @@ class CustomTextField extends StatelessWidget {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             hintText: hintText,
+            hintStyle: AppTextStyles.inputPlaceholder,
             filled: true,
             fillColor: AppColors.white,
             contentPadding: const EdgeInsets.symmetric(

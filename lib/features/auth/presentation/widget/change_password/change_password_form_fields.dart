@@ -24,7 +24,7 @@ class ChangePasswordFormFields extends StatelessWidget {
         // 비밀번호
         CustomTextField(
           label: "비밀번호",
-          isRequired: false,
+          isRequired: true,
           hintText: "비밀번호를 입력하세요",
           controller: passwordController,
           focusNode: passwordFocusNode,
@@ -36,7 +36,7 @@ class ChangePasswordFormFields extends StatelessWidget {
         // 비밀번호 확인
         CustomTextField(
           label: "비밀번호 확인",
-          isRequired: false,
+          isRequired: true,
           hintText: "비밀번호를 다시 입력하세요",
           controller: checkPasswordController,
           focusNode: checkPasswordFocusNode,

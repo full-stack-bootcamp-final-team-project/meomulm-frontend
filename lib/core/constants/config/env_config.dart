@@ -7,6 +7,7 @@ class EnvConfig {
   static String get environment => dotenv.env['ENVIRONMENT'] ?? 'development';
   static String get appName => dotenv.env['APP_NAME'] ?? 'Meomulm';
   static String get kakaoNativeKey =>  dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '';
+  static String get kakaoLoginNativeKey =>  dotenv.env['KAKAO_NATIVE_LOGIN_APP_KEY'] ?? '';
   static bool get isDevelopment => environment == 'development';
   static bool get isProduction => environment == 'product';
 
