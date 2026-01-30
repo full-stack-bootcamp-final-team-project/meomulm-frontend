@@ -86,3 +86,11 @@ class StatusMessages {
   static const String processingBooking = '예약을 진행 중입니다...';
   static const String processingPayment = '결제를 처리 중입니다...';
 }
+/// =====================
+/// 권한 메세지 상수
+/// =====================
+class PermissionMessages {
+  PermissionMessages._();
+  static const String needLocationPermission = '위치 권한이 필요합니다';
+  static const String settingLocationPermission = '설정에서 위치 권한을 허용해주세요';
+}

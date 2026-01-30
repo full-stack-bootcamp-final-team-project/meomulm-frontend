@@ -5,7 +5,7 @@ import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
-import 'package:meomulm_frontend/features/map/data/models/accommodation.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_model.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_search_result_widgets/map_search_result_card.dart';
 import 'package:provider/provider.dart';
@@ -173,7 +173,7 @@ class _MapSearchResultScreenState extends State<MapSearchResultScreen> {
 
     for (var acc in accommodations) {
       await _controller!.labelLayer.addPoi(
-        LatLng(acc.accommodationLatitude, acc.accommodationLongitude),
+        LatLng(acc.accommodationLatitude!, acc.accommodationLongitude!),
         style: PoiStyle(
           // 숙소 마커 스타일
         ),
@@ -196,7 +196,7 @@ class _MapSearchResultScreenState extends State<MapSearchResultScreen> {
             onTap: () async {
               await _controller?.moveCamera(
                 CameraUpdate.newCenterPosition(
-                  LatLng(acc.accommodationLatitude, acc.accommodationLongitude),
+                  LatLng(acc.accommodationLatitude!, acc.accommodationLongitude!),
                 ),
               );
             },
