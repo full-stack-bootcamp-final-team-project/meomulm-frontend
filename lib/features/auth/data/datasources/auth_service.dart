@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
+import 'package:meomulm_frontend/features/auth/data/models/change_password_model.dart';
 import '../models/login_request_model.dart';
 import '../models/login_response_model.dart';
 import '../models/signup_request_model.dart';
@@ -16,8 +17,8 @@ class AuthService {
   );
 
   // 로그인
-  static Future<LoginResponse> login(String userEmail, String userPassword) async {
-    final loginRequest = LoginRequest(
+  static Future<LoginResponseModel> login(String userEmail, String userPassword) async {
+    final loginRequest = LoginRequestModel(
       userEmail: userEmail,
       userPassword: userPassword,
     );
@@ -29,7 +30,7 @@ class AuthService {
       );
 
       if (res.statusCode == 200) {
-        return LoginResponse.fromJson(res.data);
+        return LoginResponseModel.fromJson(res.data);
       } else {
         print("로그인 실패");
         throw Exception('로그인 실패: ${res.statusCode}');
@@ -51,7 +52,7 @@ class AuthService {
     String? userPhone,
     String? userBirth,
   }) async {
-    final signupRequest = SignupRequest(
+    final signupRequest = SignupRequestModel(
       userEmail: userEmail,
       userPassword: userPassword,
       userName: userName,
@@ -143,6 +144,31 @@ class AuthService {
 
     } catch(e) {
       print("본인 인증 실패 $e");
+      return null;
+    }
+  }
+
+  // 비밀번호 변경 (로그인)
+  static Future<int?> LoginChangePassword(int userId, String userPassword) async {
+    final changePassword = ChangePasswordModel(
+      userId: userId,
+      userPassword: userPassword,
+    );
+
+    try {
+      final res = await _dio.patch(
+          '${ApiPaths.loginChangePasswordUrl}',
+        data: changePassword.toJson()
+      );
+      
+      if(res.statusCode == 200){
+        return 1;
+      } else {
+        return 0;
+      }
+
+    } catch(e) {
+      print("비밀번호 변경 실패 $e");
       return null;
     }
   }

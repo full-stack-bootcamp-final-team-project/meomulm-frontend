@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
-import 'package:meomulm_frontend/features/auth/presentation/widget/custom_text_field.dart';
+import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
 
 class SignupFormFields extends StatelessWidget {
   final TextEditingController emailController;
