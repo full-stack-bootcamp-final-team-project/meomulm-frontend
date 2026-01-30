@@ -12,7 +12,7 @@ class BottomNavBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 60,
+      height: 70,
       decoration: BoxDecoration(color: AppColors.white, boxShadow: AppShadows.bottomNav),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -36,7 +36,7 @@ class BottomNavBarWidget extends StatelessWidget {
           context.push(page);
         }
       },
-      child: Icon(icon, size: AppIcons.sizeXl, color: color),
+      child: Icon(icon, size: AppIcons.sizeXxl, color: color),
     );
   }
 }

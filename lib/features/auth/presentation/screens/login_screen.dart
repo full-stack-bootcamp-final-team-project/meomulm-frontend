@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
@@ -88,12 +89,17 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${ButtonLabels.login}에 실패했습니다'),
-          backgroundColor: AppColors.error,
-          duration: Duration(seconds: 2),
-        ),
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('${ButtonLabels.login}에 실패했습니다'),
+      //     backgroundColor: AppColors.error,
+      //     duration: Duration(seconds: 2),
+      //   ),
+      // );
+      SnackMessenger.showMessage(
+          context,
+          "${ButtonLabels.login}에 실패했습니다.",
+          type: ToastType.error
       );
     } finally {
       if (mounted) {
@@ -105,12 +111,17 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _showErrorMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.error,
-        duration: Duration(seconds: 2),
-      ),
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text(message),
+    //     backgroundColor: AppColors.error,
+    //     duration: Duration(seconds: 2),
+    //   ),
+    // );
+    SnackMessenger.showMessage(
+        context,
+        "${message}",
+        type: ToastType.error
     );
   }
 
@@ -207,13 +218,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: _isLoading
                             ? CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              )
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        )
                             : Text(
-                                '${ButtonLabels.login}',
-                                style: AppTextStyles.buttonLg,
-                              ),
+                          '${ButtonLabels.login}',
+                          style: AppTextStyles.buttonLg,
+                        ),
                       ),
                     ),
                     SizedBox(height: AppSpacing.lg),
@@ -234,20 +245,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: _isLoading
                             ? CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              )
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        )
                             : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    'assets/images/kakao_logo.png',
-                                    height: 20,
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Text('카카오로그인', style: AppTextStyles.buttonLg),
-                                ],
-                              ),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/kakao_logo.png',
+                              height: 20,
+                            ),
+                            const SizedBox(width: 20),
+                            Text('카카오로그인', style: AppTextStyles.buttonLg),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: AppSpacing.lg),
@@ -268,20 +279,20 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: _isLoading
                             ? CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              )
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        )
                             : Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    'assets/images/naver_logo.png',
-                                    height: 20,
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Text('네이버로그인', style: AppTextStyles.buttonLg),
-                                ],
-                              ),
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/naver_logo.png',
+                              height: 20,
+                            ),
+                            const SizedBox(width: 20),
+                            Text('네이버로그인', style: AppTextStyles.buttonLg),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: AppSpacing.lg),

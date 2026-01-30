@@ -14,9 +14,9 @@ class AccommodationImage {
   factory AccommodationImage.fromJson(Map<String, dynamic> json) {
     try {
       return AccommodationImage(
-          accommodationImageId: json['accommodationImageId'] as int,
-          accommodationId: json['accommodationId'] as int?,
-          accommodationImageUrl: json['accommodationImageUrl'] as String
+        accommodationImageId: json['accommodationImageId'] ?? 0,
+        accommodationId: json['accommodationId'],
+        accommodationImageUrl: json['accommodationImageUrl'] ?? '',
       );
     } catch (e) {
       throw Exception('Result.fromJson 파싱 실패: $e\nJSON: $json');
@@ -32,5 +32,4 @@ class AccommodationImage {
   }
 
 }
-
 

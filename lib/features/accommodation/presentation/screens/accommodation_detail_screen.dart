@@ -58,74 +58,93 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
     }
   }
 
+  // accommodation_detail_screen.dart
+
   @override
   Widget build(BuildContext context) {
-    if (isLoading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    if (accommodation == null) return const Scaffold(body: Center(child: Text("숙소 정보를 찾을 수 없습니다.")));
+    if (isLoading)
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    if (accommodation == null)
+      return const Scaffold(body: Center(child: Text("숙소 정보를 찾을 수 없습니다.")));
 
     final data = accommodation!;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AccommodationImageSlider(
-                  imageUrls: data.accommodationImages.map((img) => img.imageUrl).toList(),
-                  initialIndex: 0,
-                ),
-                Transform.translate(
-                  offset: const Offset(0, -20),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 24),
-                        TitleSection(name: data.accommodationName),
-                        const CustomDivider(),
-                        // DB 백엔드에서 숙소ID 조회한 숙소 평점, count(), 최신 리뷰 내용 불러오기
-                        ReviewPreviewSection(
-                          rating: reviewSummary?.averageRating.toString() ?? '0.0',
-                          count: reviewSummary?.totalCount.toString() ?? '0',
-                          desc: reviewSummary?.latestContent ?? '작성된 리뷰가 없습니다.',
-                          onReviewTap: () {
-                            context.push(
-                              '${RoutePaths.accommodationReview}/${widget.accommodationId}',
-                            );
-                          },
-                        ),
-                        const CustomDivider(),
-                        FacilitySection(labels: data.serviceLabels), // 수정됨
-                        const CustomDivider(),
-                        InfoSection(contact: data.accommodationPhone),
-                        const CustomDivider(),
-                        PolicySection(),
-                        const CustomDivider(),
-                        LocationSection(address: data.accommodationAddress, mapHeight: screenWidth * (2 / 5)),
-                        const SizedBox(height: 100),
-                      ],
+      body: SafeArea(     // 상단 상태바 영역 침범 방지를 위해 SafeArea 적용 (top: true)
+        top: true,
+        bottom: false,
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  AccommodationImageSlider(
+                    imageUrls: data.accommodationImages
+                        .map((img) => img.accommodationImageUrl)
+                        .where((url) => url.isNotEmpty)
+                        .toList(),
+                    initialIndex: 0,
+                  ),
+                  Transform.translate(
+                    offset: const Offset(0, -20),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 24),
+                          TitleSection(name: data.accommodationName),
+                          const CustomDivider(),
+                          ReviewPreviewSection(
+                            rating: reviewSummary?.averageRating.toString() ??
+                                '0.0',
+                            count: reviewSummary?.totalCount.toString() ?? '0',
+                            desc: reviewSummary?.latestContent ??
+                                '작성된 리뷰가 없습니다.',
+                            onReviewTap: () =>
+                                context.push(
+                                    '${RoutePaths.accommodationReview}/${widget
+                                        .accommodationId}'),
+                          ),
+                          const CustomDivider(),
+                          FacilitySection(labels: data.serviceLabels),
+                          const CustomDivider(),
+                          InfoSection(contact: data.accommodationPhone),
+                          const CustomDivider(),
+                          PolicySection(),
+                          const CustomDivider(),
+                          LocationSection(
+                              address: data.accommodationAddress,
+                              mapHeight: screenWidth * (2 / 5),
+                              latitude: data.accommodationLatitude,
+                              longitude: data.accommodationLongitude
+                          ),
+                          const SizedBox(height: 50),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Positioned(
-            left: 0, right: 0, bottom: 0,
-            child: BottomActionButton(
-              label: "모든 객실 보기",
-              onPressed: () => context.push(RoutePaths.productList),
+            // 3. 하단 버튼 배치 (SafeArea 적용됨)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: BottomActionButton(
+                label: "모든 객실 보기",
+                onPressed: () => context.push(RoutePaths.productList),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
