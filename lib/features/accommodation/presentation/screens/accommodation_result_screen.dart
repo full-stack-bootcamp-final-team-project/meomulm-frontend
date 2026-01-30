@@ -3,6 +3,7 @@ import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_filter_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_result_widgets/hotel_card.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_result_widgets/result_topBar.dart';
 import 'package:provider/provider.dart';
@@ -86,6 +87,25 @@ class _AccommodationResultScreen extends State<AccommodationResultScreen> {
         dateText:
         '${provider.checkIn.year}.${provider.checkIn.month}.${provider.checkIn.day} '
             '- ${provider.checkOut.year}.${provider.checkOut.month}.${provider.checkOut.day}',
+        onFilter: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AccommodationFilterScreen(),
+            ),
+          );
+          if (result != null) {
+            // result는 provider.toQuery()에서 반환한 Map<String, dynamic> 형태입니다.
+            debugPrint('적용된 필터: $result');
+            // 여기서 필터된 데이터를 다시 로드하는 함수를 호출하세요.
+            // 예: _loadFilteredAccommodations(result);
+          }
+        },
+        onBack: () => Navigator.pop(context),
+        onClear: () {
+          Navigator.pop(context);
+          provider.clearAccommodationName();
+        },
       ),
       body: Column(
         children: [

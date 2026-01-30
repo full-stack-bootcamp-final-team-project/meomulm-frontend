@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_filter_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/providers/user_profile_provider.dart';
@@ -24,6 +25,7 @@ class MeomulmApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AccommodationProvider()),
+        ChangeNotifierProvider(create: (_) => AccommodationFilterProvider()),
         ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider(create: (_) => UserProfileProvider()),
         ChangeNotifierProvider(create: (_) => MapProvider()),

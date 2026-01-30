@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 
+/*
 class LocationSection extends StatelessWidget {
   final String address;
   final double mapHeight;
@@ -113,6 +115,105 @@ class LocationSection extends StatelessWidget {
                       ),
                     ),
                   ],
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+*/
+
+class LocationSection extends StatelessWidget {
+  final String address;
+  final double mapHeight;
+  final double latitude;
+  final double longitude;
+
+  const LocationSection({
+    super.key,
+    required this.address,
+    required this.mapHeight,
+    required this.latitude,
+    required this.longitude,
+  });
+
+  void _copyToClipboard(BuildContext context) {
+    Clipboard.setData(ClipboardData(text: address));
+    SnackMessenger.showMessage(
+        context,
+        "주소가 복사되었습니다.",
+        bottomPadding: 85,
+        type: ToastType.success
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '숙소 위치',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              SvgPicture.asset(
+                'assets/images/accommodation/address.svg',
+                width: 16,
+                height: 14,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  address,
+                  style: const TextStyle(fontSize: 14),
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () => _copyToClipboard(context),
+                child: const Icon(Icons.copy, size: 18, color: Colors.grey),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+// --- 카카오 지도 영역 ---
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: const Color(0xFFEEEEEE),
+                width: 1,
+              ),
+              boxShadow: AppShadows.card,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: SizedBox(
+                height: mapHeight,
+                width: double.infinity,
+                child: KakaoMap(
+                  option: KakaoMapOption(
+                    // 제공해주신 클래스 구조에 맞춘 파라미터명입니다.
+                    position: LatLng(latitude, longitude), // center -> position
+                    zoomLevel: 15, // level -> zoomLevel (보통 15가 상세보기에 적당합니다)
+                    mapType: MapType.normal,
+                  ),
+                  onMapReady: (controller) async {
+                    // 마커 추가 로직은 동일합니다.
+                    await controller.labelLayer.addPoi(
+                      LatLng(latitude, longitude),
+                      style: PoiStyle(),
+                    );
+                  },
                 ),
               ),
             ),
