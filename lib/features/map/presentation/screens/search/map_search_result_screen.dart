@@ -5,7 +5,7 @@ import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_search_result_widgets/map_search_result_card.dart';
 import 'package:provider/provider.dart';
@@ -167,7 +167,7 @@ class _MapSearchResultScreenState extends State<MapSearchResultScreen> {
   }
 
   Future<void> _addAccommodationMarkers(
-    List<Accommodation> accommodations,
+    List<SearchAccommodationResponseModel> accommodations,
   ) async {
     if (_controller == null) return;
 
@@ -181,7 +181,7 @@ class _MapSearchResultScreenState extends State<MapSearchResultScreen> {
     }
   }
 
-  Widget _buildAccommodationList(List<Accommodation> accommodations) {
+  Widget _buildAccommodationList(List<SearchAccommodationResponseModel> accommodations) {
     return Container(
       height: 180,
       margin: const EdgeInsets.only(bottom: 16),
