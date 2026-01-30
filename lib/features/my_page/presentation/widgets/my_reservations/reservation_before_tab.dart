@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:meomulm_frontend/features/my_page/data/models/reservation_share_model.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_reservations/reservation_card_before.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_reservations/reservation_list.dart';
 
@@ -7,13 +6,11 @@ import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_reserv
 /// 이용전 탭
 /// ===============================
 class ReservationBeforeTab extends StatelessWidget {
-  final List<ReservationShareModel> reservations;
-  final void Function(int reservationId) onCancelTap;  // 상위로 선택한 카드의 reservationId 보내기
-  final void Function(int reservationId) onChangeTap;
+  final VoidCallback onCancelTap;
+  final VoidCallback onChangeTap;
 
   const ReservationBeforeTab({
     super.key,
-    required this.reservations,
     required this.onCancelTap,
     required this.onChangeTap,
   });
@@ -22,16 +19,17 @@ class ReservationBeforeTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return ReservationList(
       emptyText: '이용전 예약 내역이 없습니다.',
-      children: reservations.map((r) {
-        return ReservationCardBefore(
-          hotelName: r.accommodationName,
-          roomInfo: r.subtitle,
-          checkInValue: '${r.checkInText} 15:00',
-          checkOutValue: '${r.checkOutDate} 11:00',
-          onChangeTap: () => onChangeTap(r.reservationId),
-          onCancelTap: () => onCancelTap(r.reservationId),
-        );
-      }).toList(),
+      children: [
+        // TODO: 백엔드에서 가져온 데이터로 변경 (반복문 사용)
+        ReservationCardBefore(
+          hotelName: '롯데 호텔 명동',
+          roomInfo: '스탠다드 룸 · 1박',
+          checkInValue: '12.31 (수) 15:00',
+          checkOutValue: '1.1 (목) 11:00',
+          onChangeTap: onChangeTap, // ✅ 모달 호출
+          onCancelTap: onCancelTap,
+        ),
+      ],
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 
 class LocationSection extends StatelessWidget {
   final String address;
@@ -61,61 +60,50 @@ class LocationSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          Container(
-            decoration: BoxDecoration( // ← 여기에 const가 있다면 제거해보세요
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: const Color(0xFFEEEEEE),
-                width: 1,
-              ),
-              boxShadow: AppShadows.card, // 정상 적용
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: SizedBox(
-                height: mapHeight,
-                width: double.infinity,
-                child: Stack(
-                  children: [
-                    // 1. 지도 이미지 (z=16으로 확대)
-                    Positioned.fill(
-                      child: Image.network(
-                        'https://static-maps.yandex.ru/1.x/?ll=$longitude,$latitude&z=15&size=650,450&l=map',
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            color: Colors.grey[200],
-                            child: const Center(child: CircularProgressIndicator()),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[200],
-                            child: const Center(
-                              child: Icon(Icons.error_outline, color: Colors.grey),
-                            ),
-                          );
-                        },
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: SizedBox(
+              height: mapHeight,
+              width: double.infinity,
+              child: Stack(
+                children: [
+                  // 1. 지도 이미지 (z=16으로 확대)
+                  Positioned.fill(
+                    child: Image.network(
+                      'https://static-maps.yandex.ru/1.x/?ll=$longitude,$latitude&z=15&size=650,450&l=map',
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          color: Colors.grey[200],
+                          child: const Center(child: CircularProgressIndicator()),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[200],
+                          child: const Center(
+                            child: Icon(Icons.error_outline, color: Colors.grey),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  // 2. 중앙 핀 아이콘
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.only(bottom: 35), // 핀의 끝부분이 정중앙에 오도록 보정
+                      child: Icon(
+                        Icons.location_on,
+                        color: Colors.red,
+                        size: 40,
                       ),
                     ),
-                    // 2. 중앙 핀 아이콘
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(bottom: 35), // 핀의 끝부분이 정중앙에 오도록 보정
-                        child: Icon(
-                          Icons.location_on,
-                          color: Colors.red,
-                          size: 40,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          )
+          ),
         ],
       ),
     );

@@ -429,7 +429,6 @@ class _HotelImages extends StatelessWidget {
     }
 
     if (dbImages.length == 1) {
-      debugPrint("사진 1장 감지: ${dbImages[0].accommodationImageUrl}");
       return _SingleImage(
         image: _ImageSource.network(dbImages[0].accommodationImageUrl!),
       );
@@ -460,10 +459,11 @@ class _SingleImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 2.8, // ← 2장, 3장 레이아웃과 동일하게 맞춤
-      child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+      child: SizedBox(
+        height: 200,
+        width: double.infinity,
         child: _ImageView(source: image),
       ),
     );

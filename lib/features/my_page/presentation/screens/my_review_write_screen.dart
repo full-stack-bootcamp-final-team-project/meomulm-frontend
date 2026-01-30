@@ -15,7 +15,6 @@ import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 import 'package:meomulm_frontend/core/widgets/layouts/star_rating_widget.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/my_page/data/datasources/review_service.dart';
-import 'package:meomulm_frontend/features/my_page/data/models/reservation_share_model.dart';
 import 'package:meomulm_frontend/features/my_page/data/models/review_request_model.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_review_write/rating_row.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_review_write/reservation_info_card.dart';
@@ -25,12 +24,9 @@ import 'package:provider/provider.dart';
  * 마이페이지 - 리뷰 작성 스크린 - only_app_style : 수정 필요.
  */
 class MyReviewWriteScreen extends StatefulWidget {
-  final ReservationShareModel reservationShare;
+  final int accommodationId;
 
-  const MyReviewWriteScreen({
-    super.key,
-    required this.reservationShare,
-  });
+  const MyReviewWriteScreen({super.key, required this.accommodationId});
 
   @override
   State<MyReviewWriteScreen> createState() => _MyReviewWriteScreenState();
@@ -79,7 +75,7 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
     final reviewContent = _controller.text.trim();
 
     final request = ReviewRequestModel(
-        accommodationId: widget.reservationShare.accommodationId,
+        accommodationId: widget.accommodationId,
         rating: rating,
         reviewContent: reviewContent,
     );
@@ -127,7 +123,7 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
               child: Column(
                 children: [
                   // 상단 예약 정보 카드
-                  ReservationInfoCard(reservationShare: widget.reservationShare,),
+                  ReservationInfoCard(),
 
                   const SizedBox(height: AppSpacing.xl),
 
@@ -173,7 +169,7 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
                       onPressed: () async {
                         await _onSubmit();
                       },
-                      enabled: _canSubmit
+                      enabled: _canSubmit // TODO: 별점 등록 및 리뷰 입력 시 true 로 변경하는 함수 구현 후 호출
                   ),
                 ],
               ),
