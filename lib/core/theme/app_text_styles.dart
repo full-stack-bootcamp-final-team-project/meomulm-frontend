@@ -112,6 +112,17 @@ class AppTextStyles {
       color:Color(0xFFFFFFFF),
   );
 
+
+  /// =====================
+  /// 다이얼로그 텍스트
+  /// =====================
+  static const dialogLg = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    color: AppColors.main,
+  );
+
+
   /// =====================
   /// 기본 텍스트
   /// =====================
@@ -144,6 +155,7 @@ class AppTextStyles {
     fontWeight: FontWeight.w600,
     color: AppColors.black,
   );
+
 
   static const textError = TextStyle(
     fontSize: 18,

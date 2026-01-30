@@ -118,11 +118,11 @@ class AuthService {
             'userPhone': userPhone
           }
       );
-      return res.data;
+      return res.data?.toString();
+
     } catch(e) {
       print("이메일 조회 실패 $e");
       return null;
     }
   }
-
 }
