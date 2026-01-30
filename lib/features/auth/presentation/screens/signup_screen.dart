@@ -181,7 +181,7 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       // 회원가입 후 로그인 페이지로 이동
-      context.go('/login');
+      context.go('${RoutePaths.login}');
 
     } catch (e) {
       if (!mounted) return;
@@ -274,7 +274,7 @@ class _SignupScreenState extends State<SignupScreen> {
         backgroundColor: AppColors.white,
         scrolledUnderElevation: 0,
         centerTitle: true,
-        title: const Text(TitleLabels.signUp),
+        title: const Text(TitleLabels.signUp, style: AppTextStyles.appBarTitle),
         leading: IconButton(
           onPressed: () => context.go('/login'),
           icon: const Icon(Icons.arrow_back),

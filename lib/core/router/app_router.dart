@@ -93,9 +93,13 @@ class AppRouter {
         builder: (context, state) => const ConfirmPasswordScreen(),
       ),
       GoRoute(
-        path: RoutePaths.loginChangePassword,
+        path: '${RoutePaths.loginChangePassword}/:userId',
         name: "loginChangePassword",
-        builder: (context, state) => const LoginChangePasswordScreen(),
+        builder: (context, state) {
+          final idString = state.pathParameters['userId'];
+          final userId = int.tryParse(idString ?? '');
+          return LoginChangePasswordScreen(userId: userId!);
+        }
       ),
 
       /// =====================
