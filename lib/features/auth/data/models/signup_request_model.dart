@@ -1,11 +1,11 @@
-class SignupRequest {
+class SignupRequestModel {
   final String userEmail;
   final String userPassword;
   final String userName;
   final String? userPhone;
   final String? userBirth;
 
-  SignupRequest({
+  SignupRequestModel({
     required this.userEmail,
     required this.userPassword,
     required this.userName,
@@ -23,8 +23,8 @@ class SignupRequest {
     };
   }
 
-  factory SignupRequest.fromJson(Map<String, dynamic> json) {
-    return SignupRequest(
+  factory SignupRequestModel.fromJson(Map<String, dynamic> json) {
+    return SignupRequestModel(
       userEmail: json['userEmail'] as String,
       userPassword: json['userPassword'] as String,
       userName: json['userName'] as String,
