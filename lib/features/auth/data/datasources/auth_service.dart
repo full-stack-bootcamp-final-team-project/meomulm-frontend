@@ -16,8 +16,7 @@ class AuthService {
   );
 
   // 로그인
-  static Future<LoginResponse> login(String userEmail,
-      String userPassword) async {
+  static Future<LoginResponse> login(String userEmail, String userPassword) async {
     final loginRequest = LoginRequest(
       userEmail: userEmail,
       userPassword: userPassword,
@@ -80,11 +79,11 @@ class AuthService {
   }
 
   // 아이디 중복 확인
-  static Future<bool> checkEmailDuplicate(String email) async {
+  static Future<bool> checkEmailDuplicate(String userEmail) async {
     try {
       final res = await _dio.get(
         '${ApiPaths.authUrl}/checkEmail',
-        queryParameters: {'email': email},
+        queryParameters: {'email': userEmail},
       );
 
       return res.data;
@@ -94,11 +93,11 @@ class AuthService {
   }
 
   // 전화번호 중복 확인
-  static Future<bool> checkPhoneDuplicate(String phone) async {
+  static Future<bool> checkPhoneDuplicate(String userPhone) async {
     try {
       final res = await _dio.get(
         '${ApiPaths.authUrl}/checkPhone',
-        queryParameters: {'phone': phone},
+        queryParameters: {'phone': userPhone},
       );
 
       return res.data;
@@ -108,8 +107,7 @@ class AuthService {
   }
 
   // 아이디 찾기
-  static Future<String?> userEmailCheck(String userName,
-      String userPhone) async {
+  static Future<String?> userEmailCheck(String userName, String userPhone) async {
     try {
       final res = await _dio.get(
           '${ApiPaths.findIdUrl}',
@@ -118,11 +116,34 @@ class AuthService {
             'userPhone': userPhone
           }
       );
-      return res.data;
+      return res.data?.toString();
+
     } catch(e) {
       print("이메일 조회 실패 $e");
       return null;
     }
   }
 
+  // 본인 인증
+  static Future<int?> confirmPassword(String userEmail, String userBirth) async {
+    try {
+      final res = await _dio.get(
+          '${ApiPaths.confirmPasswordUrl}',
+          queryParameters: {
+            'userEmail': userEmail,
+            'userBirth': userBirth
+          }
+      );
+
+      if(res.data != null){
+        return res.data;
+      } else {
+        return null;
+      }
+
+    } catch(e) {
+      print("본인 인증 실패 $e");
+      return null;
+    }
+  }
 }
