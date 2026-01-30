@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
-import 'package:meomulm_frontend/features/map/data/models/accommodation.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_model.dart';
 
 class MapService {
   static final Dio _dio = Dio(
