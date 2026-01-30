@@ -13,52 +13,73 @@ class ProfileAvatar extends StatelessWidget {
 
   const ProfileAvatar({
     this.onCameraTap,
-    required this.profileImageUrl,
-    required this.isLoading
+    this.profileImageUrl,
+    required this.isLoading,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isImageExists =
+        profileImageUrl != null && profileImageUrl!.trim().isNotEmpty;
+    const double size = 64;
+
     return SizedBox(
-      width: 64,
-      height: 64,
+      width: size,
+      height: size,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          CircleAvatar(
-            radius: 64,
-            backgroundImage: NetworkImage(profileImageUrl!),  // TODO: null 처리하기
-            child: profileImageUrl == null
-                ? const Icon(Icons.person)
-                : null,
-          ),
-          if(isLoading)
-            const Positioned.fill(
-                child: ColoredBox(
-                  color: AppColors.gray3,
-                  child: Center(child: CircularProgressIndicator()),
-                )
+          Container(
+            width: size,
+            height: size,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                CircleAvatar(
+                  radius: 32,
+                  backgroundColor: AppColors.gray5,
+                  backgroundImage: isImageExists
+                      ? NetworkImage(profileImageUrl!)
+                      : null,
+                  child: profileImageUrl == null
+                      ? const Icon(
+                          Icons.person,
+                          size: size * 0.6,
+                          color: AppColors.gray2,
+                        ) // TODO: 공통상수로 변경하기
+                      : null,
+                ),
+                if (isLoading)
+                  const Positioned.fill(
+                    child: ColoredBox(
+                      color: AppColors.gray3,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  ),
+                Positioned(
+                  right: -4,
+                  bottom: -2,
+                  child: GestureDetector(
+                    onTap: onCameraTap,
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      // TODO: 공통상수로 변경하기
+                      decoration: BoxDecoration(
+                        color: AppColors.gray5,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.gray4),
+                      ),
+                      child: Icon(
+                        AppIcons.camera,
+                        size: AppIcons.sizeXs,
+                        color: AppColors.gray2,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          Positioned(
-            right: -4,
-            bottom: -2,
-            child: GestureDetector(
-              onTap: onCameraTap,
-              child: Container(
-                padding: const EdgeInsets.all(6), // TODO: 공통상수로 변경하기
-                decoration: BoxDecoration(
-                  color: AppColors.gray5,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.gray4),
-                ),
-                child: Icon(
-                  AppIcons.camera,
-                  size: AppIcons.sizeXs,
-                  color: AppColors.gray2,
-                ),
-              ),
-            )
-          )
+          ),
         ],
       ),
     );
