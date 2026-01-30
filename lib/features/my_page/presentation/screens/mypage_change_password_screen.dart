@@ -105,16 +105,10 @@ class _MypageChangePasswordScreenState
     try {
       final token = context.read<AuthProvider>().token;
       if (token == null) return;
-      // TODO: 디버깅 이후 삭제
-      print("비밀번호 확인 시작");
       final response = await mypageService.checkCurrentPassword(
         token,
         currentPassword,
       );
-      // TODO: 디버깅 이후 삭제
-      print(response);
-      // TODO: 디버깅 이후 삭제
-      print("비밀번호 확인 완료");
       setState(() => _isCurrentChecked = response);
     } catch (e) {
       ScaffoldMessenger.of(
@@ -133,9 +127,6 @@ class _MypageChangePasswordScreenState
     // "확인"을 반드시 눌러야 제출 가능
     if (!_isCurrentChecked) {
       setState(() => _currentErr = '기존 비밀번호 확인을 먼저 진행해 주세요.');
-      // TODO: 디버깅 이후 삭제
-      print(_currentErr);
-      print(_isCurrentChecked);
       return;
     }
 

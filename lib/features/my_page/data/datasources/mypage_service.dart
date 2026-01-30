@@ -34,8 +34,6 @@ class MypageService {
     }
   }
 
-  // TODO: 이미지 업로드/수정 fetch 함수
-
   /*
   회원정보 수정
    */
@@ -52,6 +50,24 @@ class MypageService {
     } catch (e) {
       print('회원정보 수정 실패: $e');
       throw Exception('회원정보 수정에 실패했습니다.');
+    }
+  }
+
+  /*
+  프로필 이미지 저장
+   */
+  Future<void> uploadProfileImage(String token, String imageUrl) async {
+    try {
+      await _dio.patch(
+        '/profileImage',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+        data: imageUrl,
+      );
+    } on DioException catch (e) {
+      print('프로필 이미지 저장 실패 - 상태코드: ${e.response?.statusCode}, $e');
+      throw Exception('프로필 이미지 저장에 실패했습니다.');
     }
   }
 
