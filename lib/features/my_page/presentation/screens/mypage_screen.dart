@@ -223,7 +223,7 @@ class _MypageScreenState extends State<MypageScreen> {
                   children: [
                     ProfileAvatar(
                       onCameraTap: _pickImage,
-                      profileImageUrl: user.userProfileImage ?? '',
+                      profileImageUrl: user.userProfileImage ?? null,
                       isLoading: isLoading,
                     ),
                     const SizedBox(width: AppSpacing.xl),
