@@ -52,7 +52,7 @@ class RegexpUtils {
   // 전화번호 검증
   static String? validatePhone(String? phone) {
     if (phone == null || phone.isEmpty) {
-      return null;
+      return InputMessages.emptyPhone;
     }
     if (!RegexpConstants.phone.hasMatch(phone)) {
       return InputMessages.invalidPhone;

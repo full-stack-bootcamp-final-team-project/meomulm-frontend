@@ -4,9 +4,10 @@ import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/keyboard_converter.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
+import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
-import 'package:meomulm_frontend/features/auth/presentation/widget/birth_date_selector.dart';
-import 'package:meomulm_frontend/features/auth/presentation/widget/signup_form_fields.dart';
+import 'package:meomulm_frontend/features/auth/presentation/widget/signup/birth_date_selector.dart';
+import 'package:meomulm_frontend/features/auth/presentation/widget/signup/signup_form_fields.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -46,8 +47,6 @@ class _SignupScreenState extends State<SignupScreen> {
       _emailFocusNode.requestFocus();
     });
   }
-
-
 
   void _handleSignup() async {
     // 빈 필드 체크
@@ -112,7 +111,6 @@ class _SignupScreenState extends State<SignupScreen> {
       return;
     }
 
-    // 생년월일 확인
     if (_birthController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -136,7 +134,6 @@ class _SignupScreenState extends State<SignupScreen> {
       );
       return;
     }
-
 
     setState(() {
       _isLoading = true;
@@ -181,7 +178,7 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       // 회원가입 후 로그인 페이지로 이동
-      context.go('${RoutePaths.login}');
+      context.push('${RoutePaths.login}');
 
     } catch (e) {
       if (!mounted) return;
@@ -210,8 +207,12 @@ class _SignupScreenState extends State<SignupScreen> {
 
     if(checkEmail != null){
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(checkEmail)),
+        SnackBar(
+            content: Text(checkEmail),
+          backgroundColor: AppColors.error,
+        ),
       );
+      return;
     }
 
     try {
@@ -220,7 +221,6 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() {
         _isEmailChecked = isAvailable;
       });
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(isAvailable ? '사용 가능한 이메일입니다.' : '이미 사용 중인 이메일입니다.'),
@@ -242,8 +242,12 @@ class _SignupScreenState extends State<SignupScreen> {
 
     if(checkEmail != null){
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(checkEmail)),
+        SnackBar(
+            content: Text(checkEmail),
+          backgroundColor: AppColors.error,
+        ),
       );
+      return;
     }
 
     try {
@@ -267,19 +271,14 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
+  void _moveLogin() {
+    context.push("/login");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        scrolledUnderElevation: 0,
-        centerTitle: true,
-        title: const Text(TitleLabels.signUp, style: AppTextStyles.appBarTitle),
-        leading: IconButton(
-          onPressed: () => context.go('/login'),
-          icon: const Icon(Icons.arrow_back),
-        ),
-      ),
+      appBar: AppBarWidget(title: "회원가입", onBack: _moveLogin),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -347,7 +346,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         TextButton(
                           onPressed: _isLoading
                               ? null
-                              : () => context.go('/login'),
+                              : () => context.push('${RoutePaths.login}'),
                           child: const Text('로그인하기'),
                         ),
                       ],
