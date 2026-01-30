@@ -158,9 +158,9 @@ class AuthService {
     try {
       final res = await _dio.patch(
           '${ApiPaths.loginChangePasswordUrl}',
-        data: changePassword.toJson()
+          data: changePassword.toJson()
       );
-      
+
       if(res.statusCode == 200){
         return 1;
       } else {

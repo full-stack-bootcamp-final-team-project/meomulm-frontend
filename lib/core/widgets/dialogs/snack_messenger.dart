@@ -1,0 +1,51 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+
+enum ToastType { info, success, error }
+
+class SnackMessenger {
+  static void showMessage(
+      BuildContext context,
+      String message, {
+        double? bottomPadding,
+        ToastType type = ToastType.info,
+      }
+      ) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();    // 이전 스낵바가 있다면 즉시 닫기
+
+    final backgroundColor = switch (type) {                 // 타입에 따른 색상
+      ToastType.success => AppColors.gray2,
+      ToastType.error => AppColors.cancelled,
+      _ => Colors.black87,
+    };
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              color: AppColors.white,
+              fontWeight: FontWeight.w700
+          ),
+        ),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+        backgroundColor: backgroundColor,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        margin: EdgeInsets.only(
+          left: 15,
+          right: 15,
+          bottom: bottomPadding ?? 15,
+        ),
+      ),
+    );
+  }
+}
+
+/*
+behavior: SnackBarBehavior.floating,
+backgroundColor: Colors.black87,
+shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+ */
