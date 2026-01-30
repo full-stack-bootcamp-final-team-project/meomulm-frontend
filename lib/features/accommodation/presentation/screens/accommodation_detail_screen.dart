@@ -7,6 +7,7 @@ import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_detail_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/review_summary.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/customer_divider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/facility_list.dart';
@@ -17,7 +18,10 @@ import 'package:meomulm_frontend/features/accommodation/presentation/widgets/acc
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/policy_section.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/review_preview_section.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/title_section.dart';
+import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
+import 'package:provider/provider.dart';
 import '../widgets/accommodation_detail_widgets/accommodation_image_slider.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_image_model.dart' as image_model;
 
 class AccommodationDetailScreen extends StatefulWidget {
   final int accommodationId;
@@ -50,6 +54,30 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
         reviewSummary = results[1] as ReviewSummary?;
         isLoading = false;
       });
+
+      // ========== 데이터 로드 완료 후 최근 본 숙소 저장 ==========
+      if (accommodation == null) return;
+
+      final recentItem = Accommodation(
+        accommodationId: accommodation!.accommodationId,
+        accommodationName: accommodation!.accommodationName,
+        minPrice: null,
+        accommodationImages: accommodation!.accommodationImages != null
+            ? accommodation!.accommodationImages!
+            .map((img) => image_model.AccommodationImage(
+          accommodationImageId: img.accommodationImageId,
+          accommodationId: img.accommodationId,
+          accommodationImageUrl: img.accommodationImageUrl,
+        ))
+            .toList()
+            : [],
+      );
+
+      final homeProvider = context.read<HomeProvider>();
+      homeProvider.addRecentAccommodation(recentItem).then((_) {
+        debugPrint("숙소 저장 완료");
+      });
+      // =========================================================
     } catch (e) {
       setState(() {
         accommodation = null;

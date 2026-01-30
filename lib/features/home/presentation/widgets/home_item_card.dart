@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_detail_screen.dart';
+
+import 'image_none.dart';
 
 /// 숙소 아이템
 class HomeItemCard extends StatelessWidget {
-  final Map<String, String> item;
+  final Map<String, dynamic> item;
   final double width;
   final bool isLast;
 
@@ -11,29 +14,43 @@ class HomeItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      margin: EdgeInsets.only(right: isLast ? 0 : AppSpacing.lg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AspectRatio(
-            aspectRatio: 3 / 4,
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(AppBorderRadius.xs),
-                image: DecorationImage(
-                  image: NetworkImage(item['img']!),
-                  fit: BoxFit.cover,
-                ),
-              ),
+    return GestureDetector(
+      onTap: () {
+        final id = item['id']; // 숙소 ID 가져오기
+        if (id != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => AccommodationDetailScreen(accommodationId: id),
             ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(item['title']!, style: AppTextStyles.subTitle, maxLines: 2, overflow: TextOverflow.ellipsis),
-          const SizedBox(height: AppSpacing.sm),
-          Text(item['price']!, style: AppTextStyles.subTitle.copyWith(fontWeight: FontWeight.w600)),
-        ],
+          );
+        }
+      },
+      child: Container(
+        width: width,
+        margin: EdgeInsets.only(right: isLast ? 0 : AppSpacing.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AspectRatio(
+              aspectRatio: 3 / 4,
+              child: item['img'] != null && item['img']!.isNotEmpty
+              ? Image.network(
+                item['img']!,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  // 이미지 로드 실패 시 대체 UI
+                  return ImageNone();
+                },
+              )
+              : ImageNone(),
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(item['title']!, style: AppTextStyles.subTitle, maxLines: 2, overflow: TextOverflow.ellipsis),
+            const SizedBox(height: AppSpacing.sm),
+            Text(item['price']!, style: AppTextStyles.subTitle.copyWith(fontWeight: FontWeight.w600)),
+          ],
+        ),
       ),
     );
   }
