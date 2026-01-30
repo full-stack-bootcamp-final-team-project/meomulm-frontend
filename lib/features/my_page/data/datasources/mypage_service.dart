@@ -55,4 +55,47 @@ class MypageService {
     }
   }
 
+  /*
+  현재 비밀번호 확인
+   */
+  Future<bool> checkCurrentPassword(String token, String currentPassword) async{
+    try {
+      final response = await _dio.post(
+        '/currentPassword',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+        data: {"currentPassword": currentPassword},
+      );
+      return true;
+    } on DioException catch (e) {
+      if(e.response?.statusCode == 404) {
+        // 비밀번호 불일치
+        return false;
+      } else {
+        print('비밀번호 확인 실패: $e');
+        throw Exception('비밀번호 확인에 실패했습니다: 서버 에러');
+      }
+    }
+  }
+
+  /*
+  비밀번호 수정
+   */
+  Future<bool> changePassword(String token, String newPassword) async {
+    try {
+      final response = await _dio.patch(
+        '/password',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+        data: {"newPassword": newPassword},
+      );
+      return true;
+    } catch (e) {
+      print('비밀번호 수정 실패: $e');
+      throw Exception('비밀번호 수정에 실패했습니다.');
+    }
+  }
+
 }

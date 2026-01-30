@@ -5,15 +5,24 @@ import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_input_decorations.dart';
 import 'package:meomulm_frontend/core/theme/app_input_styles.dart';
+import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
+import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
+import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/my_page/data/datasources/mypage_service.dart';
+import 'package:meomulm_frontend/features/my_page/data/models/user_profile_model.dart';
+import 'package:provider/provider.dart';
 
 /*
  * 마이페이지 - 비밀번호 변경 스크린
  */
 class MypageChangePasswordScreen extends StatefulWidget {
-  const MypageChangePasswordScreen({super.key});
+  final UserProfileModel user;
+
+  const MypageChangePasswordScreen({super.key, required this.user});
 
   @override
   State<MypageChangePasswordScreen> createState() =>
@@ -22,31 +31,36 @@ class MypageChangePasswordScreen extends StatefulWidget {
 
 class _MypageChangePasswordScreenState
     extends State<MypageChangePasswordScreen> {
-  // TODO: DB에서 받아온 이메일로 변경
-  final String _emailFromDb = 'abc@exam.com';
+  final mypageService = MypageService();
+  bool isLoading = false;
+  String _currentErr = "";
 
   final _currentCtrl = TextEditingController();
   final _newCtrl = TextEditingController();
   final _confirmCtrl = TextEditingController();
 
+  // FocusNode 생성
+  final FocusNode _currentPwFocusNode = FocusNode();
+  final FocusNode _newPwFocusNode = FocusNode();
+  final FocusNode _confirmPwFocusNode = FocusNode();
+
   // 비밀번호 input 필드 작성용 컨트롤러
   final TextEditingController passwordController = TextEditingController();
-  bool _obscure = true;
 
-  // ✅ 각 필드 아래 오류 텍스트
-  String? _currentErr;
-  String? _newErr;
-  String? _confirmErr;
+  bool isSubmittable = false;
 
-  bool _canSubmit = false;
-
-  // (선택) "확인" 버튼 클릭 시 기존 비밀번호 검증 여부 표시용
-  bool _currentChecked = false;
+  // "확인" 버튼 클릭 시 기존 비밀번호 검증 여부 표시용
+  bool _isCurrentChecked = false;
 
   @override
   void initState() {
     super.initState();
-    _currentCtrl.addListener(_recalc);
+    _currentCtrl.addListener(() {
+      if (_isCurrentChecked) {
+        setState(() => _isCurrentChecked = false);
+      }
+      _recalc();
+    });
     _newCtrl.addListener(_recalc);
     _confirmCtrl.addListener(_recalc);
     _recalc();
@@ -60,127 +74,108 @@ class _MypageChangePasswordScreenState
     super.dispose();
   }
 
+  // 실시간 유효성 검증 함수
   void _recalc() {
-    final filled =
-        _currentCtrl.text.trim().isNotEmpty &&
-        _newCtrl.text.trim().isNotEmpty &&
-        _confirmCtrl.text.trim().isNotEmpty;
+    final currentPassword = _currentCtrl.text.trim();
+    final newPassword = _newCtrl.text.trim();
+    final confirmPassword = _confirmCtrl.text.trim();
 
-    if (filled != _canSubmit) {
-      setState(() => _canSubmit = filled);
-    }
+    final isFilled =
+        currentPassword.isNotEmpty &&
+        newPassword.isNotEmpty &&
+        confirmPassword.isNotEmpty;
 
-    // 입력 바뀌면 확인 상태 초기화(선택)
-    if (_currentChecked) {
-      setState(() => _currentChecked = false);
-    }
+    final isRegexpOk =
+        RegexpUtils.validatePassword(newPassword) == null &&
+        RegexpUtils.validateCheckPassword(confirmPassword, newPassword) == null;
 
-    // 입력 중에는 실시간으로 confirm mismatch만 가볍게 처리(원치 않으면 제거 가능)
-    final newPw = _newCtrl.text;
-    final confirmPw = _confirmCtrl.text;
-    if (confirmPw.isNotEmpty && newPw.isNotEmpty && confirmPw != newPw) {
-      if (_confirmErr != InputMessages.mismatchPassword) {
-        setState(() => _confirmErr = InputMessages.mismatchPassword);
-      }
-    } else {
-      if (_confirmErr != null) {
-        setState(() => _confirmErr = null);
-      }
+    if (isFilled != isSubmittable && isRegexpOk) {
+      setState(() => isSubmittable = isFilled && isRegexpOk);
     }
   }
 
-  // TODO: 현재 비밀번호 일치여부 확인 함수 구현
+  // 비밀번호 확인 함수
   Future<void> _checkCurrentPassword() async {
-    final currentPw = _currentCtrl.text.trim();
-    if (currentPw.isEmpty) {
-      setState(() => _currentErr = InputMessages.emptyPassword);
+    final currentPassword = _currentCtrl.text.trim();
+    if (currentPassword.isEmpty) {
       return;
     }
 
-    // TODO: 서버에 기존 비밀번호 검증 API 호출
-    // 예) final ok = await userService.verifyPassword(currentPw);
-
-    // ✅ 데모: 임시로 "1234"만 맞다고 가정
-    final ok = currentPw == '1234';
-
-    setState(() {
-      _currentChecked = ok;
-      _currentErr = ok ? null : InputMessages.mismatchPassword;
-    });
+    setState(() => isLoading = true);
+    try {
+      final token = context.read<AuthProvider>().token;
+      if (token == null) return;
+      // TODO: 디버깅 이후 삭제
+      print("비밀번호 확인 시작");
+      final response = await mypageService.checkCurrentPassword(
+        token,
+        currentPassword,
+      );
+      // TODO: 디버깅 이후 삭제
+      print(response);
+      // TODO: 디버깅 이후 삭제
+      print("비밀번호 확인 완료");
+      setState(() => _isCurrentChecked = response);
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("비밀번호 확인에 실패했습니다: $e")));
+      return;
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
 
-  // TODO: 유효성 함수 구현
-  bool _validateAll() {
-    final currentPw = _currentCtrl.text.trim();
-    final newPw = _newCtrl.text.trim();
-    final confirmPw = _confirmCtrl.text.trim();
-
-    String? currentPasswordErrorText;
-    String? newPasswordErrorText;
-    String? confirmPasswordErrorText;
-
-    if (currentPw.isEmpty)
-      currentPasswordErrorText = InputMessages.emptyPassword;
-    if (newPw.isEmpty) newPasswordErrorText = InputMessages.emptyPassword;
-    if (confirmPw.isEmpty)
-      confirmPasswordErrorText = InputMessages.emptyPassword;
-
-    // TODO: 새 비밀번호 규칙 변경
-    if (newPw.isNotEmpty && newPw.length < 8) {
-      newPasswordErrorText = InputMessages.invalidPassword;
-    }
-
-    // TODO: 빈 값 검사 + 비밀번호 확인 일치 여부 확인 조건 체크
-    if (newPw.isNotEmpty && confirmPw.isNotEmpty && newPw != confirmPw) {
-      confirmPasswordErrorText = InputMessages.mismatchPassword;
-    }
-
-    setState(() {
-      _currentErr = currentPasswordErrorText;
-      _newErr = newPasswordErrorText;
-      _confirmErr = confirmPasswordErrorText;
-    });
-
-    return currentPasswordErrorText == null &&
-        newPasswordErrorText == null &&
-        confirmPasswordErrorText == null;
-  }
-
-  // TODO: 제출 함수 구현
+  // 제출 함수
   Future<void> _onSubmit() async {
-    if (!_canSubmit) return;
-    if (!_validateAll()) return;
+    if (!isSubmittable) return;
 
-    // (선택) "확인"을 반드시 누르게 하고 싶으면 아래 조건 사용
-    // if (!_currentChecked) {
-    //   setState(() => _currentErr = '기존 비밀번호 확인을 먼저 진행해 주세요.');
-    //   return;
-    // }
+    // "확인"을 반드시 눌러야 제출 가능
+    if (!_isCurrentChecked) {
+      setState(() => _currentErr = '기존 비밀번호 확인을 먼저 진행해 주세요.');
+      // TODO: 디버깅 이후 삭제
+      print(_currentErr);
+      print(_isCurrentChecked);
+      return;
+    }
 
-    final currentPw = _currentCtrl.text.trim();
-    final newPw = _newCtrl.text.trim();
+    final newPassword = _newCtrl.text.trim();
 
-    // TODO: 비밀번호 변경 API 호출
-    // 예) await userService.changePassword(currentPw: currentPw, newPw: newPw);
+    setState(() => isLoading = true);
 
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('비밀번호가 수정되었습니다'),
-        behavior: SnackBarBehavior.floating,
-        duration: Duration(milliseconds: 1200),
-      ),
-    );
+    try {
+      final token = context.read<AuthProvider>().token;
+      if (token == null) return;
 
-    // TODO: 이전 화면/마이페이지로 이동
-    // context.pop();
-    context.go('/'); // 추후 마이페이지 경로로 변경
+      final response = await mypageService.changePassword(token, newPassword);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('비밀번호가 수정되었습니다. 다시 로그인하세요.'),
+          behavior: SnackBarBehavior.floating,
+          duration: AppDurations.snackbar,
+        ),
+      );
+      await context.read<AuthProvider>().logout();
+      context.go('/login');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('비밀번호 수정에 실패했습니다.'),
+          behavior: SnackBarBehavior.floating,
+          duration: AppDurations.snackbar,
+        ),
+      );
+      return;
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
-    // final maxWidth = w >= 600 ? 520.0 : double.infinity;
     final maxWidth = w >= 600 ? w : double.infinity;
 
     const enabledBtnColor = AppColors.main;
@@ -188,87 +183,84 @@ class _MypageChangePasswordScreenState
 
     return Scaffold(
       appBar: AppBarWidget(title: TitleLabels.mypageChangePassword),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: maxWidth),
-          child: SafeArea(
-            child: Padding(
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: ListView(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.xxl,
                 AppSpacing.lg,
                 AppSpacing.xxl,
-                AppSpacing.xl,
+                // AppSpacing.xl,
+                120,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextFieldWidget(
-                    label: "이메일",
-                    initialValue: _emailFromDb,
-                    style: AppInputStyles.disabled,
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextFieldWidget(
+                      label: "이메일",
+                      initialValue: widget.user.userEmail,
+                      style: AppInputStyles.disabled,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
 
-                  // 기존 비밀번호 + 확인 버튼
-
-                  // const _FieldLabel('기존 비밀번호'),
-                  // const SizedBox(height: 6),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: TextFieldWidget(
-                          style: AppInputStyles.password,
-                          label: "기존 비밀번호",
-                          hintText: '비밀번호를 입력하세요.',
-                          errorText: "", // TODO: 에러텍스트 표시 함수 구현 후 호출
-                        ),
+                    buildFieldWithButton(
+                      field: CustomTextField(
+                        label: "기존 비밀번호",
+                        hintText: "비밀번호를 입력하세요.",
+                        controller: _currentCtrl,
+                        focusNode: _currentPwFocusNode,
+                        validator: (currentPassword) =>
+                            RegexpUtils.validatePassword(currentPassword),
                       ),
+                      onPressed: _checkCurrentPassword,
+                      label: ButtonLabels.confirm,
+                    ),
 
-                      const SizedBox(width: AppSpacing.sm),
+                    const SizedBox(height: AppSpacing.lg),
 
-                      SmallButton(
-                        label: ButtonLabels.confirm,
-                        onPressed: () {
-                          // TODO: 버튼 클릭 시 기존 비밀번호와 입력값 일치 여부 확인 함수 구현 후 호출
-                        },
-                        enabled: true,
-                      ),
-                    ],
-                  ),
+                    CustomTextField(
+                      label: "새 비밀번호",
+                      hintText: '비밀번호를 입력하세요.',
+                      controller: _newCtrl,
+                      focusNode: _newPwFocusNode,
+                      validator: (newPassword) =>
+                          RegexpUtils.validatePassword(newPassword),
+                    ),
 
-                  const SizedBox(height: AppSpacing.lg),
+                    const SizedBox(height: AppSpacing.lg),
 
-                  TextFieldWidget(
-                    style: AppInputStyles.password,
-                    label: "새 비밀번호",
-                    hintText: '비밀번호를 입력하세요.',
-                    errorText: "", // TODO: 에러텍스트 표시 함수 구현 후 호출
-                  ),
+                    CustomTextField(
+                      label: "비밀번호 확인",
+                      hintText: '비밀번호를 다시 입력하세요.',
+                      controller: _confirmCtrl,
+                      focusNode: _confirmPwFocusNode,
+                      validator: (confirmPassword) =>
+                          RegexpUtils.validateCheckPassword(
+                            confirmPassword,
+                            _newCtrl.text.trim(),
+                          ),
+                    ),
 
-                  const SizedBox(height: AppSpacing.lg),
-
-                  TextFieldWidget(
-                    style: AppInputStyles.password,
-                    label: "비밀번호 확인",
-                    hintText: '비밀번호를 다시 입력하세요.',
-                    errorText: "", // TODO: 에러텍스트 표시 함수 구현 후 호출
-                  ),
-
-                  const SizedBox(height: AppSpacing.xxxl),
-
-                  LargeButton(
-                    label: ButtonLabels.edit,
-                    onPressed: () {
-                      // TODO: 버튼 클릭 시 백엔드와 연결하는 함수 구현 후 호출 (service)
-                    },
-                    enabled: false, // TODO: 유효성 검사 후 true로 변경하는 함수 구현 후 호출
-                  ),
-                ],
-              ),
+                    const SizedBox(height: AppSpacing.xxxl),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: SizedBox(
+          height: 100,
+          child: BottomActionButton(
+            label: ButtonLabels.edit,
+            onPressed: _onSubmit,
+            // TODO: enabled 표시 - enabled: isSubmittable,
+          ),
+        )
       ),
     );
   }
