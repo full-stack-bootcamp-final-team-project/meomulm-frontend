@@ -23,6 +23,7 @@ import 'package:provider/provider.dart';
  */
 class EditProfileScreen extends StatefulWidget {
   final UserProfileModel user;
+
   const EditProfileScreen({super.key, required this.user});
 
   @override
@@ -61,7 +62,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   // 제출 가능여부 확인
   void _recalc() {
-    final isSubmittable = _nameCtrl.text.trim().isNotEmpty && _phoneCtrl.text.trim().isNotEmpty;
+    final isSubmittable =
+        _nameCtrl.text.trim().isNotEmpty && _phoneCtrl.text.trim().isNotEmpty;
     // 제출 가능 여부 확인해서 상태 변경
     if (isSubmittable != _canSubmit) {
       setState(() => _canSubmit = isSubmittable);
@@ -80,7 +82,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final name = _nameCtrl.text.trim();
     final phone = _phoneCtrl.text.trim();
     final token = context.read<AuthProvider>().token;
-    if(token == null) {
+    if (token == null) {
       // TODO: 로그인 만료 처리
       return;
     }
@@ -89,12 +91,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     try {
       await MypageService().uploadEditProfile(token, request);
-      context.read<UserProfileProvider>().loadUserProfile(token);  // 성공 시 다시 조회해서 갱신
+      context.read<UserProfileProvider>().loadUserProfile(
+        token,
+      ); // 성공 시 다시 조회해서 갱신
       context.pop(true);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("회원정보 수정에 실패했습니다."))
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("회원정보 수정에 실패했습니다.")));
     }
 
     if (!mounted) return;
@@ -115,121 +119,122 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBarWidget(title: "회원정보 수정"),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: maxWidth),
-          child: SafeArea(
-            child: Column(
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.xxl,
+                AppSpacing.lg,
+                AppSpacing.xxl,
+                AppSpacing.xl,
+              ),
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.xxl,
-                    AppSpacing.lg,
-                    AppSpacing.xxl,
-                    AppSpacing.xl,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      SizedBox(height: AppSpacing.md),
-                      // 이메일
-                      TextFieldWidget(
-                        label: "이메일",
-                        style: AppInputStyles.disabled,
-                        initialValue: widget.user.userEmail,
-                      ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(height: AppSpacing.md),
+                    // 이메일
+                    TextFieldWidget(
+                      label: "이메일",
+                      style: AppInputStyles.disabled,
+                      initialValue: widget.user.userEmail,
+                    ),
 
-                      const SizedBox(height: AppSpacing.lg),
+                    const SizedBox(height: AppSpacing.lg),
 
-                      // 이름
-                      TextFieldWidget(
-                        label: "이름",
-                        style: AppInputStyles.standard,
-                        controller: _nameCtrl,
-                        validator: (value) {
-                          if(value == null || value.isEmpty)
-                            return InputMessages.emptyName;
-                          return null;
-                        },
-                      ),
+                    // 이름
+                    TextFieldWidget(
+                      label: "이름",
+                      style: AppInputStyles.standard,
+                      controller: _nameCtrl,
+                      validator: (value) {
+                        if (value == null || value.isEmpty)
+                          return InputMessages.emptyName;
+                        return null;
+                      },
+                    ),
 
-                      const SizedBox(height: AppSpacing.lg),
+                    const SizedBox(height: AppSpacing.lg),
 
-                      // 연락처
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            child: TextFieldWidget(
-                              label: "연락처",
-                              style: AppInputStyles.standard,
-                              controller: _phoneCtrl,
-                              validator: (value) {
-                                if(value == null || value.isEmpty)
-                                  return InputMessages.emptyPhone;
-                                // TODO: 중복확인 통과 여부 메서드 구현 후 해당하는 메세지 return
-                                // if()
-                                return null;
-                              },
-                            ),
+                    // 연락처
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: TextFieldWidget(
+                            label: "연락처",
+                            style: AppInputStyles.standard,
+                            controller: _phoneCtrl,
+                            validator: (value) {
+                              if (value == null || value.isEmpty)
+                                return InputMessages.emptyPhone;
+                              // TODO: 중복확인 통과 여부 메서드 구현 후 해당하는 메세지 return
+                              // if()
+                              return null;
+                            },
                           ),
-                          SizedBox(width: AppSpacing.sm),
-                          SmallButton(
-                              label: "중복확인",
-                              onPressed: () {
-                                // TODO: 버튼 클릭 시 현재 회원이 아닌 회원 중 중복값이 있는지 확인하는 함수 구현 (백엔드 연결)
-                              },
-                              enabled: true
-                          ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(width: AppSpacing.sm),
+                        SmallButton(
+                          label: "중복확인",
+                          onPressed: () {
+                            // TODO: 버튼 클릭 시 현재 회원이 아닌 회원 중 중복값이 있는지 확인하는 함수 구현 (백엔드 연결)
+                          },
+                          enabled: true,
+                        ),
+                      ],
+                    ),
 
-                      const SizedBox(height: AppSpacing.lg),
+                    const SizedBox(height: AppSpacing.lg),
 
-                      // 생년월일
-                      Row(
-                        children: [
-                          Expanded(
-                              flex: 2,
-                              child: TextFieldWidget(
-                                label: "생년월일",
-                                style: AppInputStyles.disabled,
-                                initialValue: _birthYearFromDb,
-                              )
+                    // 생년월일
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: TextFieldWidget(
+                            label: "생년월일",
+                            style: AppInputStyles.disabled,
+                            initialValue: _birthYearFromDb,
                           ),
-                          SizedBox(width: AppSpacing.sm),
-                          Expanded(
-                              flex: 1,
-                              child: TextFieldWidget(
-                                label: " ",
-                                style: AppInputStyles.disabled,
-                                initialValue: _birthMonthFromDb,
-                              )
+                        ),
+                        SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          flex: 1,
+                          child: TextFieldWidget(
+                            label: " ",
+                            style: AppInputStyles.disabled,
+                            initialValue: _birthMonthFromDb,
                           ),
-                          SizedBox(width: AppSpacing.sm),
-                          Expanded(
-                              flex: 1,
-                              child: TextFieldWidget(
-                                label: " ",
-                                style: AppInputStyles.disabled,
-                                initialValue: _birthDayFromDb,
-                              )
+                        ),
+                        SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          flex: 1,
+                          child: TextFieldWidget(
+                            label: " ",
+                            style: AppInputStyles.disabled,
+                            initialValue: _birthDayFromDb,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
+                    ),
 
-                      const SizedBox(height: 30),
-                    ],
-                  ),
+                    const SizedBox(height: 30),
+                  ],
                 ),
-
-                // 버튼
-                BottomActionButton(
-                  label: ButtonLabels.edit,
-                  onPressed: _onSubmit,
-                )
               ],
-            )
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: SizedBox(
+          height: 100,
+          child: BottomActionButton(
+            label: ButtonLabels.edit,
+            onPressed: _onSubmit,
           ),
         ),
       ),

@@ -229,7 +229,10 @@ class AppRouter {
           GoRoute(
             path: RoutePaths.myPageChangePassword,
             name: "myPageChangePassword",
-            builder: (context, state) => const MypageChangePasswordScreen(),
+            builder: (context, state) {
+              final user = state.extra as UserProfileModel;
+              return MypageChangePasswordScreen(user: user);
+            },
           ),
           GoRoute(
             path: RoutePaths.favorite,

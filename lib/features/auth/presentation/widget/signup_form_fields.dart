@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
+import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
 import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
 
 class SignupFormFields extends StatelessWidget {
@@ -38,7 +39,7 @@ class SignupFormFields extends StatelessWidget {
     return Column(
       children: [
         // 이메일 입력 (중복확인 버튼 포함)
-        _buildFieldWithButton(
+        buildFieldWithButton(
           field: CustomTextField(
             label: "이메일",
             isRequired: true,
@@ -49,6 +50,7 @@ class SignupFormFields extends StatelessWidget {
             validator: (email) => RegexpUtils.validateEmail(email),
           ),
           onPressed: onCheckEmail,
+          label: "중복확인",
         ),
         const SizedBox(height: AppSpacing.xl),
 
@@ -88,7 +90,7 @@ class SignupFormFields extends StatelessWidget {
         const SizedBox(height: AppSpacing.xl),
 
         // 연락처 (중복확인 버튼 포함)
-        _buildFieldWithButton(
+        buildFieldWithButton(
           field: CustomTextField(
             label: "연락처",
             isRequired: true,
@@ -99,36 +101,7 @@ class SignupFormFields extends StatelessWidget {
             validator: (phone) => RegexpUtils.validatePhone(phone),
           ),
           onPressed: onCheckPhone,
-        ),
-      ],
-    );
-  }
-
-  // 중복확인 버튼이 있는 필드 위젯
-  Widget _buildFieldWithButton({
-    required Widget field,
-    required VoidCallback onPressed,
-  }) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(child: field),
-        const SizedBox(width: 10),
-        Container(
-          margin: const EdgeInsets.only(top: 22),
-          height: 50,
-          child: ElevatedButton(
-            onPressed: onPressed,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppBorderRadius.md),
-              ),
-              backgroundColor: AppColors.main,
-              foregroundColor: AppColors.white,
-            ),
-            child: const Text("중복확인"),
-          ),
+          label: "중복확인",
         ),
       ],
     );

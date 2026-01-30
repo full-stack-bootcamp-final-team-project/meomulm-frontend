@@ -101,7 +101,7 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
     }
   }
 
-  // TODO: 예약 취소 로직
+  // 예약 취소 로직
   Future<void> cancelReservation(int reservationId) async {
     setState(() => isLoading = true);
     try {
