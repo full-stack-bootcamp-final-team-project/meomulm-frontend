@@ -52,7 +52,7 @@ class ProfileAvatar extends StatelessWidget {
                 if (isLoading)
                   const Positioned.fill(
                     child: ColoredBox(
-                      color: AppColors.gray3,
+                      color: AppColors.gray5,
                       child: Center(child: CircularProgressIndicator()),
                     ),
                   ),

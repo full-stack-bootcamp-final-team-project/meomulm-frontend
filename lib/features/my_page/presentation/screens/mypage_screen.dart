@@ -62,8 +62,9 @@ class _MypageScreenState extends State<MypageScreen> {
       barrierDismissible: true,
       builder: (_) {
         return SimpleModal(
-          onConfirm: () {
-            // TODO: 로그아웃 기능 구현
+          onConfirm: () async {
+            await context.read<AuthProvider>().logout();
+            context.go('/login');
           },
           content: Text(DialogMessages.logoutContent),
           confirmLabel: ButtonLabels.confirm,
@@ -100,70 +101,24 @@ class _MypageScreenState extends State<MypageScreen> {
 
     if(picked == null) return;
     final original = File(picked.path);
-    // TODO: 디버깅 후 삭제
-    print("이미지 선택 완료: $original");
 
-    final cropped = await _profileImageCrop(original);
-    if(cropped == null) return;
-
-    _uploadProfileImage(cropped);
-  }
-
-  // 이미지 크롭 함수
-  Future<File?> _profileImageCrop(File file) async {
-    // TODO: 디버깅 후 삭제
-    print("이미지 크롭 함수 호출됨");
-
-    // 크롬 환경에서 실행하는 경우 이미지 크롭 건너뛰기
-    if (kIsWeb) {
-      return file;
-    }
-
-    final cropped = await ImageCropper().cropImage(
-      sourcePath: file.path,
-      aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),  // 이미지 비율
-      compressFormat: ImageCompressFormat.jpg,
-      compressQuality: 85,
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: '이미지 편집',
-          lockAspectRatio: true,  // 이미지 비율 고정
-          hideBottomControls: false,
-        ),
-        IOSUiSettings(
-          title: '이미지 편집',
-          aspectRatioLockEnabled: true,
-        ),
-      ],
-    );
-
-    if(cropped == null) return null;
-    return File(cropped.path);
+    _uploadProfileImage(original);
   }
 
   // 프로필 업로드 함수 호출
   Future<void> _uploadProfileImage(File file) async {
-    // TODO: 디버깅 후 삭제
-    print("프로필 업로드 함수 호출됨");
-
     final token = context.read<AuthProvider>().token;
     if(token == null) return;
 
     setState(() => isLoading = true);
 
     try {
-      // TODO: 디버깅 후 삭제
-      print("클라우디너리 업로드 fetch 함수 호출");
       // Cloudinary 업로드
       final imageUrl = await cloudinaryUploader.uploadImage(file);
 
-      // TODO: 디버깅 후 삭제
-      print("백엔드 fetch 함수 호출");
       // 백엔드에 저장
       await mypageService.uploadProfileImage(token, imageUrl);
 
-      // TODO: 디버깅 후 삭제
-      print("프로필 재로드 함수 호출");
       // 프로필 다시 불러오기
       await context.read<UserProfileProvider>().loadUserProfile(token);
 
