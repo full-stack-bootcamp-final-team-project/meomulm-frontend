@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
@@ -45,7 +46,6 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
       final reviewService = ReviewService();
       final token = context.read<AuthProvider>().token;
       if(token == null) {
-        // TODO: 로그인 만료 처리
         return;
       }
       final result = await reviewService.loadReviews(token);
@@ -53,7 +53,10 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
         reviews = result;
         isLoading = false;
       });
-    } catch (e) {
+    } on DioException catch (e) {
+      if(e.response?.statusCode == 404) {
+        return;
+      }
       // TODO: 공통 에러 페이지가 있으면 교체
       setState(() => isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -76,8 +79,6 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
         return;
       }
       final result = await reviewService.deleteReview(token, reviewId);
-      // 결과가 true일 경우에만 수행
-      // TODO: provider 사용할 건지 결정 (미사용 시 삭제)
       if(result && mounted) {
         context.read<ReviewProvider>().removeReview(reviewId);
       }
@@ -105,19 +106,11 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
         );
       },
     );
-
-    // TODO: provider 사용할 건지 결정 (미사용 시 복구)
-    // if (result == true) {
-    //   setState(() {
-    //     reviews.removeAt(index);
-    //   });
-    // }
   }
 
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
-    // final maxWidth = w >= 600 ? 520.0 : double.infinity;
     final maxWidth = w >= 600 ? w : double.infinity;
 
     return Scaffold(

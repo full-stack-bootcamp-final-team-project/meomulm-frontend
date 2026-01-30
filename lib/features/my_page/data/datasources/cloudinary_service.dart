@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
 
 /**
  * Cloudinary 관련 api_service 페이지
@@ -12,9 +13,8 @@ import 'package:dio/dio.dart';
 class CloudinaryUploader {
   final Dio _dio = Dio();
 
-  // TODO: 추후 cloudName, preset 이름, API Key 설정 파일로 옮기기
-  final String cloudName = "dskouaacx";
-  final String uploadPreset = 'meomulm-image-preset';
+  final String cloudName = EnvConfig.cloudinaryCloudName;
+  final String uploadPreset = EnvConfig.cloudinaryUploadPreset;
 
   Future<String> uploadImage(File file) async {
     // TODO: 디버깅 후 삭제
