@@ -7,9 +7,15 @@ import 'package:meomulm_frontend/core/theme/app_icons.dart';
 // 프로필 이미지 영역
 // =====================
 class ProfileAvatar extends StatelessWidget {
-  final VoidCallback? onCameraTap;
+  final String? profileImageUrl;
+  final Function()? onCameraTap;
+  final bool isLoading;
 
-  const ProfileAvatar({this.onCameraTap});
+  const ProfileAvatar({
+    this.onCameraTap,
+    required this.profileImageUrl,
+    required this.isLoading
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,44 +25,40 @@ class ProfileAvatar extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Container(
-            width: 64,
-            height: 64,
-            // TODO: 프로필 이미지로 영역 채우기
-            child: CircleAvatar(
-
-            ),
-            // decoration: BoxDecoration(
-            //
-            //   color: AppColors.gray5,
-            //   shape: BoxShape.circle,
-            //   border: Border.all(color: AppColors.gray4),
-            // ),
+          CircleAvatar(
+            radius: 64,
+            backgroundImage: NetworkImage(profileImageUrl!),  // TODO: null 처리하기
+            child: profileImageUrl == null
+                ? const Icon(Icons.person)
+                : null,
           ),
+          if(isLoading)
+            const Positioned.fill(
+                child: ColoredBox(
+                  color: AppColors.gray3,
+                  child: Center(child: CircularProgressIndicator()),
+                )
+            ),
           Positioned(
-            right: -2,
+            right: -4,
             bottom: -2,
-            child: InkWell(
-              onTap: onCameraTap,  // TODO: 카메라 아이콘 터치 시 작동하는 기능 변수 넣기
-              borderRadius: BorderRadius.circular(999),
+            child: GestureDetector(
+              onTap: onCameraTap,
               child: Container(
-                width: 22,
-                height: 22,
+                padding: const EdgeInsets.all(6), // TODO: 공통상수로 변경하기
                 decoration: BoxDecoration(
                   color: AppColors.gray5,
                   shape: BoxShape.circle,
                   border: Border.all(color: AppColors.gray4),
                 ),
-                child: const Center(
-                  child: Icon(
-                    AppIcons.camera,
-                    size: AppIcons.sizeXs,
-                    color: AppColors.gray2,
-                  ),
+                child: Icon(
+                  AppIcons.camera,
+                  size: AppIcons.sizeXs,
+                  color: AppColors.gray2,
                 ),
               ),
-            ),
-          ),
+            )
+          )
         ],
       ),
     );
