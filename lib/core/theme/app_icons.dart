@@ -52,6 +52,8 @@ class AppIcons {
   // Location & Map
   static const location = Icons.my_location;
   static const locationOn = Icons.location_on;
+  static const locationOff = Icons.location_off;
+  static const accommodation = Icons.home;
   static const tune = Icons.tune;
 
   // User & Account

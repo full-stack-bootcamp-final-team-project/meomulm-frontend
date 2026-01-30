@@ -45,3 +45,4 @@ class BottomActionButtonDimensions {
   static const double height = 50;
   static const double widthPercentage = 0.9;
 }
+
