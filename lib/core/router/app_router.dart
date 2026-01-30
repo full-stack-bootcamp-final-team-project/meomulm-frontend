@@ -7,6 +7,7 @@ import 'package:meomulm_frontend/features/accommodation/presentation/screens/pro
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/screens/search/map_search_result_screen.dart';
 import 'package:meomulm_frontend/features/map/presentation/screens/search/map_search_screen.dart';
+import 'package:meomulm_frontend/features/my_page/data/models/reservation_share_model.dart';
 import 'package:meomulm_frontend/features/my_page/data/models/user_profile_model.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/screens/favorite_screen.dart';
 
@@ -217,8 +218,8 @@ class AppRouter {
             path: RoutePaths.myReviewWrite,
             name: "myReviewWrite",
             builder: (context, state) {
-              final accommodationId = state.extra as int;
-              return MyReviewWriteScreen(accommodationId: accommodationId);
+              final data = state.extra as ReservationShareModel;
+              return MyReviewWriteScreen(reservationShare: data,);
             },
           ),
           GoRoute(

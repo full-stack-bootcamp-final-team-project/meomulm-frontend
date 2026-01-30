@@ -5,12 +5,21 @@ import 'package:meomulm_frontend/core/theme/app_decorations.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_icons.dart';
 import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
+import 'package:meomulm_frontend/features/my_page/data/models/reservation_share_model.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_review_write/mini_date_block.dart';
 
 /// ===============================
 /// 상단 예약 정보 카드
 /// ===============================
 class ReservationInfoCard extends StatelessWidget {
+  final ReservationShareModel reservationShare;
+
+  const ReservationInfoCard({
+    super.key,
+    required this.reservationShare,
+  });
+
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,17 +31,17 @@ class ReservationInfoCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // 숙소 사진 영역
+                  // 숙소 사진
                   Container(
                     width: 48,
                     height: 48,
-                    // TODO: 백엔드에서 불러온 숙소 사진으로 변경하기
                     decoration: BoxDecoration(
                       color: AppColors.gray5,
-                      borderRadius: BorderRadius.circular(AppBorderRadius.xs),
-                    ),
-                    child: const Center(
-                      child: Icon(AppIcons.image, color: AppColors.gray3),
+                      // borderRadius: BorderRadius.circular(AppBorderRadius.xs),
+                      image: DecorationImage(
+                        image: NetworkImage(reservationShare.accommodationImage ?? ''),
+                        fit: BoxFit.cover,
+                      )
                     ),
                   ),
 
@@ -42,8 +51,8 @@ class ReservationInfoCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "롯데 호텔 명동",  // TODO: 추후 백엔드 데이터로 교체
+                        Text(
+                          reservationShare.accommodationName,
                           style: AppTextStyles.cardTitle,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -51,7 +60,7 @@ class ReservationInfoCard extends StatelessWidget {
                         const SizedBox(height: AppSpacing.xs),
 
                         Text(
-                          "스탠다드 룸 · 1박",  // TODO: 추후 백엔드 데이터로 교체
+                          reservationShare.subtitle,
                           style: AppTextStyles.subTitle.copyWith(color: AppColors.gray2),
                         ),
                       ],
@@ -69,7 +78,7 @@ class ReservationInfoCard extends StatelessWidget {
                     Expanded(
                       child: MiniDateBlock(
                           label: "체크인",
-                          value: "12.14 (수) 15:00"  // TODO: 추후 백엔드 데이터로 교체
+                          value: "${reservationShare.checkInText} 15:00"
                       ),
                     ),
 
@@ -87,7 +96,7 @@ class ReservationInfoCard extends StatelessWidget {
                     Expanded(
                         child: MiniDateBlock(
                             label: "체크아웃",
-                            value: "12.25 (목) 11:00"  // TODO: 추후 백엔드 데이터로 교체
+                            value: "${reservationShare.checkOutDate} 11:00"
                         )
                     )
                   ],
