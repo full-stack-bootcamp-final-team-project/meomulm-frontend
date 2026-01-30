@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 
 class LocationSection extends StatelessWidget {
   final String address;
@@ -19,11 +20,11 @@ class LocationSection extends StatelessWidget {
 
   void _copyToClipboard(BuildContext context) {
     Clipboard.setData(ClipboardData(text: address));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('주소가 복사되었습니다'),
-        behavior: SnackBarBehavior.floating,
-      ),
+    SnackMessenger.showMessage(
+        context,
+        "주소가 복사되었습니다.",
+        bottomPadding: 85,
+        type: ToastType.success
     );
   }
 

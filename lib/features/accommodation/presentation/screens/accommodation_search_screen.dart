@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/core/widgets/search/search_box.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_search_widgets/location_input_row.dart';
@@ -75,12 +76,11 @@ class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
 
     if (trimmedLocation.isEmpty) {
       // 검색어가 비어있을 때 스낵바 표시
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('숙소명 또는 지역을 입력해주세요'),
-          behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "숙소명 또는 지역을 입력해주세요.",
+          bottomPadding: 85,
+          type: ToastType.error
       );
       return;
     }

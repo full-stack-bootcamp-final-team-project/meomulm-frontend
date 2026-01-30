@@ -16,7 +16,7 @@ class BottomActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.lg),
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
         decoration: const BoxDecoration(
           color: AppColors.white,
           boxShadow: AppShadows.bottomNav,
@@ -26,7 +26,7 @@ class BottomActionButton extends StatelessWidget {
             width:
                 MediaQuery.of(context).size.width *
                 BottomActionButtonDimensions.widthPercentage,
-            height: 56,
+            height: 48,
             child: ElevatedButton(
               onPressed: onPressed,
               style: ElevatedButton.styleFrom(
