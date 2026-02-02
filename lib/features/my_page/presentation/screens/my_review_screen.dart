@@ -122,15 +122,12 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
           child: reviews.isEmpty
               ? ListView(
             padding: const EdgeInsets.all(16),
-            children: const [
-              SizedBox(height: 24),
+            children: [
+              const SizedBox(height: 24),
               Text(
                 '작성한 리뷰가 없습니다.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color(0xFF8B8B8B),
-                  fontWeight: FontWeight.w600,
-                ),
+                style: AppTextStyles.bodyMd.copyWith(color: AppColors.gray2)
               ),
             ],
           )
