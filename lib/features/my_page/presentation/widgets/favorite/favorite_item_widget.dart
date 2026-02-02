@@ -7,11 +7,12 @@ import 'package:meomulm_frontend/features/my_page/presentation/widgets/favorite/
 class FavoriteItemWidget extends StatefulWidget {
   // 숙소명
   final String accommodationName;
+
   // 숙소 주소
-  final String location;
+  final String accommodationAddress;
 
   // 숙소 이미지, 첫 번째 이미지만
-  final List<String> imageUrls;
+  final String accommodationImageUrl;
 
   // 찜 해제 콜백 (부모에서 주입)
   final VoidCallback onUnfavorite;
@@ -19,8 +20,8 @@ class FavoriteItemWidget extends StatefulWidget {
   const FavoriteItemWidget({
     super.key,
     required this.accommodationName,
-    required this.location,
-    required this.imageUrls,
+    required this.accommodationAddress,
+    required this.accommodationImageUrl,
     required this.onUnfavorite,
   });
 
@@ -31,9 +32,9 @@ class FavoriteItemWidget extends StatefulWidget {
 class _FavoriteItemWidgetState extends State<FavoriteItemWidget> {
   @override
   Widget build(BuildContext context) {
-    // 대표 이미지
-    final String? thumbnailImage =
-    widget.imageUrls.isNotEmpty ? widget.imageUrls.first : null;
+    // // 대표 이미지
+    // final String? thumbnailImage =
+    // widget.accommodationImageUrl.isNotEmpty ? widget.accommodationImageUrl : null;
 
     return Padding(
       padding: const EdgeInsets.symmetric(
@@ -45,11 +46,11 @@ class _FavoriteItemWidgetState extends State<FavoriteItemWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 숙소 이미지
-          FavoriteImage(imageUrl: thumbnailImage),
+          FavoriteImage(imageUrl: widget.accommodationImageUrl),
           const SizedBox(width: AppSpacing.md),
 
           // 숙소 정보 영역 (제목 + 위치)
-          Expanded(child: FavoriteInfo(accommodationName: widget.accommodationName, location: widget.location)),
+          Expanded(child: FavoriteInfo(accommodationName: widget.accommodationName, location: widget.accommodationAddress)),
 
           // 찜 아이콘
           FavoriteHeartIcon (
@@ -79,6 +80,7 @@ class _FavoriteItemWidgetState extends State<FavoriteItemWidget> {
               Navigator.pop(context);
 
               widget.onUnfavorite();
+
 
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
