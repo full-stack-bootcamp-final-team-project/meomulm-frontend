@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_filter_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_result_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_search_screen.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/screens/notification_list_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/product_list_screen.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/screens/search/map_search_result_screen.dart';
@@ -105,6 +106,11 @@ class AppRouter {
       /// =====================
       /// accommodation 라우팅
       /// =====================
+      GoRoute(
+        path: RoutePaths.notificationList,
+        name: "notificationList",
+        builder: (context, state) => const NotificationListScreen(),
+      ),
       GoRoute(
         path: RoutePaths.accommodationSearch,
         name: "accommodationSearch",

@@ -19,6 +19,42 @@ class AccommodationApiService {
     ),
   );
 
+
+
+  static Future<List<SearchAccommodationResponseModel>> searchAccommodations({
+    required Map<String, dynamic> params,
+  }) async {
+    debugPrint("DB 조회 전 Provider 데이터 확인: $params");
+    try {
+      final res = await _dio.get(
+        '/search',
+        queryParameters: params,
+      );
+
+      if (res.statusCode == 200) {
+        final List<dynamic> jsonList = res.data;
+        return jsonList.map((json) {
+          // 기존 디버깅 스타일 유지
+          // debugPrint('숙소명: ${json['accommodationName']} / 최저가: ${json['minPrice']}');
+          return SearchAccommodationResponseModel.fromJson(json);
+        }).toList();
+      } else if (res.statusCode == 404) {
+        return [];
+      } else {
+        throw Exception('서버 오류: ${res.statusCode}');
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        return [];
+      }
+      throw Exception('네트워크 오류: ${e.message}');
+    } catch (e) {
+      throw Exception('알 수 없는 오류: $e');
+    }
+  }
+
+
+
   static Future<List<SearchAccommodationResponseModel>> getAccommodationByKeyword({
     required String keyword,    // 사용자가 검색한 숙소명/지역
   }) async {
