@@ -164,6 +164,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/widgets/product_detail_widgets/product_search_box.dart';
 import 'package:provider/provider.dart';
 
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
@@ -171,6 +172,7 @@ import 'package:meomulm_frontend/features/accommodation/data/datasources/product
 import 'package:meomulm_frontend/features/accommodation/data/models/product_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/product_detail_widgets/product_card.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
+
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
@@ -182,6 +184,13 @@ class ProductListScreen extends StatefulWidget {
 class _ProductListScreenState extends State<ProductListScreen> {
   List<Product> rooms = [];
   bool isLoading = true;
+
+
+  DateTimeRange? dateRange = DateTimeRange(
+    start: DateTime.now(),
+    end: DateTime.now().add(const Duration(days: 1)),
+  );
+  int guestCount = 2;
 
   @override
   void initState() {
@@ -197,6 +206,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
       debugPrint('숙소 ID가 없습니다.');
       return;
     }
+
+
 
     setState(() {
       isLoading = true;
@@ -276,7 +287,44 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
               // 날짜 + 인원 선택 박스
               GestureDetector(
-                onTap: () => context.push('/calendar'),
+                onTap: () {
+                  final size = MediaQuery.of(context).size;
+
+                  final provider = context.read<AccommodationProvider>();
+
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Colors.transparent,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    builder: (context) {
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                        child: ProductSearchBox(
+                          width: size.width * 0.9,
+                          dateRange: provider.dateRange,
+                          guestCount: provider.guestNumber,
+                          onDateChanged: (newRange) {
+                            if (newRange != null) {
+                              provider.setSearchDate(dateRangeValue: newRange);
+                            }
+                          },
+                          onGuestChanged: (newCount) {
+                            provider.setSearchDate(guestNumberValue: newCount);
+                          },
+                          onApply: () {
+                            Navigator.pop(context); // 모달 닫기
+                            loadRooms();            // 선택값으로 다시 로드
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     vertical: AppSpacing.md,

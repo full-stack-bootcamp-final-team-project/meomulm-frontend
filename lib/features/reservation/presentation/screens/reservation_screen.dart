@@ -29,10 +29,29 @@ class _ReservationScreenState extends State<ReservationScreen> {
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
 
+  // 버튼 활성화 상태
+  bool _canSubmit = false;
 
   @override
   void initState() {
     super.initState();
+
+    // 입력값 변경 시 유효성 검사
+    _nameController.addListener(_validateForm);
+    _emailController.addListener(_validateForm);
+    _phoneController.addListener(_validateForm);
+  }
+
+  void _validateForm() {
+    final isValid = RegexpUtils.validateName(_nameController.text) == null &&
+        RegexpUtils.validateEmail(_emailController.text) == null &&
+        RegexpUtils.validatePhone(_phoneController.text) == null;
+
+    if (_canSubmit != isValid) {
+      setState(() {
+        _canSubmit = isValid;
+      });
+    }
   }
 
   @override
@@ -40,6 +59,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
+    _nameFocusNode.dispose();
+    _emailFocusNode.dispose();
+    _phoneFocusNode.dispose();
     super.dispose();
   }
 
@@ -55,7 +77,6 @@ class _ReservationScreenState extends State<ReservationScreen> {
     final checkOutDate = accommodation.checkOut != null
         ? '${accommodation.checkOut!.year}.${accommodation.checkOut!.month.toString().padLeft(2, '0')}.${accommodation.checkOut!.day.toString().padLeft(2, '0')}'
         : '체크아웃 정보 없음';
-
 
     // ======= 여기에 provider에서 예약 정보 가져와서 print =======
     final reservationInfo = context.watch<ReservationProvider>().reservation;
@@ -186,7 +207,6 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   validator: (value) => RegexpUtils.validateEmail(value),
                 ),
 
-
                 const SizedBox(height: AppSpacing.xl),
                 CustomUnderlineTextField(
                   label: "휴대폰 번호",
@@ -230,12 +250,13 @@ class _ReservationScreenState extends State<ReservationScreen> {
           child: SizedBox(
             height: AppSpacing.xxxl,
             child: ElevatedButton(
-              style: AppButtonStyles.globalButtonStyle(
-                enabled: reservationForm.canSubmit,
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                _canSubmit ? AppColors.onPressed : Colors.grey,
               ),
-              onPressed: reservationForm.canSubmit
+              onPressed: _canSubmit
                   ? () {
-                GoRouter.of(context).go('/payment');
+                GoRouter.of(context).push('/payment');
               }
                   : null,
               child: const Text(
