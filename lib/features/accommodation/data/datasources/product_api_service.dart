@@ -34,6 +34,7 @@ class ProductApiService {
     );
 
     if (res.statusCode == 200) {
+      print(res.data);
       return ProductResponse.fromJson(res.data);
     } else {
       // constants 에서 지정한 에러 타입으로 교체

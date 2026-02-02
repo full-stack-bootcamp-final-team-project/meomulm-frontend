@@ -3,11 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
+import 'package:meomulm_frontend/core/widgets/input/custom_underline_text_field.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/reservation/presentation/providers/reservation_form_provider.dart';
+import 'package:meomulm_frontend/features/reservation/presentation/providers/reservation_provider.dart';
 import 'package:provider/provider.dart';
-
 
 class ReservationScreen extends StatefulWidget {
   const ReservationScreen({super.key});
@@ -21,20 +25,14 @@ class _ReservationScreenState extends State<ReservationScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final FocusNode _nameFocusNode = FocusNode();
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _phoneFocusNode = FocusNode();
+
 
   @override
   void initState() {
     super.initState();
-    // 입력 변경시 Provider에 전달
-    _nameController.addListener(() {
-      context.read<ReservationFormProvider>().setName(_nameController.text);
-    });
-    _emailController.addListener(() {
-      context.read<ReservationFormProvider>().setEmail(_emailController.text);
-    });
-    _phoneController.addListener(() {
-      context.read<ReservationFormProvider>().setPhone(_phoneController.text);
-    });
   }
 
   @override
@@ -47,7 +45,30 @@ class _ReservationScreenState extends State<ReservationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final reservation = context.watch<ReservationFormProvider>();
+    final reservationForm = context.watch<ReservationFormProvider>();
+    final accommodation = context.watch<AccommodationProvider>();
+
+    final checkInDate = accommodation.checkIn != null
+        ? '${accommodation.checkIn!.year}.${accommodation.checkIn!.month.toString().padLeft(2, '0')}.${accommodation.checkIn!.day.toString().padLeft(2, '0')}'
+        : '체크인 정보 없음';
+
+    final checkOutDate = accommodation.checkOut != null
+        ? '${accommodation.checkOut!.year}.${accommodation.checkOut!.month.toString().padLeft(2, '0')}.${accommodation.checkOut!.day.toString().padLeft(2, '0')}'
+        : '체크아웃 정보 없음';
+
+
+    // ======= 여기에 provider에서 예약 정보 가져와서 print =======
+    final reservationInfo = context.watch<ReservationProvider>().reservation;
+    if (reservationInfo != null) {
+      print('=== ReservationScreen 예약 정보 ===');
+      print('roomId: ${reservationInfo.roomId}');
+      print('productName: ${reservationInfo.productName}');
+      print('price: ${reservationInfo.price}');
+      print('checkInfo: ${reservationInfo.checkInfo}');
+      print('peopleInfo: ${reservationInfo.peopleInfo}');
+      print('===============================');
+    }
+    // ==========================================================
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -58,30 +79,28 @@ class _ReservationScreenState extends State<ReservationScreen> {
         child: SingleChildScrollView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.xl, AppSpacing.lg, AppSpacing.xxxl),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg, AppSpacing.xl, AppSpacing.lg, AppSpacing.xxxl),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
-
                 // 숙소 정보
-                const Text(
-                  '그랜드 호스텔 LDK 명동',
-                  style: AppTextStyles.cardTitle,
+                Text(
+                  accommodation.selectedAccommodationName ?? '숙소 이름 없음',
+                  style: AppTextStyles.bodyXl,
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                const Text(
-                  '프리미어 패밀리 트윈',
-                  style: AppTextStyles.subTitle ,
+                Text(
+                  reservationInfo?.productName ?? '객실 이름 없음',
+                  style: AppTextStyles.subTitle,
                 ),
                 const SizedBox(height: AppSpacing.xs),
-                const Text(
-                  '기준 3인 / 최대 3인',
+                Text(
+                  reservationInfo?.peopleInfo ?? '인원 정보 없음',
                   style: AppTextStyles.bodySm,
                 ),
                 const SizedBox(height: AppSpacing.xl),
 
-                // 체크인 / 체크아웃
                 // 체크인 / 체크아웃
                 Row(
                   children: [
@@ -90,19 +109,20 @@ class _ReservationScreenState extends State<ReservationScreen> {
                         height: 108,
                         padding: const EdgeInsets.all(AppSpacing.md),
                         decoration: BoxDecoration(
-                          color: AppColors.selectedLight, // 배경 색
-                          borderRadius: BorderRadius.circular(AppBorderRadius.md),
+                          color: AppColors.selectedLight,
+                          borderRadius:
+                          BorderRadius.circular(AppBorderRadius.md),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
+                          children: [
+                            const Text(
                               '체크인',
                               style: AppTextStyles.bodySm,
                             ),
-                            SizedBox(height: AppSpacing.sm),
+                            const SizedBox(height: AppSpacing.sm),
                             Text(
-                              '2025.12.30 (화)\n15:00',
+                              '$checkInDate\n${reservationInfo != null ? reservationInfo.checkInfo.split('~')[0].replaceFirst('체크인 ', '') : '체크인 정보 없음'}',
                               style: AppTextStyles.bodyMd,
                             ),
                           ],
@@ -110,26 +130,25 @@ class _ReservationScreenState extends State<ReservationScreen> {
                       ),
                     ),
                     const SizedBox(width: AppSpacing.md),
-
-
                     Expanded(
                       child: Container(
                         height: 108,
                         padding: const EdgeInsets.all(AppSpacing.md),
                         decoration: BoxDecoration(
-                          color: AppColors.selectedLight, // 배경 색
-                          borderRadius: BorderRadius.circular(AppBorderRadius.md),
+                          color: AppColors.selectedLight,
+                          borderRadius:
+                          BorderRadius.circular(AppBorderRadius.md),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
+                          children: [
+                            const Text(
                               '체크아웃',
                               style: AppTextStyles.bodySm,
                             ),
-                            SizedBox(height: AppSpacing.sm),
+                            const SizedBox(height: AppSpacing.sm),
                             Text(
-                              '2026.12.31 (수)\n11:00',
+                              '$checkOutDate\n${reservationInfo != null ? reservationInfo.checkInfo.split('~')[1].trimLeft().replaceFirst('체크아웃 ', '') : '체크아웃 정보 없음'}',
                               style: AppTextStyles.bodyMd,
                             ),
                           ],
@@ -148,35 +167,34 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 ),
                 const SizedBox(height: AppSpacing.xl),
 
-                TextFieldWidget(
+                CustomUnderlineTextField(
                   label: "이름",
+                  isRequired: true,
                   hintText: InputMessages.emptyName,
-                  errorText: reservation.nameError,
                   controller: _nameController,
-                  style: AppInputStyles.underline,
+                  focusNode: _nameFocusNode,
+                  validator: (value) => RegexpUtils.validateName(value),
                 ),
-                const SizedBox(height: AppSpacing.xl),
 
-                // 이메일
-                TextFieldWidget(
+                const SizedBox(height: AppSpacing.xl),
+                CustomUnderlineTextField(
                   label: "이메일",
+                  isRequired: true,
                   hintText: InputMessages.emptyEmail,
-                  errorText: reservation.emailError,
                   controller: _emailController,
-                  style: AppInputStyles.underline,
-                  keyboardType: TextInputType.emailAddress,
+                  focusNode: _emailFocusNode,
+                  validator: (value) => RegexpUtils.validateEmail(value),
                 ),
 
-                const SizedBox(height: AppSpacing.xl),
 
-                // 휴대폰 번호
-                TextFieldWidget(
+                const SizedBox(height: AppSpacing.xl),
+                CustomUnderlineTextField(
                   label: "휴대폰 번호",
+                  isRequired: true,
                   hintText: InputMessages.emptyPhone,
-                  errorText: reservation.phoneError,
                   controller: _phoneController,
-                  style: AppInputStyles.underline,
-                  keyboardType: TextInputType.phone,
+                  focusNode: _phoneFocusNode,
+                  validator: (value) => RegexpUtils.validatePhone(value),
                 ),
 
                 const SizedBox(height: AppSpacing.xxxl),
@@ -190,11 +208,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Text('객실 가격(1박)', style: AppTextStyles.bodyLg),
+                  children: [
+                    const Text('객실 가격', style: AppTextStyles.bodyLg),
                     Text(
-                      '153,000원',
-                      style:AppTextStyles.bodyLg,
+                      reservationInfo?.price ?? '가격 정보 없음',
+                      style: AppTextStyles.bodyXl,
                     ),
                   ],
                 ),
@@ -207,14 +225,15 @@ class _ReservationScreenState extends State<ReservationScreen> {
       // 하단 예약 버튼
       bottomNavigationBar: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.xxs, AppSpacing.xl, AppSpacing.xl),
+          padding: const EdgeInsets.fromLTRB(
+              AppSpacing.xl, AppSpacing.xxs, AppSpacing.xl, AppSpacing.xl),
           child: SizedBox(
             height: AppSpacing.xxxl,
             child: ElevatedButton(
               style: AppButtonStyles.globalButtonStyle(
-                enabled: reservation.canSubmit,
+                enabled: reservationForm.canSubmit,
               ),
-              onPressed: reservation.canSubmit
+              onPressed: reservationForm.canSubmit
                   ? () {
                 GoRouter.of(context).go('/payment');
               }
@@ -230,65 +249,3 @@ class _ReservationScreenState extends State<ReservationScreen> {
     );
   }
 }
-
-
-
-
-/*
-Row(
-                  children: const [
-                    Expanded(
-                      child: _DateBox(
-                        title: '체크인',
-                        value: '2025.12.30 (화)\n15:00',
-                      ),
-                    ),
-                    SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: _DateBox(
-                        title: '체크아웃',
-                        value: '2026.12.31 (수)\n11:00',
-                      ),
-                    ),
-                  ],
-                ),
-
-// =====================
-// 날짜 박스
-// =====================
-class _DateBox extends StatelessWidget {
-  final String title;
-  final String value;
-
-  const _DateBox({
-    required this.title,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 108,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF0F4FF),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFF8B8B8B),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontSize: 14)),
-        ],
-      ),
-    );
-  }
-}
-*/
