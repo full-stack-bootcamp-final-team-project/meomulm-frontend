@@ -31,7 +31,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _loadSaveEmail();
-
+    
+    // 중복여부에 따른 이메일 표기
     _emailController.addListener(() {
       if (_saveCheckBox) {
         _saveOrRemoveEmail(_emailController.text);
@@ -39,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  // 이메일
   void _loadSaveEmail() async {
     final prefs = await SharedPreferences.getInstance();
     final saveEmail = prefs.getString("saveEmail");

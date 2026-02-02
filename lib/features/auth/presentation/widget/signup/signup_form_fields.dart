@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
@@ -17,6 +18,12 @@ class SignupFormFields extends StatelessWidget {
   final FocusNode phoneFocusNode;
   final VoidCallback onCheckEmail;
   final VoidCallback onCheckPhone;
+  final bool isEmailChecked;
+  final bool isPasswordChecked;
+  final bool isCheckPasswordChecked;
+  final bool isPhoneChecked;
+  final bool isNameChecked;
+
 
   const SignupFormFields({
     super.key,
@@ -32,6 +39,11 @@ class SignupFormFields extends StatelessWidget {
     required this.phoneFocusNode,
     required this.onCheckEmail,
     required this.onCheckPhone,
+    required this.isEmailChecked,
+    required this.isPasswordChecked,
+    required this.isCheckPasswordChecked,
+    required this.isPhoneChecked,
+    required this.isNameChecked,
   });
 
   @override
@@ -48,6 +60,8 @@ class SignupFormFields extends StatelessWidget {
             focusNode: emailFocusNode,
             keyboardType: TextInputType.emailAddress,
             validator: (email) => RegexpUtils.validateEmail(email),
+            helperText: isEmailChecked ? InputMessages.validEmail : null,
+            helperStyle: TextStyle(color: AppColors.success),
           ),
           onPressed: onCheckEmail,
           label: "중복확인",
@@ -63,6 +77,8 @@ class SignupFormFields extends StatelessWidget {
           focusNode: passwordFocusNode,
           obscureText: true,
           validator: (password) => RegexpUtils.validatePassword(password),
+          helperText: isPasswordChecked ? InputMessages.validPassword : null,
+          helperStyle: TextStyle(color: AppColors.success),
         ),
         const SizedBox(height: AppSpacing.xl),
 
@@ -75,6 +91,8 @@ class SignupFormFields extends StatelessWidget {
           focusNode: checkPasswordFocusNode,
           obscureText: true,
           validator: (password) => RegexpUtils.validateCheckPassword(password, passwordController.text),
+          helperText: isCheckPasswordChecked ? InputMessages.matchPassword : null,
+          helperStyle: TextStyle(color: AppColors.success),
         ),
         const SizedBox(height: AppSpacing.xl),
 
@@ -86,6 +104,8 @@ class SignupFormFields extends StatelessWidget {
           controller: nameController,
           focusNode: nameFocusNode,
           validator: (name) => RegexpUtils.validateName(name),
+          helperText: isNameChecked ? InputMessages.validName : null,
+          helperStyle: TextStyle(color: AppColors.success),
         ),
         const SizedBox(height: AppSpacing.xl),
 
@@ -99,6 +119,8 @@ class SignupFormFields extends StatelessWidget {
             focusNode: phoneFocusNode,
             keyboardType: TextInputType.phone,
             validator: (phone) => RegexpUtils.validatePhone(phone),
+            helperText: isPhoneChecked ? InputMessages.validPhone : null,
+            helperStyle: TextStyle(color: AppColors.success),
           ),
           onPressed: onCheckPhone,
           label: "중복확인",

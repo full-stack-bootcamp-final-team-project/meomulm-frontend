@@ -19,21 +19,44 @@ class LoginChangePasswordScreen extends StatefulWidget {
 
 class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _checkPasswordController =
-      TextEditingController();
+  final TextEditingController _checkPasswordController = TextEditingController();
 
-  // FocusNode들을 생성
+  // FocusNode
   final FocusNode _passwordFocusNode = FocusNode();
   final FocusNode _checkPasswordFocusNode = FocusNode();
 
+  // 입력값 검증
+  bool _isPasswordChecked = false;
+  bool _isCheckPasswordChecked = false;
+
+  // 앱 시작하고 입력값 검증
+  @override
+  void initState() {
+    super.initState();
+
+    _passwordController.addListener(() {
+      final password = _passwordController.text.trim();
+      setState(() {
+        _isPasswordChecked = RegexpUtils.validatePassword(password) == null;
+      });
+    });
+
+    _checkPasswordController.addListener(() {
+      final password = _passwordController.text.trim();
+      final checkPassword = _checkPasswordController.text.trim();
+      setState(() {
+        _isCheckPasswordChecked = RegexpUtils.validateCheckPassword(password, checkPassword) == null;
+      });
+    });
+  }
+
+  // 비밀번호 변경 (로그인)
   void _changePassword() async {
+    // 입력값 검증
     final password = _passwordController.text.trim();
     final checkPassword = _checkPasswordController.text.trim();
     final passwordRegexp = RegexpUtils.validatePassword(password);
-    final checkPasswordRegexp = RegexpUtils.validateCheckPassword(
-      password,
-      checkPassword,
-    );
+    final checkPasswordRegexp = RegexpUtils.validateCheckPassword(password, checkPassword);
 
     if (passwordRegexp != null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -59,32 +82,33 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
 
     try {
       final res = await AuthService.LoginChangePassword(widget.userId, password);
-      if(mounted){
-        if(res != null || res != 0){
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text("비밀번호가 변경되었습니다."),
-                  backgroundColor: AppColors.success)
-          );
-          context.push('${RoutePaths.login}');
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text("비밀번호 변경에 실패했습니다."),
-                backgroundColor: AppColors.error,
-              )
-          );
-        }
+
+      if(!mounted) return;
+
+      if(res != null || res != 0){
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text("비밀번호가 변경되었습니다."),
+                backgroundColor: AppColors.success)
+        );
+        context.push('${RoutePaths.login}');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("비밀번호 변경에 실패했습니다."),
+              backgroundColor: AppColors.error,
+            )
+        );
       }
 
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context,).showSnackBar(
-            SnackBar(content: Text('오류 : $e')));
-      }
+      if(!mounted) return;
+      ScaffoldMessenger.of(context,).showSnackBar(
+          SnackBar(content: Text('오류 : $e')));
     }
   }
 
+  // 로그인 스크린으로 이동
   void _moveLogin() {
     context.push('${RoutePaths.login}');
   }
@@ -106,6 +130,8 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
               checkPasswordController: _checkPasswordController,
               passwordFocusNode: _passwordFocusNode,
               checkPasswordFocusNode: _checkPasswordFocusNode,
+              isPasswordChecked: _isPasswordChecked,
+              isCheckPasswordChecked: _isCheckPasswordChecked,
             ),
             const SizedBox(height: 40),
 
