@@ -21,12 +21,12 @@ class SearchBarAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return Consumer<AccommodationProvider>(
       builder: (context, provider, _) {
-        final keyword = provider.accommodationName ?? provider.accommodationName ?? '';
+        final keyword = provider.keyword ?? provider.keyword ?? '';
         final hasKeyword = keyword.isNotEmpty;
 
         final dateText =
             '${provider.checkIn.year}.${provider.checkIn.month}.${provider.checkIn.day} - ${provider.checkOut.year}.${provider.checkOut.month}.${provider.checkOut.day}';
-        final peopleCount = provider.guestCount;
+        final peopleCount = provider.guestNumber;
 
         return AppBar(
           backgroundColor: AppColors.white,
@@ -63,7 +63,7 @@ class SearchBarAppBar extends StatelessWidget implements PreferredSizeWidget {
                         // 키워드 존재 시 클리어, 없으면 검색 버튼
                         hasKeyword
                         ? IconButton(
-                          onPressed: () => provider.clearAccommodationName(),
+                          onPressed: () => provider.resetKeyword(),
                           icon: const Icon(
                             AppIcons.cancel,
                             size: AppIcons.sizeMd,

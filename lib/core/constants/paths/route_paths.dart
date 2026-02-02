@@ -29,6 +29,8 @@ class RoutePaths{
   /// =====================
   /// accommodation 라우팅 경로
   /// =====================
+  // 알림 목록 스크린 (notification_list_screen)
+  static const String notificationList = '/notification-list';
   // 숙소 검색 스크린 (search_accommodation_screen)
   static const String accommodationSearch = '/accommodation-search';
   // 숙소 필터 스크린 (accommodation_filter_screen)

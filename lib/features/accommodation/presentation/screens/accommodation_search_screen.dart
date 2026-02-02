@@ -26,9 +26,9 @@ class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
   void initState() {
     super.initState();
     final provider = context.read<AccommodationProvider>();
-    tempLocation = provider.accommodationName ?? '';
+    tempLocation = provider.keyword ?? '';
     tempDateRange = provider.dateRange;
-    tempGuestCount = provider.guestCount ?? 2;
+    tempGuestCount = provider.guestNumber ?? 2;
 
     _locationController = TextEditingController(text: tempLocation);
     _locationController.addListener(_onLocationTextChanged);
@@ -86,10 +86,10 @@ class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
     }
 
     final provider = context.read<AccommodationProvider>();
-    provider.setAccommodationSearch(
-      accommodationName: trimmedLocation,
-      dateRange: tempDateRange,
-      guestCount: tempGuestCount,
+    provider.setSearchDate(
+      keywordValue: trimmedLocation,
+      dateRangeValue: tempDateRange,
+      guestNumberValue: tempGuestCount,
     );
 
     debugPrint('지역: $trimmedLocation');

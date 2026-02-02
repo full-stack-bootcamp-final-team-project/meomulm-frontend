@@ -56,6 +56,7 @@ dependencies:
   cloudinary_api: ^1.1.1
   cloudinary_url_gen: ^1.8.0
   image_cropper: ^11.0.0
+  cupertino_icons: ^1.0.8
 
 
 dev_dependencies:
