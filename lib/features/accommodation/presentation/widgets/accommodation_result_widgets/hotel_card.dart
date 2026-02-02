@@ -301,7 +301,7 @@ class HotelCard extends StatelessWidget {
       child: GestureDetector(
         onTap: () {
           final accommodationId = accommodation.accommodationId;
-          provider.setAccommodation(
+          provider.setAccommodationInfo(
             accommodationId ?? 0,
             accommodation.accommodationName ?? '',
           );

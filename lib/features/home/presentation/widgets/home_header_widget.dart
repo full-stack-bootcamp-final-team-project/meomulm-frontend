@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
 /// 헤더 영역(로고 + 알림)
@@ -26,7 +27,14 @@ class HomeHeaderWidget extends StatelessWidget {
                   Text('머묾', style: AppTextStyles.appBarTitle.copyWith(color: Colors.white)),
             ),
           ),
-          Icon(AppIcons.notifications, color: AppColors.white, size: AppIcons.sizeXxl),
+          GestureDetector(
+            onTap: () => context.pushNamed("notificationList"),
+            child: Icon(
+              AppIcons.notifications,
+              color: AppColors.white,
+              size: AppIcons.sizeXxl
+            ),
+          ),
         ],
       ),
     );
