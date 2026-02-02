@@ -34,6 +34,7 @@ class InputMessages {
   static const invalidName = '이름은 영어와 한글만 입력 가능합니다.';
   static const emptyName = '이름은 필수 입력 사항입니다.';
   static const validName = "사용 가능한 이름입니다.";
+  static const nameLength = "이름은 2글자 이상이여야 합니다.";
 
   // 연락처
   static const invalidPhone = '연락처는 숫자 또는 하이픈만 입력 가능합니다.';

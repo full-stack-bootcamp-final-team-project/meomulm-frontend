@@ -210,7 +210,11 @@ class FacilityItem extends StatelessWidget {
 */
 
 // lib/widgets/product_card.dart
+// lib/widgets/product_card.dart
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/product_image_model.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/accommodation_image_slider.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/widgets/product_detail_widgets/product_image_slider.dart';
 import 'package:provider/provider.dart';
 import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/theme/app_decorations.dart';
@@ -221,7 +225,7 @@ import 'package:meomulm_frontend/features/reservation/data/models/reservation_in
 import 'package:meomulm_frontend/features/reservation/presentation/providers/reservation_provider.dart';
 
 class ProductCard extends StatefulWidget {
-  final int productId; // roomId 추가
+  final int productId;
   final String title;
   final String price;
   final String checkInfo;
@@ -229,6 +233,7 @@ class ProductCard extends StatefulWidget {
   final String peopleInfo;
   final List<String> facilities;
   final VoidCallback onTapReserve;
+  final List<ProductImage> images;
 
   const ProductCard({
     super.key,
@@ -240,6 +245,7 @@ class ProductCard extends StatefulWidget {
     required this.peopleInfo,
     required this.facilities,
     required this.onTapReserve,
+    required this.images,
   });
 
   @override
@@ -258,17 +264,18 @@ class _ProductCardState extends State<ProductCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 이미지
+          // 이미지
           ClipRRect(
             borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(AppBorderRadius.md),
-                topRight: Radius.circular(AppBorderRadius.md)),
-            child: Image.network(
-              widget.imageUrl,
-              width: double.infinity,
-              height: 163,
-              fit: BoxFit.cover,
+              topLeft: Radius.circular(AppBorderRadius.md),
+              topRight: Radius.circular(AppBorderRadius.md),
+            ),
+            child: ProductImageSlider(
+              imageUrl: widget.images.map((e) => e.productImageUrl).toList(),
             ),
           ),
+
+
           const SizedBox(height: AppSpacing.md),
 
           // 방 종류 + 가격 + 기준 인원
@@ -280,56 +287,44 @@ class _ProductCardState extends State<ProductCard> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      widget.title,
-                      style: AppTextStyles.cardTitle,
-                    ),
+                    Text(widget.title, style: AppTextStyles.cardTitle),
                     const SizedBox(height: AppSpacing.xxs),
-                    Text(
-                      widget.peopleInfo,
-                      style: const TextStyle(fontSize: 13, color: Colors.grey),
-                    ),
+                    Text(widget.peopleInfo,
+                        style: const TextStyle(fontSize: 13, color: Colors.grey)),
                   ],
                 ),
                 const Spacer(),
-                Text(
-                  widget.price,
-                  style: AppTextStyles.cardTitle,
-                ),
+                Text(widget.price, style: AppTextStyles.cardTitle),
               ],
             ),
           ),
 
           // 예약 버튼 (우측 정렬)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
             child: Row(
               children: [
                 const Spacer(),
                 SizedBox(
-                  width: 80,
+                  width: 110, // 버튼 가로 늘림
                   height: AppSpacing.xxl,
                   child: ElevatedButton(
                     onPressed: () {
-                      final provider = context.read<ReservationProvider>(); // Provider 가져오기
-
+                      final provider = context.read<ReservationProvider>();
                       provider.setReservation(
                         ReservationInfo(
                           roomId: widget.productId,
-                          accommodationName: widget.title, // 숙소 이름
-                          roomType: widget.title, // 방 종류
-                          baseCapacity: widget.peopleInfo, // 기준인원 추출
-                          price: widget.price,
+                          productName: widget.title,    // 이전 roomType 대신
+                          price: widget.price,          // 그대로
+                          checkInfo: widget.checkInfo,  // ProductCard에서 넘어온 체크인~체크아웃 문자열
+                          peopleInfo: widget.peopleInfo, // ProductCard에서 넘어온 기준/최대 인원 문자열
                         ),
                       );
-
-                      final res = provider.reservation;
-                      debugPrint('저장된 예약 정보: ${res?.roomId}, ${res?.accommodationName}, ${res?.roomType}, ${res?.baseCapacity}, ${res?.price}');
-                      widget.onTapReserve(); // 화면 이동
+                      widget.onTapReserve();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.onPressed,
-                      padding: EdgeInsets.zero,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(AppBorderRadius.sm),
@@ -342,6 +337,7 @@ class _ProductCardState extends State<ProductCard> {
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
@@ -379,20 +375,11 @@ class _ProductCardState extends State<ProductCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    '숙박',
-                    style: AppTextStyles.bodyMd,
-                  ),
+                  const Text('숙박', style: AppTextStyles.bodyMd),
                   const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    widget.checkInfo,
-                    style: TextStyle(fontSize: 13, color: AppColors.gray2),
-                  ),
+                  Text(widget.checkInfo, style: TextStyle(fontSize: 13, color: AppColors.gray2)),
                   const SizedBox(height: AppSpacing.md),
-                  const Text(
-                    '시설/서비스',
-                    style: AppTextStyles.bodyMd,
-                  ),
+                  const Text('시설/서비스', style: AppTextStyles.bodyMd),
                   const SizedBox(height: AppSpacing.sm),
                   Wrap(
                     alignment: WrapAlignment.start,
@@ -426,12 +413,8 @@ class FacilityItem extends StatelessWidget {
       children: [
         Icon(icon, size: AppIcons.sizeXs, color: AppColors.black),
         const SizedBox(width: AppSpacing.xs),
-        Text(
-          label,
-          style: TextStyle(fontSize: 13, color: AppColors.gray2),
-        ),
+        Text(label, style: TextStyle(fontSize: 13, color: AppColors.gray2)),
       ],
     );
   }
 }
-
