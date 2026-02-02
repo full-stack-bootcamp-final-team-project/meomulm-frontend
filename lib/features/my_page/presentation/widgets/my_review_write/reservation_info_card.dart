@@ -39,7 +39,7 @@ class ReservationInfoCard extends StatelessWidget {
                       color: AppColors.gray5,
                       // borderRadius: BorderRadius.circular(AppBorderRadius.xs),
                       image: DecorationImage(
-                        image: NetworkImage(reservationShare.accommodationImage ?? ''),
+                        image: NetworkImage(reservationShare.accommodationImageUrl ?? ''),
                         fit: BoxFit.cover,
                       )
                     ),

@@ -12,7 +12,7 @@ import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_reserv
 /// ===============================
 class ReservationCardBase extends StatelessWidget {
   final Widget headerLeft;
-
+  final String? accommodationImageUrl;
   final String hotelName;
   final String roomInfo;
   final String checkInValue;
@@ -24,6 +24,7 @@ class ReservationCardBase extends StatelessWidget {
   const ReservationCardBase({
     super.key,
     required this.headerLeft,
+    this.accommodationImageUrl,
     required this.hotelName,
     required this.roomInfo,
     required this.checkInValue,
@@ -36,6 +37,8 @@ class ReservationCardBase extends StatelessWidget {
   Widget build(BuildContext context) {
     final labelColor = AppColors.gray3;
     final valueColor = isCanceled ? AppColors.gray2 : AppColors.black;
+    final isImageExists = accommodationImageUrl != null && accommodationImageUrl!.trim().isNotEmpty;
+
 
     return Container(
         decoration: AppCardStyles.card,
@@ -56,13 +59,24 @@ class ReservationCardBase extends StatelessWidget {
                   Container(
                     width: 64,
                     height: 64,
-                    decoration: BoxDecoration(  // TODO: 백엔드에서 받아온 이미지로 변경하기
+                    decoration: BoxDecoration(
                       color: AppColors.gray5,
                       borderRadius: BorderRadius.circular(6),
+                      image: isImageExists
+                          ? DecorationImage(
+                              image: NetworkImage(accommodationImageUrl!),
+                              fit: BoxFit.cover,
+                          )
+                          : null,
                     ),
-                    child: const Center(
-                      child: Icon(AppIcons.image, color: AppColors.gray3),
-                    ),
+                    child: isImageExists
+                      ? null
+                      : const Center(
+                        child: Icon(
+                          AppIcons.image,
+                          color: AppColors.gray3,
+                        )
+                      )
                   ),
 
                   const SizedBox(width: AppSpacing.md),
@@ -89,15 +103,11 @@ class ReservationCardBase extends StatelessWidget {
 
               const SizedBox(height: AppSpacing.lg),
 
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  return DateRow(
-                      checkInDate: checkInValue,
-                      checkOutDate: checkOutValue,
-                      labelColor: labelColor,
-                      valueColor: valueColor
-                  );
-                },
+              DateRow(
+                checkInDate: checkInValue,
+                checkOutDate: checkOutValue,
+                labelColor: labelColor,
+                valueColor: valueColor
               ),
 
               if (bottomAction != null) ...[

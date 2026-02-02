@@ -20,13 +20,18 @@ class ReservationService {
   예약 내역 조회 : /api/users/reservation
    */
   Future<List<ReservationResponseModel>> loadReservations(String token) async {
+    // TODO: 디버깅 후 삭제
+    print("예약 조회 함수 호출");
     try {
       final response = await _dio.get(
-        '',
+        '/users/reservation',
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
         ),
       );
+      // TODO: 디버깅 후 삭제
+      print(response.data);
+
       final List<dynamic> data = response.data;
       return data.map((json) => ReservationResponseModel.fromJson(json)).toList();
     } catch (e) {

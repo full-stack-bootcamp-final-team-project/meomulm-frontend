@@ -46,7 +46,7 @@ class ProfileAvatar extends StatelessWidget {
                           Icons.person,
                           size: size * 0.6,
                           color: AppColors.gray2,
-                        ) // TODO: 공통상수로 변경하기
+                        )
                       : null,
                 ),
                 if (isLoading)

@@ -12,6 +12,7 @@ import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_reserv
 class ReservationCardBefore extends StatelessWidget {
 
   final String hotelName;
+  final String? accommodationImageUrl;
   final String roomInfo;
   final String checkInValue;
   final String checkOutValue;
@@ -22,6 +23,7 @@ class ReservationCardBefore extends StatelessWidget {
   const ReservationCardBefore({
     super.key,
     required this.hotelName,
+    this.accommodationImageUrl,
     required this.roomInfo,
     required this.checkInValue,
     required this.checkOutValue,
@@ -33,6 +35,7 @@ class ReservationCardBefore extends StatelessWidget {
   Widget build(BuildContext context) {
     return ReservationCardBase(
       headerLeft: StatusBlock(title: "예약확정"),
+      accommodationImageUrl: accommodationImageUrl,
       hotelName: hotelName,
       roomInfo: roomInfo,
       checkInValue: checkInValue,
@@ -55,9 +58,13 @@ class ReservationCardBefore extends StatelessWidget {
           if (isNarrow) {
             return Column(
               children: [
-                changeBtn(),
+                Row(
+                  children: [Expanded(child: changeBtn())],
+                ),
                 const SizedBox(height: AppSpacing.md),
-                cancelBtn(),
+                Row(
+                  children: [Expanded(child: cancelBtn())],
+                )
               ],
             );
           }
