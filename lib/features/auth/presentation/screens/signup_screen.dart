@@ -35,19 +35,46 @@ class _SignupScreenState extends State<SignupScreen> {
 
   bool _isLoading = false;
 
-  // 중복확인 체크
+  // 중복확인 체크 + 입력값 검증
   bool _isEmailChecked = false;
+  bool _isPasswordChecked = false;
+  bool _isCheckPasswordChecked = false;
+  bool _isNameChecked = false;
   bool _isPhoneChecked = false;
 
-  // 앱 시작하자마자 이메일 필드에 포커스
+  // 앱 시작하고 입력값 검증
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _emailFocusNode.requestFocus();
     });
+
+
+    _passwordController.addListener(() {
+      final password = _passwordController.text.trim();
+      setState(() {
+        _isPasswordChecked = RegexpUtils.validatePassword(password) == null;
+      });
+    });
+
+    _checkPasswordController.addListener(() {
+      final password = _passwordController.text.trim();
+      final checkPassword = _checkPasswordController.text.trim();
+      setState(() {
+        _isCheckPasswordChecked = RegexpUtils.validateCheckPassword(password, checkPassword) == null;
+      });
+    });
+
+    _nameController.addListener(() {
+      final name = _nameController.text.trim();
+      setState(() {
+        _isNameChecked = RegexpUtils.validateName(name) == null;
+      });
+    });
   }
 
+  // 회원가입
   void _handleSignup() async {
     // 빈 필드 체크
     if (_emailController.text.trim().isEmpty) {
@@ -143,6 +170,7 @@ class _SignupScreenState extends State<SignupScreen> {
       // 비밀번호에 한글이 있으면 영어로 변환
       String password = _passwordController.text.trim();
       String checkPassword = _checkPasswordController.text.trim();
+      String phone = _phoneController.text.trim();
 
       if (KeyboardConverter.containsKorean(password)) {
         password = KeyboardConverter.convertToEnglish(password);
@@ -158,17 +186,16 @@ class _SignupScreenState extends State<SignupScreen> {
         checkPassword = KeyboardConverter.convertToEnglish(checkPassword);
       }
 
+      // 전화번호 - 여부 확인
+      String checkPhone = PhoneNumberCheck(phone);
+
       // 회원가입 요청
       final user = await AuthService.signup(
         userEmail: _emailController.text.trim(),
         userPassword: password,
         userName: _nameController.text.trim(),
-        userPhone: _phoneController.text.trim().isNotEmpty
-            ? _phoneController.text.trim()
-            : null,
-        userBirth: _birthController.text.trim().isNotEmpty
-            ? _birthController.text.trim()
-            : null,
+        userPhone: checkPhone,
+        userBirth: _birthController.text.trim()
       );
 
       if (!mounted) return;
@@ -200,6 +227,7 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
+  // 이메일 중복 확인
   void _checkEmail() async {
     final email = _emailController.text.trim();
 
@@ -235,6 +263,7 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
+  // 전화번호 중복 확인
   void _checkPhone() async {
     final phone = _phoneController.text.trim();
 
@@ -271,6 +300,24 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
+  // 전화번호 - 확인 (없으면 추가)
+  String PhoneNumberCheck(String phone) {
+    if (phone.length == 10) {
+      return '${phone.substring(0, 2)}-'
+          '${phone.substring(2, 6)}-'
+          '${phone.substring(6)}';
+    }
+
+    if (phone.length == 11) {
+      return '${phone.substring(0, 3)}-'
+          '${phone.substring(3, 7)}-'
+          '${phone.substring(7)}';
+    }
+
+    return phone; // 형식이 다르면 원본 반환
+  }
+
+  // 로그인 스크린 이동 (AppBar)
   void _moveLogin() {
     context.push("/login");
   }
@@ -286,8 +333,6 @@ class _SignupScreenState extends State<SignupScreen> {
               padding: const EdgeInsets.all(AppSpacing.xl),
               child: Form(
                 key: _formKey,
-                // Form 레벨에서는 autovalidateMode 제거
-                // 각 필드가 독립적으로 실시간 검증
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -305,6 +350,11 @@ class _SignupScreenState extends State<SignupScreen> {
                       phoneFocusNode: _phoneFocusNode,
                       onCheckEmail: _checkEmail,
                       onCheckPhone: _checkPhone,
+                      isEmailChecked: _isEmailChecked,
+                      isPasswordChecked: _isPasswordChecked,
+                      isCheckPasswordChecked: _isCheckPasswordChecked,
+                      isPhoneChecked: _isPhoneChecked,
+                      isNameChecked: _isNameChecked
                     ),
                     const SizedBox(height: AppSpacing.xl),
 

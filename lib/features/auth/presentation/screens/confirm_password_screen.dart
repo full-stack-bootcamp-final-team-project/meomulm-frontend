@@ -19,9 +19,12 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _birthController = TextEditingController();
 
+  // FocusNode
   final FocusNode _emailFocusNode = FocusNode();
 
+  // 본인 인증
   void _confirmPassword() async {
+    // 입력값 검증
     final email = _emailController.text.trim();
     final birth = _birthController.text.trim();
     final emailRegexp = RegexpUtils.validateEmail(email);
@@ -80,6 +83,7 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
 
   }
 
+  // 로그인 스크린으로 이동
   void _moveLogin() {
     context.push('${RoutePaths.login}');
   }

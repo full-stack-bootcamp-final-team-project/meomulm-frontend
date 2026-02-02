@@ -19,6 +19,7 @@ class BirthDateSelector extends StatefulWidget {
 class _BirthDateSelectorState extends State<BirthDateSelector> {
   Timer? _debounceTimer;
 
+  // 날짜 범위 지정
   final List<String> _year = List.generate(
     2020 - 1950 + 1,
         (i) => (1950 + i).toString(),
@@ -26,10 +27,12 @@ class _BirthDateSelectorState extends State<BirthDateSelector> {
   final List<String> _month = List.generate(12, (i) => (i + 1).toString());
   final List<String> _day = List.generate(31, (i) => (i + 1).toString());
 
+  // 날짜 초기값
   String _selectYear = '';
   String _selectMonth = '';
   String _selectDay = '';
 
+  // 날짜 합차기 (2000-01-01)
   void _updateBirthController() {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 100), () {
@@ -118,6 +121,7 @@ class _BirthDateSelectorState extends State<BirthDateSelector> {
     );
   }
 
+  // dropdown 버튼
   Widget _dropdownField({
     required String hint,
     required List<String> items,

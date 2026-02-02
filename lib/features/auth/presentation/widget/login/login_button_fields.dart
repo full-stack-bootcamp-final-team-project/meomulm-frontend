@@ -25,7 +25,6 @@ class LoginButtonFields extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-
         // 로그인 버튼
         SizedBox(
           width: double.infinity,

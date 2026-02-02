@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/constants/ui/messages_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
@@ -8,6 +9,8 @@ class ChangePasswordFormFields extends StatelessWidget {
   final TextEditingController checkPasswordController;
   final FocusNode passwordFocusNode;
   final FocusNode checkPasswordFocusNode;
+  final bool isPasswordChecked;
+  final bool isCheckPasswordChecked;
 
   const ChangePasswordFormFields({
     super.key,
@@ -15,6 +18,8 @@ class ChangePasswordFormFields extends StatelessWidget {
     required this.checkPasswordController,
     required this.passwordFocusNode,
     required this.checkPasswordFocusNode,
+    required this.isPasswordChecked,
+    required this.isCheckPasswordChecked,
   });
 
   @override
@@ -30,6 +35,8 @@ class ChangePasswordFormFields extends StatelessWidget {
           focusNode: passwordFocusNode,
           obscureText: true,
           validator: (password) => RegexpUtils.validatePassword(password),
+          helperText: isPasswordChecked ? InputMessages.validPassword : null,
+          helperStyle: TextStyle(color: AppColors.success),
         ),
         const SizedBox(height: AppSpacing.xl),
 
@@ -42,6 +49,8 @@ class ChangePasswordFormFields extends StatelessWidget {
           focusNode: checkPasswordFocusNode,
           obscureText: true,
           validator: (password) => RegexpUtils.validateCheckPassword(password, passwordController.text),
+          helperText: isCheckPasswordChecked ? InputMessages.matchPassword : null,
+          helperStyle: TextStyle(color: AppColors.success),
         ),
         const SizedBox(height: AppSpacing.xl),
       ],

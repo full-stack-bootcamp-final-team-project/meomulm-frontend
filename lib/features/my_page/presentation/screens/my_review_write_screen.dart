@@ -73,6 +73,7 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
     return stepped.clamp(0.0, 5.0);
   }
 
+  // 제출 함수
   Future<void> _onSubmit() async {
     if (!_canSubmit) return;
     final rating = (_rating * 2).toInt();

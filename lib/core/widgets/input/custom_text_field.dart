@@ -11,6 +11,9 @@ class CustomTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final bool obscureText;
   final String? Function(String?)? validator;
+  final String? helperText;
+  final TextStyle? helperStyle;
+
 
   const CustomTextField({
     super.key,
@@ -22,10 +25,13 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType,
     this.obscureText = false,
     this.validator,
+    this.helperText,
+    this.helperStyle,
   });
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -37,7 +43,12 @@ class CustomTextField extends StatelessWidget {
           obscureText: obscureText,
           // 실시간 검증을 위해 autovalidateMode 설정
           autovalidateMode: AutovalidateMode.onUserInteraction,
+          onChanged: (value) {
+
+          },
           decoration: InputDecoration(
+            helperText: helperText,
+            helperStyle: helperStyle,
             hintText: hintText,
             hintStyle: AppTextStyles.inputPlaceholder,
             filled: true,
