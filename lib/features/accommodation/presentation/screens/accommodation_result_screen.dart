@@ -100,10 +100,6 @@ class _AccommodationResultScreen extends State<AccommodationResultScreen> {
       ),
       body: Column(
         children: [
-          ElevatedButton(
-            onPressed: () => context.pushNamed("notificationList"),
-            child: const Text('알림 목록 보기'),
-          ),
           const SizedBox(height: 20),
           Expanded(
             child: _buildBodyContent(),
