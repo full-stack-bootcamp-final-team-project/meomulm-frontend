@@ -114,4 +114,22 @@ class MypageService {
     }
   }
 
+  /*
+  회원탈퇴
+   */
+  Future<bool> userWithdrawal(String token) async {
+    try {
+      final response = await _dio.delete(
+        '',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+      return true;
+    } catch (e) {
+      print('회원탈퇴 실패: $e');
+      throw Exception('회원 탈퇴에 실패했습니다.');
+    }
+  }
+
 }

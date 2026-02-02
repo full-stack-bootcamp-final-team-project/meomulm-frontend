@@ -64,7 +64,7 @@ class _MypageScreenState extends State<MypageScreen> {
         return SimpleModal(
           onConfirm: () async {
             await context.read<AuthProvider>().logout();
-            context.go('/login');
+            context.go(RoutePaths.login);
           },
           content: Text(DialogMessages.logoutContent),
           confirmLabel: ButtonLabels.confirm,
@@ -82,12 +82,8 @@ class _MypageScreenState extends State<MypageScreen> {
       barrierDismissible: true,
       builder: (_) {
         return SimpleModal(
-          onConfirm: () {
-            // TODO: 회원탈퇴 API 호출 구현 - service 호출
-            // TODO: 탈퇴 완료 후 이동 기능 구현
-            // context.go('/');
-          },
-          content: Text("탈퇴를 진행하시겠습니까?"),  // TODO: 상수 추가
+          onConfirm: _userWithdrawal,
+          content: Text("탈퇴를 진행하시겠습니까?"),
           confirmLabel: "탈퇴",
         );
       },
@@ -130,6 +126,29 @@ class _MypageScreenState extends State<MypageScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('프로필 이미지 업로드 실패: $e')),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
+
+  // 회원탈퇴 함수 호출
+  Future<void> _userWithdrawal() async {
+    setState(() => isLoading = true);
+    try {
+      final token = context.read<AuthProvider>().token;
+      if(token == null) return;
+
+      await mypageService.userWithdrawal(token);
+      await context.read<AuthProvider>().logout();
+      context.go(RoutePaths.home);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("회원 탈퇴에 실패했습니다."),
+          behavior: SnackBarBehavior.floating,
+          duration: AppDurations.snackbar,
+        ),
       );
     } finally {
       setState(() => isLoading = false);
