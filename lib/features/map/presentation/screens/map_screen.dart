@@ -7,10 +7,10 @@ import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
 import 'package:meomulm_frontend/features/map/data/datasources/location_service.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
-import 'package:meomulm_frontend/features/map/presentation/utils/map_marker_manager.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/accommodation_counter.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/base_kakao_map.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/accommodation_counter.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/error_message.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/loading_overlay.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/loading_overlay.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/location_denied_message.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/my_location_button.dart';
 import 'package:provider/provider.dart';
@@ -23,14 +23,14 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
-  // Services & Managers
   final LocationService _locationService = LocationService();
-  MapMarkerManager? _markerManager;
 
-  // State
   KakaoMapController? _controller;
-  Position? _currentPosition;
+  LatLng? _myLatLng;
+  Position? _lastSearchPosition;
   bool _locationDenied = false;
+
+  static const double _minSearchDistance = 50.0;
 
   @override
   void initState() {
@@ -38,7 +38,11 @@ class _MapScreenState extends State<MapScreen> {
     _initializeLocation();
   }
 
-  // 초기 위치 설정 및 숙소 검색
+  @override
+  void dispose() {
+    _controller = null;
+    super.dispose();
+  }
 
   Future<void> _initializeLocation() async {
     final position = await _locationService.getCurrentPosition();
@@ -50,72 +54,59 @@ class _MapScreenState extends State<MapScreen> {
       return;
     }
 
-    _currentPosition = position;
+    setState(() {
+      _myLatLng = LatLng(position.latitude, position.longitude);
+      _locationDenied = false;
+    });
 
-    await _searchAccommodationsByPosition(position);
+    await _searchByPosition(position);
+  }
 
-    if (mounted) {
-      setState(() {
-        _locationDenied = false;
-      });
+  Future<void> _searchByPosition(Position position) async {
+    if (_shouldSkipSearch(position)) return;
+
+    try {
+      await context.read<MapProvider>().searchByLocation(
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
+      _lastSearchPosition = position;
+    } catch (e) {
+      debugPrint('검색 실패: $e');
     }
   }
 
-  // 위치 기반 숙소 검색
-  Future<void> _searchAccommodationsByPosition(Position position) async {
-    if (!mounted) return;
+  bool _shouldSkipSearch(Position position) {
+    if (_lastSearchPosition == null) return false;
 
-    await context.read<MapProvider>().searchByLocation(
-      latitude: position.latitude,
-      longitude: position.longitude,
+    final distance = Geolocator.distanceBetween(
+      _lastSearchPosition!.latitude,
+      _lastSearchPosition!.longitude,
+      position.latitude,
+      position.longitude,
     );
+
+    return distance < _minSearchDistance;
   }
 
-  // 카메라를 특정 위치로 이동
-  Future<void> _moveCameraToPosition(Position position) async {
-    if (_controller == null) return;
-
-    await _controller!.moveCamera(
-      CameraUpdate.newCenterPosition(
-        LatLng(position.latitude, position.longitude),
-      ),
-    );
-  }
-
-  // 내 위치로 이동하고 재검색
   Future<void> _moveToMyLocationAndSearch() async {
     final position = await _locationService.getCurrentPosition();
+
     if (position == null) {
       setState(() => _locationDenied = true);
       return;
     }
 
     setState(() {
-      _currentPosition = position;
+      _myLatLng = LatLng(position.latitude, position.longitude);
       _locationDenied = false;
     });
 
-    await _moveCameraToPosition(position);
-    await _searchAccommodationsByPosition(position);
-  }
-
-  // 마커 업데이트
-  Future<void> _updateMarkers(MapProvider provider) async {
-    if (_markerManager == null) return;
-
-    await _markerManager!.updateMarkers(
-      myPosition: _currentPosition,
-      accommodations: provider.accommodations,
+    await _controller?.moveCamera(
+      CameraUpdate.newCenterPosition(_myLatLng!),
     );
-  }
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final provider = context.watch<MapProvider>();
 
-    if (_markerManager != null && !provider.isLoading) {
-      _updateMarkers(provider);
-    }
+    await _searchByPosition(position);
   }
 
   @override
@@ -127,10 +118,15 @@ class _MapScreenState extends State<MapScreen> {
         onSearch: () => context.push(RoutePaths.mapSearch),
       ),
       body: Consumer<MapProvider>(
-        builder: (context, provider, child) {
+        builder: (context, provider, _) {
           return Stack(
             children: [
-              _buildKakaoMap(provider),
+              BaseKakaoMap(
+                initialPosition: _myLatLng ?? MapConstants.defaultPosition,
+                myPosition: _myLatLng,
+                accommodations: provider.accommodations,
+                onMapReady: (controller) => _controller = controller,
+              ),
               if (provider.isLoading) const LoadingOverlay(),
               if (provider.error != null && !provider.isLoading)
                 ErrorMessage(message: provider.error!),
@@ -142,25 +138,6 @@ class _MapScreenState extends State<MapScreen> {
           );
         },
       ),
-    );
-  }
-
-  Widget _buildKakaoMap(MapProvider provider) {
-    return KakaoMap(
-      option: const KakaoMapOption(
-        position: MapConstants.defaultPosition,
-        zoomLevel: MapConstants.defaultZoomLevel,
-        mapType: MapType.normal,
-      ),
-      onMapReady: (controller) async {
-        _controller = controller;
-        _markerManager = MapMarkerManager(controller);
-
-        if (_currentPosition != null) {
-          await _moveCameraToPosition(_currentPosition!);
-        }
-      },
-
     );
   }
 }
