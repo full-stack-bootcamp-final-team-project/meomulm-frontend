@@ -77,5 +77,6 @@ flutter:
     - assets/images/main_logo.png
     - assets/images/ad/ad_01.png
     - assets/images/ad/ad_02.png
+    - assets/markers/
     - .env.development
     - .env.product

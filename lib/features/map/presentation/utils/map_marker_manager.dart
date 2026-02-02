@@ -1,64 +1,160 @@
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 
 class MapMarkerManager {
   final KakaoMapController controller;
+
   final List<Poi> _accommodationPois = [];
   Poi? _myLocationPoi;
 
   MapMarkerManager(this.controller);
 
-  // 모든 마커 제거
+  /* =======================
+   * 마커 전체 제거
+   * ======================= */
   Future<void> clearAll() async {
-    // 숙소 마커 제거
-    for (final poi in _accommodationPois) {
-      await poi.remove();
-    }
-    _accommodationPois.clear();
+    try {
+      // 숙소 마커 제거
+      for (final poi in _accommodationPois) {
+        try {
+          await poi.remove();
+        } catch (e) {
+          debugPrint('숙소 마커 제거 실패: $e');
+        }
+      }
+      _accommodationPois.clear();
 
-    // 내 위치 마커 제거
-    await _myLocationPoi?.remove();
-    _myLocationPoi = null;
+      // 내 위치 마커 제거
+      if (_myLocationPoi != null) {
+        try {
+          await _myLocationPoi!.remove();
+        } catch (e) {
+          debugPrint('내 위치 마커 제거 실패: $e');
+        } finally {
+          _myLocationPoi = null;
+        }
+      }
+    } catch (e) {
+      debugPrint('마커 전체 제거 중 오류: $e');
+    }
   }
 
-  // 내 위치 마커 추가
-  Future<void> addMyLocationMarker(Position position) async {
-    _myLocationPoi = await controller.labelLayer.addPoi(
-      LatLng(position.latitude, position.longitude),
-      style: PoiStyle(),
+  /* =======================
+   * 내 위치 마커
+   * ======================= */
+  Future<void> addMyLocationMarker(LatLng position) async {
+    try {
+      _myLocationPoi = await controller.labelLayer.addPoi(
+        position,
+        style: PoiStyle(
+          icon: KImage.fromAsset('assets/markers/my_location.png', 34, 50),
+        ),
+      );
+    } catch (e) {
+      debugPrint('내 위치 마커 추가 실패: $e');
+      rethrow;
+    }
+  }
+
+  /* =======================
+   * 숙소 마커 추가
+   * ======================= */
+  Future<void> addAccommodationMarkers(
+      List<SearchAccommodationResponseModel> accommodations,
+      ) async {
+    int successCount = 0;
+    int failCount = 0;
+
+    for (final acc in accommodations) {
+      try {
+        final poi = await controller.labelLayer.addPoi(
+          LatLng(
+            acc.accommodationLatitude,
+            acc.accommodationLongitude,
+          ),
+          style: _styleByCategory(acc.categoryCode),
+        );
+
+        _accommodationPois.add(poi);
+        successCount++;
+      } catch (e) {
+        failCount++;
+        debugPrint('마커 추가 실패 [${acc.accommodationName}]: $e');
+        // 일부 마커 추가 실패해도 계속 진행
+      }
+    }
+
+    debugPrint('마커 추가 완료: 성공 $successCount개, 실패 $failCount개');
+  }
+
+  /* =======================
+   * 전체 마커 갱신
+   * ======================= */
+  Future<void> updateMarkers({
+    LatLng? myPosition,
+    required List<SearchAccommodationResponseModel> accommodations,
+  }) async {
+    try {
+      await clearAll();
+
+      if (myPosition != null) {
+        await addMyLocationMarker(myPosition);
+      }
+
+      await addAccommodationMarkers(accommodations);
+    } catch (e) {
+      debugPrint('마커 업데이트 중 오류: $e');
+      rethrow;
+    }
+  }
+
+  /* =======================
+   * 카테고리별 PoiStyle
+   * ======================= */
+  PoiStyle _styleByCategory(String categoryCode) {
+    return PoiStyle(
+      icon: KImage.fromAsset(
+        'assets/markers/${_markerImageByCategory(categoryCode)}',
+        34,
+        50,
+      ),
     );
   }
 
-  // 숙소 마커 추가
-  Future<void> addAccommodationMarkers(List<SearchAccommodationResponseModel> accommodations) async {
-    for (final acc in accommodations) {
-      if (acc.accommodationLatitude == null ||
-          acc.accommodationLongitude == null) continue;
+  /* =======================
+   * 카테고리 → 마커 이미지 매핑
+   * ======================= */
+  String _markerImageByCategory(String categoryCode) {
+    switch (categoryCode) {
+      case 'HOTEL':
+        return 'hotel.png';
+      case 'PENSION':
+        return 'pension.png';
+      case 'RESORT':
+        return 'resort.png';
+      case 'MOTEL':
+        return 'motel.png';
+      case 'GUESTHOUSE':
+        return 'guest_house.png';
+      case 'GLAMPING':
+        return 'glamping.png';
+      case 'CAMPNIC':
+        return 'campnic.png';
+      case 'CARAVAN':
+        return 'caravan.png';
+      case 'AUTO_CAMPING':
+        return 'auto_camping.png';
+      case 'CAMPING':
+        return 'camping.png';
 
-      final poi = await controller.labelLayer.addPoi(
-        LatLng(
-          acc.accommodationLatitude!,
-          acc.accommodationLongitude!,
-        ),
-        style: PoiStyle(),
-      );
-
-      _accommodationPois.add(poi);
+      case 'ETC':
+      default:
+        return 'etc.png';
     }
   }
 
-  // 모든 마커 갱신 (내 위치 + 숙소)
-  Future<void> updateMarkers({
-    Position? myPosition,
-    required List<SearchAccommodationResponseModel> accommodations,
-  }) async {
+  Future<void> dispose() async {
     await clearAll();
-
-    if (myPosition != null) {
-      await addMyLocationMarker(myPosition);
-    }
-
-    await addAccommodationMarkers(accommodations);
   }
 }

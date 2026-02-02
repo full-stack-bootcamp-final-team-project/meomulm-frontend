@@ -9,6 +9,10 @@ class MapProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
 
+  // 마지막 검색 위치 저장 (중복 검색 방지)
+  double? _lastLatitude;
+  double? _lastLongitude;
+
   // =====================
   // getters
   // =====================
@@ -32,7 +36,14 @@ class MapProvider extends ChangeNotifier {
     required double latitude,
     required double longitude,
   }) async {
+    // 이미 로딩 중이면 무시
     if (_isLoading) return;
+
+    // 동일한 위치 재검색 방지 (소수점 4자리까지 비교)
+    if (_isSameLocation(latitude, longitude)) {
+      debugPrint('동일한 위치 검색 스킵');
+      return;
+    }
 
     _isLoading = true;
     _error = null;
@@ -45,6 +56,9 @@ class MapProvider extends ChangeNotifier {
       );
 
       _accommodations = result;
+      _lastLatitude = latitude;
+      _lastLongitude = longitude;
+
     } catch (e, stack) {
       _error = '숙소를 불러오는데 실패했습니다.';
       debugPrint('MapProvider 검색 에러: $e');
@@ -55,11 +69,29 @@ class MapProvider extends ChangeNotifier {
     }
   }
 
+  /// 동일 위치 확인 (소수점 4자리 비교 - 약 11m 정확도)
+  bool _isSameLocation(double latitude, double longitude) {
+    if (_lastLatitude == null || _lastLongitude == null) {
+      return false;
+    }
+
+    return (_lastLatitude! - latitude).abs() < 0.0001 &&
+        (_lastLongitude! - longitude).abs() < 0.0001;
+  }
+
   /// 상태 초기화 (화면 이탈, 새 검색 시작 등)
   void clear() {
     _accommodations = [];
     _error = null;
     _isLoading = false;
+    _lastLatitude = null;
+    _lastLongitude = null;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _service.dispose(); // MapService의 Dio 인스턴스 정리
+    super.dispose();
   }
 }
