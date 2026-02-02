@@ -28,7 +28,7 @@ class RegexpUtils {
   // 비밀번호 확인 검증
   static String? validateCheckPassword(String? value, String password) {
     if (value == null || value.isEmpty) {
-      return null;
+      return InputMessages.emptyPassword;
     }
     if (password != value) {
       return InputMessages.mismatchPassword;
@@ -60,8 +60,8 @@ class RegexpUtils {
     if (phone.length < 10) {
       return '전화번호는 최소 10자리 이상이어야 합니다.';
     }
-    if (phone.length > 11) {
-      return '전화번호는 11자리 이하여야 합니다.';
+    if (phone.length > 13) {
+      return '전화번호는 13자리 이하여야 합니다.';
     }
     return null;
   }
