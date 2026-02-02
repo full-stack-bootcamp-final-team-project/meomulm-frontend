@@ -22,56 +22,54 @@ class DateRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "체크인",
-                  style: AppTextStyles.bodyXs.copyWith(color: labelColor),
-                ),
-                Text(
-                  checkInDate,
-                  style: AppTextStyles.bodyMd.copyWith(color: valueColor),
-                  textAlign: TextAlign.right,
-                )
-              ],
-            ),
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "체크인",
+                style: AppTextStyles.bodyXs.copyWith(color: labelColor),
+              ),
+              Text(
+                checkInDate,
+                style: AppTextStyles.bodyMd.copyWith(color: valueColor),
+                textAlign: TextAlign.right,
+              )
+            ],
           ),
+        ),
 
 
-          const SizedBox(width: AppSpacing.md),
-          const SizedBox(
-            height: AppSpacing.xxl,
-            child: VerticalDivider(
-              width: AppBorderWidth.md,
-              thickness: AppBorderWidth.md,
-              color: AppColors.gray3,
-            ),
+        const SizedBox(width: AppSpacing.md),
+        const SizedBox(
+          height: AppSpacing.xxl,
+          child: VerticalDivider(
+            width: AppBorderWidth.md,
+            thickness: AppBorderWidth.md,
+            color: AppColors.gray3,
           ),
-          const SizedBox(width: AppSpacing.md),
+        ),
+        const SizedBox(width: AppSpacing.md),
 
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "체크아웃",
-                  style: AppTextStyles.bodyXs.copyWith(color: labelColor),
-                ),
-                Text(
-                  checkOutDate,
-                  style: AppTextStyles.bodyMd.copyWith(color: valueColor),
-                  textAlign: TextAlign.right,
-                )
-              ],
-            ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "체크아웃",
+                style: AppTextStyles.bodyXs.copyWith(color: labelColor),
+              ),
+              Text(
+                checkOutDate,
+                style: AppTextStyles.bodyMd.copyWith(color: valueColor),
+                textAlign: TextAlign.right,
+              )
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

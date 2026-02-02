@@ -25,6 +25,7 @@ class ReservationBeforeTab extends StatelessWidget {
       children: reservations.map((r) {
         return ReservationCardBefore(
           hotelName: r.accommodationName,
+          accommodationImageUrl: r.accommodationImageUrl,
           roomInfo: r.subtitle,
           checkInValue: '${r.checkInText} 15:00',
           checkOutValue: '${r.checkOutDate} 11:00',

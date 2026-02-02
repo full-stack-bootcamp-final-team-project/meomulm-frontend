@@ -45,6 +45,16 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadReservations();
+      // TODO: 디버깅 후 삭제
+      print('reservations count: ${reservations.length}');
+      for (final r in reservations) {
+        print('status=${r.status}, id=${r.reservationId}');
+      }
+
+    });
   }
 
   @override
@@ -79,7 +89,7 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
             reservationId: r.reservationId,
             accommodationId: r.accommodationId,
             accommodationName: r.accommodationName,
-            accommodationImage: image?.accommodationImageUrl,
+            accommodationImageUrl: image?.accommodationImageUrl,
             productName: r.productName,
             checkInDate: r.checkInDate,
             checkOutDate: r.checkOutDate,
@@ -166,11 +176,11 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
 
   // 상태별 예약내역
   List<ReservationShareModel> get reservationsBefore =>
-      reservations.where((r) => r.status == ReservationStatus.PAID).toList();
+      reservations.where((r) => r.status == "PAID").toList();
   List<ReservationShareModel> get reservationsAfter  =>
-      reservations.where((r) => r.status == ReservationStatus.USED).toList();
+      reservations.where((r) => r.status == "USED").toList();
   List<ReservationShareModel> get reservationsCanceled  =>
-      reservations.where((r) => r.status == ReservationStatus.CANCELED).toList();
+      reservations.where((r) => r.status == "CANCELED").toList();
 
   @override
   Widget build(BuildContext context) {

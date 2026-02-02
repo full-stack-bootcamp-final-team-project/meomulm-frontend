@@ -1,16 +1,16 @@
 /// ===============================
 /// 예약 - 리뷰작성 - 위젯에서 공유되는 데이터 DTO
 /// ===============================
-enum ReservationStatus {
-  PAID,
-  USED,
-  CANCELED,
-}
+// enum ReservationStatus {
+//   PAID,
+//   USED,
+//   CANCELED,
+// }
 class ReservationShareModel {
   final int reservationId;
   final int accommodationId;
   final String accommodationName;
-  final String? accommodationImage;
+  final String? accommodationImageUrl;
   final String productName;
   final String checkInDate;
   final String checkOutDate;
@@ -20,7 +20,7 @@ class ReservationShareModel {
     required this.reservationId,
     required this.accommodationId,
     required this.accommodationName,
-    this.accommodationImage,
+    this.accommodationImageUrl,
     required this.productName,
     required this.checkInDate,
     required this.checkOutDate,
@@ -28,7 +28,7 @@ class ReservationShareModel {
   });
 
   DateTime _parseDate(String date) {
-    final parts = date.split(".");
+    final parts = date.split("-");
     final year = int.parse(parts[0]);
     final month = int.parse(parts[1]);
     final day = int.parse(parts[2]);
