@@ -44,7 +44,7 @@ class _notification_list_screenState extends State<NotificationListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text('notification_list_screen is working'),
+        child: Text('notificationListScreen'),
       ),
     );
   }
