@@ -33,6 +33,23 @@ class FavoriteService {
     }
   }
 
+  // 사용자 찜 추가하기
+  Future<bool> postFavorite(String token, int accommodationId) async {
+    try {
+      final response = await _dio.post(
+        '/$accommodationId',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+      print('찜 추가 성공: accommodationId=$accommodationId');
+      return true;
+    } catch (e) {
+      print('찜 추가 실패: $e');
+      return false;
+    }
+  }
+
   // 사용자 찜 삭제하기
   Future<bool> deleteFavorite(String token, int favoriteId) async {
     try {

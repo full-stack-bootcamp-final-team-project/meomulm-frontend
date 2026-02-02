@@ -125,7 +125,7 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
                               latitude: data.accommodationLatitude,
                               longitude: data.accommodationLongitude
                           ),
-                          const SizedBox(height: 50),
+                          const SizedBox(height: 100),// 50 -> 100
                         ],
                       ),
                     ),
