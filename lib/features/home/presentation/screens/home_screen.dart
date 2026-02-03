@@ -28,11 +28,23 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _verticalScroll = ScrollController();
 
   // 스크롤 컨트롤러
-  static final ScrollController _adScroll = ScrollController();
-  static final ScrollController _recentScroll = ScrollController();
-  static final ScrollController _seoulScroll = ScrollController();
-  static final ScrollController _jejuScroll = ScrollController();
-  static final ScrollController _busanScroll = ScrollController();
+  final ScrollController _adScroll = ScrollController();
+  final ScrollController _recentScroll = ScrollController();
+  final ScrollController _seoulScroll = ScrollController();
+  final ScrollController _jejuScroll = ScrollController();
+  final ScrollController _busanScroll = ScrollController();
+
+  @override
+  void dispose() {
+    _verticalScroll.dispose();
+    _adScroll.dispose();
+    _recentScroll.dispose();
+    _seoulScroll.dispose();
+    _jejuScroll.dispose();
+    _busanScroll.dispose();
+    _timer.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -48,9 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final auth = context.read<AuthProvider>();
 
-        context.read<HomeProvider>().loadHome(
-          token: auth.isLoggedIn ? auth.token : null,
-        );
+        context.read<HomeProvider>().loadHome();
       });
     });
   }
