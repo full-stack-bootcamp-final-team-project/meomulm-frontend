@@ -38,11 +38,13 @@ Future<void> main() async {
     nativeAppKey: EnvConfig.kakaoLoginNativeKey,
   );
 
-  await NaverLoginSDK.initialize(
-    clientId: EnvConfig.naverLoginClientId,
-    clientSecret: EnvConfig.naverLoginClientSecret,
-    clientName: EnvConfig.naverLoginClientName,
-  );
+  if (Platform.isAndroid || Platform.isIOS) {
+    await NaverLoginSDK.initialize(
+      clientId: EnvConfig.naverLoginClientId,
+      clientSecret: EnvConfig.naverLoginClientSecret,
+      clientName: EnvConfig.naverLoginClientName,
+    );
+  }
 
   runApp(MeomulmApp(authProvider: authProvider));
 }
