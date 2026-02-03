@@ -142,4 +142,17 @@ class AccommodationApiService {
       return [];
     }
   }
+
+  /// 최근 본 숙소 조회
+  Future<List<SearchAccommodationResponseModel>> getRecentAccommodations(
+      List<int> ids) async {
+    final response = await _dio.post(
+      '/recent',
+      data: ids,
+    );
+
+    return (response.data as List)
+        .map((e) => SearchAccommodationResponseModel.fromJson(e))
+        .toList();
+  }
 }

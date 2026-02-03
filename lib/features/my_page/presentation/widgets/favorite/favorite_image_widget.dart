@@ -2,22 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
 /// 숙소 이미지 영역
-class FavoriteImage extends StatelessWidget {
+class FavoriteImage extends StatefulWidget {
   final String? imageUrl;
 
-  const FavoriteImage({super.key, required this.imageUrl});
+  const FavoriteImage({super.key, this.imageUrl});
+
+  @override
+  State<FavoriteImage> createState() => _FavoriteImageState();
+}
+
+class _FavoriteImageState extends State<FavoriteImage> {
 
   @override
   Widget build(BuildContext context) {
 
-    if (imageUrl == null) {
+    // 이미지 URL이 없으면 기본 아이콘 보여주기
+    if (widget.imageUrl == null || widget.imageUrl!.isEmpty) {
       return Container(
         width: 100,
         height: 140,
-        decoration: BoxDecoration(
-          color: AppColors.gray5,
-          borderRadius: BorderRadius.circular(AppBorderRadius.md),
-        ),
+        color: AppColors.gray5,
         alignment: Alignment.center,
         child: Icon(
           Icons.image,
@@ -27,10 +31,12 @@ class FavoriteImage extends StatelessWidget {
       );
     }
 
+    // 이미지 URL이 있으면 Image.network로 표시
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppBorderRadius.md),
-      child: Image.network(
-        imageUrl!,
+      child:
+      Image.network(
+        widget.imageUrl!,
         width: 100,
         height: 140,
         fit: BoxFit.cover,
@@ -46,7 +52,7 @@ class FavoriteImage extends StatelessWidget {
           );
         },
 
-        // 이미지 로드 실패 / URL 없을 경우
+        // 이미지 로드 실패
         errorBuilder: (context, error, stackTrace) {
           return Container(
             width: 100,

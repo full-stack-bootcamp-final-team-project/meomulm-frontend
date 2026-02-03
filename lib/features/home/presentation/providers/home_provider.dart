@@ -1,45 +1,45 @@
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
-import 'package:meomulm_frontend/features/accommodation/data/datasources/home_accommodation_service.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class HomeProvider with ChangeNotifier {
-  final HomeAccommodationService _service;
+import 'package:meomulm_frontend/features/accommodation/data/datasources/home_accommodation_service.dart';
+import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 
-  HomeProvider(this._service);
+class HomeProvider with ChangeNotifier {
+  // 인기 숙소 조회
+  final HomeAccommodationService _homeService;
+  // 최근 본 숙소 조회
+  final AccommodationApiService _accommodationService;
+
+  HomeProvider(this._homeService, this._accommodationService);
 
   bool isLoading = false;
 
-  // 최근 본 숙소
+  /// 최근 본 숙소 (서버 응답 그대로)
   List<SearchAccommodationResponseModel> recentList = [];
 
-  // HOT 영역
+  /// HOT 지역별 숙소
   List<SearchAccommodationResponseModel> seoulList = [];
   List<SearchAccommodationResponseModel> busanList = [];
   List<SearchAccommodationResponseModel> jejuList = [];
 
-  // 홈 화면 데이터 불러오기
-  Future<void> loadHome({String? token}) async {
-
+  /// 홈 전체 로드
+  Future<void> loadHome() async {
     isLoading = true;
     notifyListeners();
 
     try {
-      // 지역 별 HOT 숙소
       final results = await Future.wait([
-        _service.getAccommodationPopularByAddress('서울'),
-        _service.getAccommodationPopularByAddress('부산'),
-        _service.getAccommodationPopularByAddress('제주'),
+        _homeService.getAccommodationPopularByAddress('서울'),
+        _homeService.getAccommodationPopularByAddress('부산'),
+        _homeService.getAccommodationPopularByAddress('제주'),
       ]);
 
       seoulList = results[0];
       busanList = results[1];
       jejuList = results[2];
 
-      // 최근 본 숙소
-      recentList = await _loadRecentFromLocal();
+      await loadRecentFromLocal();
     } catch (e) {
       debugPrint('Home load 실패: $e');
     } finally {
@@ -48,38 +48,41 @@ class HomeProvider with ChangeNotifier {
     }
   }
 
-  // 최근 본 숙소 불러오기
-  Future<List<SearchAccommodationResponseModel>> _loadRecentFromLocal() async {
+  /// 최근 본 숙소 ID 저장 + 리스트 갱신
+  Future<void> addRecentAccommodationId(int id) async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonList = prefs.getStringList('recent_accommodations') ?? [];
-    final recentAccom = jsonList
-        .map((e) => SearchAccommodationResponseModel.fromJson(jsonDecode(e)))
-        .toList();
+    final ids = prefs.getStringList('recent_ids') ?? [];
 
-    return recentAccom;
+    ids.remove(id.toString()); // 중복 제거
+    ids.insert(0, id.toString()); // 가장 최근 본 숙소를 맨 앞에 삽입
+
+    if (ids.length > 12) ids.removeLast(); // 최대 12개
+
+    await prefs.setStringList('recent_ids', ids);
+
+    // 로컬 -> 서버 조회 후 recentList 갱신
+    await loadRecentFromLocal();
   }
 
-  // 최근 본 숙소 추가
-  Future<void> addRecentAccommodation(SearchAccommodationResponseModel accom) async {
+  /// 최근 본 숙소 서버 조회
+  Future<void> loadRecentFromLocal() async {
     final prefs = await SharedPreferences.getInstance();
-    final current = prefs.getStringList('recent_accommodations') ?? [];
+    // 아이디 리스트
+    final ids = prefs.getStringList('recent_ids') ?? [];
 
-    // 중복 제거
-    current.removeWhere((e) {
-      final item = SearchAccommodationResponseModel.fromJson(jsonDecode(e));
-      return item.accommodationId == (accom.accommodationId ?? '');
-    });
+    if (ids.isEmpty) {
+      recentList = [];
+      notifyListeners();
+      return;
+    }
 
-    // 맨 앞에 추가
-    current.insert(0, jsonEncode(accom.toJson()));
+    final idList = ids.map(int.parse).toList();
 
-    // 최대 12개 유지
-    if (current.length > 12) current.removeLast();
-
-    await prefs.setStringList('recent_accommodations', current);
-
-    // Provider 업데이트
-    recentList = current.map((e) => SearchAccommodationResponseModel.fromJson(jsonDecode(e))).toList();
+    final responses = await _accommodationService.getRecentAccommodations(idList);
+    // 데이터 순서대로 정렬
+    responses.sort((a, b) => idList.indexOf(a.accommodationId) - idList.indexOf(b.accommodationId));
+    // 서버 API 호출
+    recentList = responses;
 
     notifyListeners();
   }

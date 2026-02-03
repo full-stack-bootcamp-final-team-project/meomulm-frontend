@@ -25,24 +25,7 @@ class HomeItemCard extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         final id = item.accommodationId; // 숙소 ID 가져오기
-        // ========== 데이터 로드 완료 후 최근 본 숙소 저장 ==========
-        final recentItem = item;
-        print('item.accommodationLatitude $item.accommodationLatitude');
-        print("item.accommodationLongitude $item.accommodationLongitude");
-        print(item.categoryCode);
-        print(item.accommodationAddress);
-        print(item.accommodationId);
-        print(item.accommodationName);
-        print(item.accommodationImages);
-        print(item.minPrice);
-        final homeProvider = context.read<HomeProvider>();
 
-        if (recentItem.accommodationId != null) {
-          await homeProvider.addRecentAccommodation(recentItem).then((_) {
-            debugPrint("숙소 저장 완료");
-          });
-        }
-        // =========================================================
         Navigator.push(
           context,
           MaterialPageRoute(

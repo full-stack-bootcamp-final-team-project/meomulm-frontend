@@ -8,6 +8,7 @@ import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart'
 import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_detail_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/review_summary.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/customer_divider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/facility_list.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/facility_section.dart';
@@ -17,6 +18,8 @@ import 'package:meomulm_frontend/features/accommodation/presentation/widgets/acc
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/policy_section.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/review_preview_section.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/title_section.dart';
+import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
+import 'package:provider/provider.dart';
 import '../widgets/accommodation_detail_widgets/accommodation_image_slider.dart';
 
 class AccommodationDetailScreen extends StatefulWidget {
@@ -45,6 +48,15 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
         AccommodationApiService.getAccommodationById(id),
         AccommodationApiService.getReviewSummary(id),
       ]);
+
+      // ========================= 최근 숙소 저장 =========================
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final homeProvider = context.read<HomeProvider>();
+        await homeProvider.addRecentAccommodationId(widget.accommodationId);
+        await homeProvider.loadRecentFromLocal(); // 최신 데이터 로드
+      });
+      // =================================================================
+
       setState(() {
         accommodation = results[0] as AccommodationDetail?;
         reviewSummary = results[1] as ReviewSummary?;
