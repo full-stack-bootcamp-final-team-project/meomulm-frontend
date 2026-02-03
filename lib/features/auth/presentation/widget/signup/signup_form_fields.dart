@@ -24,7 +24,6 @@ class SignupFormFields extends StatelessWidget {
   final bool isPhoneChecked;
   final bool isNameChecked;
 
-
   const SignupFormFields({
     super.key,
     required this.emailController,

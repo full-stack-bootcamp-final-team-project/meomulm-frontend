@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/input/form_label.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final String label;
   final bool isRequired;
   final String hintText;
@@ -13,7 +13,6 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final String? helperText;
   final TextStyle? helperStyle;
-
 
   const CustomTextField({
     super.key,
@@ -30,26 +29,31 @@ class CustomTextField extends StatelessWidget {
   });
 
   @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  bool _obscureText = true;
+
+  @override
   Widget build(BuildContext context) {
+    final bool isPasswordField = widget.obscureText;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        FormLabel(label: label, isRequired: isRequired),
+        FormLabel(label: widget.label, isRequired: widget.isRequired),
         TextFormField(
-          controller: controller,
-          focusNode: focusNode,
-          keyboardType: keyboardType,
-          obscureText: obscureText,
+          controller: widget.controller,
+          focusNode: widget.focusNode,
+          keyboardType: widget.keyboardType,
+          obscureText: isPasswordField ? _obscureText : false,
           // 실시간 검증을 위해 autovalidateMode 설정
           autovalidateMode: AutovalidateMode.onUserInteraction,
-          onChanged: (value) {
-
-          },
           decoration: InputDecoration(
-            helperText: helperText,
-            helperStyle: helperStyle,
-            hintText: hintText,
+            helperText: widget.helperText,
+            helperStyle: widget.helperStyle,
+            hintText: widget.hintText,
             hintStyle: AppTextStyles.inputPlaceholder,
             filled: true,
             fillColor: AppColors.white,
@@ -77,8 +81,27 @@ class CustomTextField extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppBorderRadius.md),
               borderSide: BorderSide(color: AppColors.error, width: 2),
             ),
+
+            // 👁 눈 아이콘
+            suffixIcon: isPasswordField
+                ? IconButton(
+              icon: Icon(
+                _obscureText
+                    ? Icons.visibility_off
+                    : Icons.visibility,
+              ),
+              style: IconButton.styleFrom(
+                foregroundColor: AppColors.gray3
+              ),
+              onPressed: () {
+                setState(() {
+                  _obscureText = !_obscureText;
+                });
+              },
+            )
+                : null,
           ),
-          validator: validator,
+          validator: widget.validator,
         ),
       ],
     );
