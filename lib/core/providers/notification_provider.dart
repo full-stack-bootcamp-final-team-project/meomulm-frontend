@@ -19,7 +19,7 @@ class NotificationProvider extends ChangeNotifier {
 
     stompClient = StompClient(
       config: StompConfig(
-        url: 'ws://10.0.2.2:8080/ws/websocket',   // iOS 시뮬레이터 -> localhost
+        url: 'ws://localhost:8080/ws/websocket',   // iOS 시뮬레이터 -> localhost
         onConnect: (frame) => _onConnect(frame, token),
         reconnectDelay: const Duration(seconds: 3),
         stompConnectHeaders: {'Authorization': 'Bearer $token'},
@@ -45,14 +45,13 @@ class NotificationProvider extends ChangeNotifier {
   void _handleIncomingMessage(StompFrame frame) {
     if (frame.body != null) {
       final Map<String, dynamic> data = json.decode(frame.body!);
-      print("수신된 알림 데이터: $data");
+      print("📩 수신된 알림 데이터: $data");
 
-      // 백엔드 Map 구조: {id, notificationContent, userId, timestamp, notificationLinkUrl(있을경우)}
-      // UI에서 기대하는 키값으로 매핑하거나, 전달받은 데이터 그대로 사용
+      // 백엔드 Map 구조를 프론트 모델 키값에 맞게 매핑
       final notificationData = {
-        'notificationId': data['id'], // 백엔드의 'id'를 'notificationId'로 매핑
-        'notificationContent': data['notificationContent'],
-        'notificationLinkUrl': data['notificationLinkUrl'], // 스케줄러에서 추가 예정
+        'notificationId': data['id'] ?? 0,
+        'notificationContent': data['notificationContent'] ?? '알림 내용이 없습니다.',
+        'notificationLinkUrl': data['notificationLinkUrl'] ?? '',
         'userId': data['userId'],
         'timestamp': data['timestamp'] ?? DateTime.now().millisecondsSinceEpoch,
       };
@@ -60,20 +59,24 @@ class NotificationProvider extends ChangeNotifier {
       _notifications.add(notificationData);
       notifyListeners();
 
-      final context = AppRouter.navigatorKey.currentContext;
-      if (context != null) {
-        showOverlayNotification(context, notificationData);
-      }
+      showOverlayNotification(notificationData);
     }
   }
 
-  void showOverlayNotification(BuildContext context, Map<String, dynamic> data) {
-    OverlayState? overlayState = Overlay.of(context);
+  void showOverlayNotification(Map<String, dynamic> data) {
+    final OverlayState? overlayState = AppRouter.navigatorKey.currentState?.overlay;
+
+    if (overlayState == null) {
+      print("⚠️ 오버레이를 찾을 수 없습니다.");
+      return;
+    }
+
     late OverlayEntry overlayEntry;
 
     overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
-        top: MediaQuery.of(context).padding.top + 10, // 노치 아래 여유 공간
+        // 상태바(노치) 아래에 위치하도록 패딩 추가
+        top: MediaQuery.of(context).padding.top + 10,
         left: 0,
         right: 0,
         child: NotificationToast(
@@ -83,10 +86,12 @@ class NotificationProvider extends ChangeNotifier {
           },
           onRead: (id) async {
             try {
-              await NotificationService.updateNotificationStatus(notificationId: id);
-              print("ID: $id 알림 읽음 처리 완료");
+              if (id != 0) {
+                await NotificationService.updateNotificationStatus(notificationId: id);
+                print("🆗 ID: $id 알림 읽음 처리 완료");
+              }
             } catch (e) {
-              print("읽음 처리 실패: $e");
+              print("❌ 읽음 처리 실패: $e");
             }
           },
         ),
@@ -95,13 +100,10 @@ class NotificationProvider extends ChangeNotifier {
 
     overlayState.insert(overlayEntry);
 
-    // 4초 후 자동 삭제
-    Future.delayed(const Duration(milliseconds: 4000), () {
+    // 4초 후 자동 소멸
+    Future.delayed(const Duration(seconds: 4), () {
       if (overlayEntry.mounted) {
         overlayEntry.remove();
-        // 팝업이 사라지면 메모리 알림 리스트에서도 제거 (선택 사항)
-        _notifications.removeWhere((n) => n['id'] == data['id']);
-        notifyListeners();
       }
     });
   }

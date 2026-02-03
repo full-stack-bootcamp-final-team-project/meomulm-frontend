@@ -37,8 +37,10 @@ class NotificationToast extends StatelessWidget {
               // 1. 읽음 처리 (DB 업데이트 등)
               onRead(notification['notificationId'] ?? 0);
               // 2. 링크 이동
-              if (notification['notificationLinkUrl'] != null) {
-                context.push(notification['notificationLinkUrl']);
+              final String? linkUrl = notification['notificationLinkUrl'];
+              // null 체크와 빈 문자열 체크를 동시에 (AND 연산자 사용)
+              if (linkUrl != null && linkUrl.isNotEmpty) {
+                context.push(linkUrl);
               }
               // 3. 토스트 닫기
               onDismiss();
