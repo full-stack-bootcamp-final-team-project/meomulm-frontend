@@ -31,6 +31,7 @@ dependencies:
 
   # [Auth - Social Login]
   kakao_flutter_sdk_user: ^1.9.6 # 카카오 로그인
+  naver_login_sdk: ^1.0.9        # 네이버 로그인
   google_sign_in: ^6.2.1         # 구글 로그인
 
   # [Map & Location]

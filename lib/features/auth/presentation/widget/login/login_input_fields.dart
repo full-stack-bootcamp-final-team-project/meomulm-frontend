@@ -8,11 +8,13 @@ import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 class LoginInputFields extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final VoidCallback onSubmit;
 
   const LoginInputFields({
     super.key,
     required this.emailController,
     required this.passwordController,
+    required this.onSubmit,
   });
 
   @override
@@ -51,6 +53,7 @@ class LoginInputFields extends StatelessWidget {
           hintText: "비밀번호를 입력하세요",
           style: AppInputStyles.password,
           controller: passwordController,
+          onFieldSubmitted: (_) => onSubmit(),
         ),
         SizedBox(height: AppSpacing.sm),
       ],

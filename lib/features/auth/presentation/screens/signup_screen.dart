@@ -10,7 +10,9 @@ import 'package:meomulm_frontend/features/auth/presentation/widget/signup/birth_
 import 'package:meomulm_frontend/features/auth/presentation/widget/signup/signup_form_fields.dart';
 
 class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+  final Map<String, dynamic>? kakaoUser;
+  const SignupScreen({super.key, this.kakaoUser});
+
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();
@@ -42,14 +44,29 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _isNameChecked = false;
   bool _isPhoneChecked = false;
 
+  // 카카오로 회원가입인지 검증
+  late final bool _isKakaoSignup;
+
   // 앱 시작하고 입력값 검증
   @override
   void initState() {
     super.initState();
+
+    _isKakaoSignup = widget.kakaoUser != null;
+
+    final kakaoUser = widget.kakaoUser;
+    if (kakaoUser != null) {
+
+      _emailController.text = (kakaoUser['userEmail'] ?? '').toString();
+      _nameController.text  = (kakaoUser['userName'] ?? '').toString();
+
+      _isEmailChecked = true;
+      _isNameChecked = true;
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _emailFocusNode.requestFocus();
     });
-
 
     _passwordController.addListener(() {
       final password = _passwordController.text.trim();
@@ -148,7 +165,7 @@ class _SignupScreenState extends State<SignupScreen> {
       return;
     }
 
-    if (!_isEmailChecked) {
+    if (!_isKakaoSignup && !_isEmailChecked) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('이메일 중복 확인을 해주세요.')),
       );
@@ -201,7 +218,8 @@ class _SignupScreenState extends State<SignupScreen> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("회원가입이 완료되었습니다.")),
+        const SnackBar(content: Text("회원가입이 완료되었습니다."),
+          backgroundColor: AppColors.success,),
       );
 
       // 회원가입 후 로그인 페이지로 이동
@@ -338,6 +356,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: [
                     // 분리된 폼 필드 위젯 ~!
                     SignupFormFields(
+                      isKakaoSignup: _isKakaoSignup,
                       emailController: _emailController,
                       passwordController: _passwordController,
                       checkPasswordController: _checkPasswordController,
@@ -348,13 +367,13 @@ class _SignupScreenState extends State<SignupScreen> {
                       checkPasswordFocusNode: _checkPasswordFocusNode,
                       nameFocusNode: _nameFocusNode,
                       phoneFocusNode: _phoneFocusNode,
-                      onCheckEmail: _checkEmail,
+                      onCheckEmail: _isKakaoSignup ? null : _checkEmail,
                       onCheckPhone: _checkPhone,
-                      isEmailChecked: _isEmailChecked,
+                      isEmailChecked: _isKakaoSignup ? true : _isEmailChecked,
                       isPasswordChecked: _isPasswordChecked,
                       isCheckPasswordChecked: _isCheckPasswordChecked,
                       isPhoneChecked: _isPhoneChecked,
-                      isNameChecked: _isNameChecked
+                      isNameChecked: _isKakaoSignup ? true : _isNameChecked,
                     ),
                     const SizedBox(height: AppSpacing.xl),
 

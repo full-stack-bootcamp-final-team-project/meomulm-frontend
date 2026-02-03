@@ -13,8 +13,9 @@ class CustomTextField extends StatefulWidget {
   final String? Function(String?)? validator;
   final String? helperText;
   final TextStyle? helperStyle;
+  final bool readOnly;
 
-  const CustomTextField({
+  const   CustomTextField({
     super.key,
     required this.label,
     this.isRequired = false,
@@ -26,6 +27,7 @@ class CustomTextField extends StatefulWidget {
     this.validator,
     this.helperText,
     this.helperStyle,
+    this.readOnly = false,
   });
 
   @override
@@ -48,6 +50,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           focusNode: widget.focusNode,
           keyboardType: widget.keyboardType,
           obscureText: isPasswordField ? _obscureText : false,
+          readOnly: widget.readOnly,
           // 실시간 검증을 위해 autovalidateMode 설정
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
@@ -56,7 +59,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
             hintText: widget.hintText,
             hintStyle: AppTextStyles.inputPlaceholder,
             filled: true,
-            fillColor: AppColors.white,
+            fillColor: widget.readOnly
+                ? AppColors.gray6
+                : AppColors.white,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
@@ -93,7 +98,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
               style: IconButton.styleFrom(
                 foregroundColor: AppColors.gray3
               ),
-              onPressed: () {
+              onPressed: widget.readOnly
+                  ? null
+                  : () {
                 setState(() {
                   _obscureText = !_obscureText;
                 });

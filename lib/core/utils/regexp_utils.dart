@@ -28,7 +28,7 @@ class RegexpUtils {
   // 비밀번호 확인 검증
   static String? validateCheckPassword(String? value, String password) {
     if (value == null || value.isEmpty) {
-      return null;
+      return InputMessages.emptyPassword;
     }
     if (password != value) {
       return InputMessages.mismatchPassword;
