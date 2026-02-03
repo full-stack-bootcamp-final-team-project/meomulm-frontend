@@ -32,7 +32,13 @@ Future<void> main() async {
 
   final authProvider = AuthProvider();
 
-  KakaoSdk.init(nativeAppKey: EnvConfig.kakaoLoginNativeKey);
+  // ✅ Kakao SDK 초기화 먼저
+  KakaoSdk.init(
+    nativeAppKey: EnvConfig.kakaoLoginNativeKey,
+  );
+
+  // ✅ init 이후에 접근/출력
+  debugPrint('KakaoSdk.appKey = ${KakaoSdk.appKey}');
 
   runApp(MeomulmApp(authProvider: authProvider));
 }
