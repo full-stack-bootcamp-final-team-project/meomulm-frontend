@@ -8,11 +8,13 @@ import 'action_buttons.dart';
 
 class AccommodationImageSlider extends StatefulWidget {
   final List<String> imageUrls;
+  final int accommodationId;
   final int initialIndex;
 
   const AccommodationImageSlider({
     super.key,
     required this.imageUrls,
+    required this.accommodationId,
     this.initialIndex = 0,
   });
 
@@ -167,17 +169,9 @@ class _AccommodationImageSliderState extends State<AccommodationImageSlider> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                CommonBackButton(
-                  backgroundColor: Colors.black87,
-                  iconColor: Colors.white,
-                ),
-                Consumer<AccommodationProvider>(
-                  builder: (context, provider, child) {
-                    // provider에 저장된 id를 쓰거나, Screen에서 넘겨받은 id를 쓰도록 설계
-                    final id = provider.selectedAccommodationId ?? 0;
-                    return ActionButtons(accommodationId: id);
-                  },
-                ),
+                CommonBackButton(backgroundColor: Colors.black87, iconColor: Colors.white),
+                // 숙소 ID를 직접 전달
+                ActionButtons(accommodationId: widget.accommodationId),
               ],
             ),
           ),
