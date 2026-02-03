@@ -56,6 +56,8 @@ dependencies:
   cloudinary_api: ^1.1.1
   cloudinary_url_gen: ^1.8.0
   image_cropper: ^11.0.0
+  stomp_dart_client: ^3.0.1
+  flutter_local_notifications: ^20.0.0
 
 
 dev_dependencies:

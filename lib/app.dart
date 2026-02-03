@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/providers/notification_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/providers/user_profile_provider.dart';
@@ -27,6 +28,7 @@ class MeomulmApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => AccommodationProvider()),
         ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider(create: (_) => UserProfileProvider()),
@@ -35,8 +37,17 @@ class MeomulmApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ReservationProvider()),
         ChangeNotifierProvider(create: (_) => ReservationFormProvider()),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
+      child: Consumer2<ThemeProvider, AuthProvider>(
+        builder: (context, themeProvider, auth, child) {
+
+          // 로그인 상태 확인 후 실시간 알림 연결
+          if (auth.token != null) {
+            // 프레임 렌더링 후 실행되도록 예약
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.read<NotificationProvider>().connect(auth.token!);
+            });
+          }
+
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
             title: EnvConfig.appName,

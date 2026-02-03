@@ -72,8 +72,8 @@ class AccommodationProvider extends ChangeNotifier {
       'longitude': _longitude,
       'facilities': _selectedFacilities.map((f) => _facilityMapping[f]).toList(),
       'types': _selectedTypes.map((t) => _typeMapping[t]).toList(),
-      'minPrice': (_priceRange.start * 1000).toInt(), // 예: 50 -> 50,000
-      'maxPrice': (_priceRange.end * 1000).toInt(),
+      'minPrice': (_priceRange.start * 10000).toInt(), // 예: 50 -> 50,000
+      'maxPrice': (_priceRange.end * 10000).toInt(),
     };
 
     // null / 빈 리스트는 제거 후 전송

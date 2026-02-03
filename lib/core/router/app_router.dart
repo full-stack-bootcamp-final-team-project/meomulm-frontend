@@ -36,7 +36,16 @@ import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:provider/provider.dart';
 
 class AppRouter {
+
+  // ✅ 전역 navigatorKey 추가
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+
+
   static final GoRouter router = GoRouter(
+
+    navigatorKey: navigatorKey, // ✅ Key 등록
+
     redirect: (context, state) {
       final auth = context.read<AuthProvider>();
       final loggedIn = auth.token != null;
