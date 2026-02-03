@@ -17,21 +17,21 @@ class IntroScreen extends StatefulWidget {
 class _IntroScreenState extends State<IntroScreen>
     with SingleTickerProviderStateMixin {
 
-  // 🔹 애니메이션 관련
+  // 애니메이션 관련
   late AnimationController _controller; // 애니메이션을 시간으로 제어
   late Animation<double> _animation; // 0.0 ~ 1.0 진행률 애니메이션
 
-  // 🔹 상태 관리
+  // 상태 관리
   bool _isAnimationDone = false; // 애니메이션 종료 여부
   bool _isHomeReady = false;     // 초기 데이터 준비 완료 여부
   bool _isNavigated = false;     // 홈 화면 이동 여부 (중복 방지)
   bool _isDialogShowing = false; // 에러 다이얼로그 중복 방지
 
-  // 🔹 경고 타이머
+  // 경고 타이머
   Timer? _softErrorTimer;        // 5초 후 경고
   Timer? _hardErrorTimer;        // 30초 후 치명적 오류
 
-  // 🔹 로딩바 Key (강제로 재생성할 때 사용)
+  // 로딩바 Key (강제로 재생성할 때 사용)
   Key _loadingBarKey = UniqueKey();
 
   @override
