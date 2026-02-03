@@ -30,7 +30,7 @@ dependencies:
   flutter_svg: ^2.0.10          # SVG 아이콘
 
   # [Auth - Social Login]
-  kakao_flutter_sdk_user: ^1.9.0 # 카카오 로그인
+  kakao_flutter_sdk_user: ^1.9.6 # 카카오 로그인
   google_sign_in: ^6.2.1         # 구글 로그인
 
   # [Map & Location]
