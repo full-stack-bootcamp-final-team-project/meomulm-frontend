@@ -8,6 +8,9 @@ class EnvConfig {
   static String get appName => dotenv.env['APP_NAME'] ?? 'Meomulm';
   static String get kakaoNativeKey =>  dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '';
   static String get kakaoLoginNativeKey =>  dotenv.env['KAKAO_NATIVE_APP_LOGIN_KEY'] ?? '';
+  static String get naverLoginClientId =>  dotenv.env['NAVER_LOGIN_CLIENT_ID'] ?? '';
+  static String get naverLoginClientSecret =>  dotenv.env['NAVER_LOGIN_CLIENT_SECRET'] ?? '';
+  static String get naverLoginClientName =>  dotenv.env['NAVER_LOGIN_CLIENT_NAME'] ?? '';
   static String get cloudinaryCloudName => dotenv.env['CLOUDINARY_CLOUD_NAME'] ?? '';
   static String get cloudinaryUploadPreset => dotenv.env['CLOUDINARY_UPLOAD_PRESET'] ?? '';
   static bool get isDevelopment => environment == 'development';

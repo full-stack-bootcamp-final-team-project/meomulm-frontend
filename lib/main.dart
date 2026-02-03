@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
+import 'package:naver_login_sdk/naver_login_sdk.dart';
 
 import 'app.dart';
 import 'core/constants/config/env_config.dart';
@@ -37,8 +38,11 @@ Future<void> main() async {
     nativeAppKey: EnvConfig.kakaoLoginNativeKey,
   );
 
-  // ✅ init 이후에 접근/출력
-  debugPrint('KakaoSdk.appKey = ${KakaoSdk.appKey}');
+  await NaverLoginSDK.initialize(
+    clientId: EnvConfig.naverLoginClientId,
+    clientSecret: EnvConfig.naverLoginClientSecret,
+    clientName: EnvConfig.naverLoginClientName,
+  );
 
   runApp(MeomulmApp(authProvider: authProvider));
 }

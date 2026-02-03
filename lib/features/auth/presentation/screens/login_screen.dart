@@ -7,9 +7,11 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/kakao_login_service.dart';
+import 'package:meomulm_frontend/features/auth/data/datasources/naver_login_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/login/login_button_fields.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/login/login_input_fields.dart';
+import 'package:naver_login_sdk/naver_login_sdk.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  // 이메일
+  // 아이디 저장 기반 이메일 조회
   void _loadSaveEmail() async {
     final prefs = await SharedPreferences.getInstance();
     final saveEmail = prefs.getString("saveEmail");
@@ -52,7 +54,8 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
   }
-
+  
+  // 아이디 저장
   void _saveOrRemoveEmail(String email) async {
     final prefs = await SharedPreferences.getInstance();
     if (_saveCheckBox) {
@@ -62,6 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // 로그인
   void _handleLogin() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -131,6 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // 카카오 로그인
   Future<void> _kakaoLogin() async {
     print('========== 카카오 로그인 시작 ==========');
     // 해시 키 확인
@@ -205,7 +210,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('추가 정보를 입력해주세요'),
+            content: Text('미가입 회원입니다. 회원가입을 진행해주세요.'),
             backgroundColor: AppColors.error,
             duration: Duration(seconds: 2),
           ),
@@ -214,7 +219,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // 회원가입 페이지로 카카오 정보 전달
         context.push(
           RoutePaths.signup,
-          extra: response['kakaoUser'],
+          extra: Map<String, dynamic>.from(response['kakaoUser']),
         );
       }
 
@@ -263,8 +268,111 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _naverLogin() {
+  // 네이버 로그인
+  Future<void> _naverLogin() async {
+    if (_isLoading) return;
 
+    setState(() => _isLoading = true);
+
+    NaverLoginSDK.authenticate(
+      callback: OAuthLoginCallback(
+        onSuccess: () async {
+          try {
+            // 1) 네이버 SDK에서 accessToken 가져오기
+            final accessToken = await NaverLoginSDK.getAccessToken();
+            if (accessToken.isEmpty) {
+              throw Exception('네이버 accessToken 없음');
+            }
+
+            if (!mounted) return;
+
+            // 2) 백엔드로 토큰 전송 (카카오와 동일 패턴)
+            final naverService = NaverLoginService();
+            final Map<String, dynamic> response =
+            await naverService.sendTokenToBackend(accessToken);
+
+            if (!mounted) return;
+
+            // 3) 백엔드 응답 분기 처리
+            // 성공: { "token": "..." }
+            if (response.containsKey('token')) {
+              final token = response['token'] as String;
+
+              await context.read<AuthProvider>().login(token);
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('네이버 로그인 성공'),
+                  backgroundColor: AppColors.success,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+              context.go(RoutePaths.home);
+              return;
+            }
+
+            // 미가입: { "message": "need_signup", "naverUser": {...} }
+            if (response['message'] == 'need_signup') {
+              final naverUser =
+              Map<String, dynamic>.from(response['naverUser'] as Map);
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('미가입 회원입니다. 회원가입을 진행해주세요.'),
+                  backgroundColor: AppColors.error,
+                  duration: Duration(seconds: 2),
+                ),
+              );
+              context.push(
+                RoutePaths.signup,
+                extra: naverUser,
+              );
+              return;
+            }
+            // 그 외 예외 응답
+            throw Exception('네이버 로그인 응답 형식 오류: $response');
+          } catch (e) {
+            if (!mounted) return;
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('네이버 로그인 처리 실패: $e'),
+                backgroundColor: AppColors.error,
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          } finally {
+            if (mounted) {
+              setState(() => _isLoading = false);
+            }
+          }
+        },
+
+        onFailure: (httpStatus, message) {
+          if (!mounted) return;
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('네이버 로그인 실패($httpStatus): $message'),
+              backgroundColor: AppColors.error,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        },
+
+        onError: (errorCode, message) {
+          if (!mounted) return;
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('네이버 로그인 에러($errorCode): $message'),
+              backgroundColor: AppColors.error,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -291,6 +399,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     LoginInputFields(
                       emailController: _emailController,
                       passwordController: _passwordController,
+                      onSubmit: _handleLogin,
                     ),
 
                     // 체크박스

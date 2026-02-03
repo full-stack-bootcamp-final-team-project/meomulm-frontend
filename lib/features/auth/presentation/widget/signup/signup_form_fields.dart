@@ -16,13 +16,15 @@ class SignupFormFields extends StatelessWidget {
   final FocusNode checkPasswordFocusNode;
   final FocusNode nameFocusNode;
   final FocusNode phoneFocusNode;
-  final VoidCallback onCheckEmail;
+  final VoidCallback? onCheckEmail;
   final VoidCallback onCheckPhone;
   final bool isEmailChecked;
   final bool isPasswordChecked;
   final bool isCheckPasswordChecked;
   final bool isPhoneChecked;
   final bool isNameChecked;
+  final bool isKakaoSignup;
+
 
   const SignupFormFields({
     super.key,
@@ -36,13 +38,14 @@ class SignupFormFields extends StatelessWidget {
     required this.checkPasswordFocusNode,
     required this.nameFocusNode,
     required this.phoneFocusNode,
-    required this.onCheckEmail,
+    this.onCheckEmail,
     required this.onCheckPhone,
     required this.isEmailChecked,
     required this.isPasswordChecked,
     required this.isCheckPasswordChecked,
     required this.isPhoneChecked,
     required this.isNameChecked,
+    required this.isKakaoSignup,
   });
 
   @override
@@ -61,8 +64,9 @@ class SignupFormFields extends StatelessWidget {
             validator: (email) => RegexpUtils.validateEmail(email),
             helperText: isEmailChecked ? InputMessages.validEmail : null,
             helperStyle: TextStyle(color: AppColors.success),
+            readOnly: isKakaoSignup
           ),
-          onPressed: onCheckEmail,
+          onPressed: isKakaoSignup ? null : onCheckEmail,
           label: "중복확인",
         ),
         const SizedBox(height: AppSpacing.xl),
@@ -105,6 +109,7 @@ class SignupFormFields extends StatelessWidget {
           validator: (name) => RegexpUtils.validateName(name),
           helperText: isNameChecked ? InputMessages.validName : null,
           helperStyle: TextStyle(color: AppColors.success),
+          readOnly: isKakaoSignup,
         ),
         const SizedBox(height: AppSpacing.xl),
 

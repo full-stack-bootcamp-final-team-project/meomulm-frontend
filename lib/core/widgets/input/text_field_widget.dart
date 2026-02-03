@@ -20,6 +20,7 @@ class TextFieldWidget extends StatefulWidget {
 
   final ValueChanged<String>? onChanged;
   final FormFieldValidator<String>? validator;
+  final ValueChanged<String>? onFieldSubmitted;
 
   const TextFieldWidget({
     super.key,
@@ -35,6 +36,7 @@ class TextFieldWidget extends StatefulWidget {
     this.enabled = true,
     this.onChanged,
     this.validator,
+    this.onFieldSubmitted,
   });
 
   @override
@@ -101,6 +103,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
           onChanged: widget.onChanged,
           validator: widget.validator,
           decoration: _getDecoration(),
+          onFieldSubmitted: widget.onFieldSubmitted,
         ),
       ],
     );

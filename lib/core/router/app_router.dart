@@ -86,7 +86,10 @@ class AppRouter {
       GoRoute(
         path: RoutePaths.signup,
         name: "signup",
-        builder: (context, state) => const SignupScreen(),
+        builder: (context, state) {
+          final kakaoUser = state.extra as Map<String, dynamic>?;
+          return SignupScreen(kakaoUser: kakaoUser);
+        },
       ),
       GoRoute(
         path: RoutePaths.confirmPassword,

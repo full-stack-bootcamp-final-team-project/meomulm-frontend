@@ -132,7 +132,7 @@ class SmallButton extends StatelessWidget {
 // input과 나란히 있는 버튼
 Widget buildFieldWithButton({
   required Widget field,
-  required VoidCallback onPressed,
+  VoidCallback? onPressed,
   required String label,
 }) {
   return Row(
