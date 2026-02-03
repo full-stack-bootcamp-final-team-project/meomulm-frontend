@@ -62,6 +62,7 @@ class MapMarkerManager {
    * ======================= */
   Future<void> addAccommodationMarkers(
       List<SearchAccommodationResponseModel> accommodations,
+      ValueChanged<SearchAccommodationResponseModel>? onMarkerTap, // 👈 추가
       ) async {
     int successCount = 0;
     int failCount = 0;
@@ -75,6 +76,13 @@ class MapMarkerManager {
           ),
           style: _styleByCategory(acc.categoryCode),
         );
+
+        // 👇 추가: 마커 탭 이벤트 연결
+        if (onMarkerTap != null) {
+          poi.onClick = () {
+            onMarkerTap(acc);
+          };
+        }
 
         _accommodationPois.add(poi);
         successCount++;
@@ -94,6 +102,7 @@ class MapMarkerManager {
   Future<void> updateMarkers({
     LatLng? myPosition,
     required List<SearchAccommodationResponseModel> accommodations,
+    ValueChanged<SearchAccommodationResponseModel>? onMarkerTap, // 👈 추가
   }) async {
     try {
       await clearAll();
@@ -102,7 +111,7 @@ class MapMarkerManager {
         await addMyLocationMarker(myPosition);
       }
 
-      await addAccommodationMarkers(accommodations);
+      await addAccommodationMarkers(accommodations, onMarkerTap); // 👈 전달
     } catch (e) {
       debugPrint('마커 업데이트 중 오류: $e');
       rethrow;

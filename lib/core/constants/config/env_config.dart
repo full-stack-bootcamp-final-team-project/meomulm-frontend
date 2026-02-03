@@ -19,5 +19,6 @@ class EnvConfig {
     print('API Base URL : $apiBaseUrl');
     print('APP Name : $appName');
     print('kakaoMapKey : ${kakaoNativeKey.isNotEmpty ? '설정됨': '미설정됨'}');
+    print('kakaoLoginNativeKey : ${kakaoLoginNativeKey.isNotEmpty ? '설정됨': '미설정됨'}');
   }
 }

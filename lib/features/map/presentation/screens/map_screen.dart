@@ -9,7 +9,8 @@ import 'package:meomulm_frontend/features/map/data/datasources/location_service.
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/base_kakao_map.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/accommodation_counter.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/error_message.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/map_accommodation_card.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/error_message.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/loading_overlay.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/location_denied_message.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/my_location_button.dart';
@@ -102,9 +103,7 @@ class _MapScreenState extends State<MapScreen> {
       _locationDenied = false;
     });
 
-    await _controller?.moveCamera(
-      CameraUpdate.newCenterPosition(_myLatLng!),
-    );
+    await _controller?.moveCamera(CameraUpdate.newCenterPosition(_myLatLng!));
 
     await _searchByPosition(position);
   }
@@ -126,6 +125,10 @@ class _MapScreenState extends State<MapScreen> {
                 myPosition: _myLatLng,
                 accommodations: provider.accommodations,
                 onMapReady: (controller) => _controller = controller,
+                // 마커 클릭 시 선택된 숙소 설정
+                onMarkerTap: (accommodation) {
+                  provider.selectAccommodation(accommodation);
+                },
               ),
               if (provider.isLoading) const LoadingOverlay(),
               if (provider.error != null && !provider.isLoading)
@@ -133,6 +136,30 @@ class _MapScreenState extends State<MapScreen> {
               if (!provider.isLoading && provider.accommodations.isNotEmpty)
                 AccommodationCounter(count: provider.accommodations.length),
               if (_locationDenied) const LocationDeniedMessage(),
+
+              // 선택된 숙소가 있을 때만 카드 표시
+              if (provider.selectedAccommodation != null)
+                SafeArea(
+                  child: MapAccommodationCard(
+                    accommodation: provider.selectedAccommodation!,
+                    onTap: () {
+                      // 카드 클릭 시 해당 위치로 이동
+                      _controller?.moveCamera(
+                        CameraUpdate.newCenterPosition(
+                          LatLng(
+                            provider
+                                .selectedAccommodation!
+                                .accommodationLatitude,
+                            provider
+                                .selectedAccommodation!
+                                .accommodationLongitude,
+                          ),
+                        ),
+                      );
+                    },
+                    onClose: () => provider.selectAccommodation(null),
+                  ),
+                ),
               MyLocationButton(onPressed: _moveToMyLocationAndSearch),
             ],
           );
