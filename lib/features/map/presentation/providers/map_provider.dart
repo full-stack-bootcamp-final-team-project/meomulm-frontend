@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/error/app_exception.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/map/data/datasources/map_service.dart';
 
@@ -7,24 +8,22 @@ class MapProvider extends ChangeNotifier {
 
   List<SearchAccommodationResponseModel> _accommodations = [];
   bool _isLoading = false;
-  String? _error;
-
-  // 👇 추가: 선택된 숙소
+  bool _isSearching = false;
+  AppException? _error;
   SearchAccommodationResponseModel? _selectedAccommodation;
 
-  // 마지막 검색 위치 저장 (중복 검색 방지)
   double? _lastLatitude;
   double? _lastLongitude;
 
   // =====================
-  // getters
+  // Getters
   // =====================
   List<SearchAccommodationResponseModel> get accommodations => _accommodations;
   bool get isLoading => _isLoading;
-  String? get error => _error;
-
-  // 👇 추가
-  SearchAccommodationResponseModel? get selectedAccommodation => _selectedAccommodation;
+  bool get isSearching => _isSearching;
+  AppException? get error => _error;
+  SearchAccommodationResponseModel? get selectedAccommodation =>
+      _selectedAccommodation;
 
   /// 검색 결과가 있는 상태
   bool get hasResult => _accommodations.isNotEmpty;
@@ -34,10 +33,10 @@ class MapProvider extends ChangeNotifier {
       !_isLoading && _accommodations.isEmpty && _error == null;
 
   // =====================
-  // actions
+  // Actions
   // =====================
 
-  // 👇 추가: 숙소 선택/해제
+  /// 숙소 선택/해제
   void selectAccommodation(SearchAccommodationResponseModel? accommodation) {
     _selectedAccommodation = accommodation;
     notifyListeners();
@@ -48,15 +47,19 @@ class MapProvider extends ChangeNotifier {
     required double latitude,
     required double longitude,
   }) async {
-    // 이미 로딩 중이면 무시
-    if (_isLoading) return;
+    // 중복 호출 차단
+    if (_isSearching) {
+      debugPrint('검색 중복 호출 차단');
+      return;
+    }
 
-    // 동일한 위치 재검색 방지 (소수점 4자리까지 비교)
+    // 동일 위치 검색 스킵
     if (_isSameLocation(latitude, longitude)) {
       debugPrint('동일한 위치 검색 스킵');
       return;
     }
 
+    _isSearching = true;
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -71,20 +74,47 @@ class MapProvider extends ChangeNotifier {
       _lastLatitude = latitude;
       _lastLongitude = longitude;
 
-      // 👇 추가: 검색 시 선택 초기화
-      _selectedAccommodation = null;
-
+      // 선택된 숙소가 결과에 없으면 해제
+      if (_selectedAccommodation != null) {
+        final stillExists = result.any(
+              (acc) => acc.accommodationId == _selectedAccommodation!.accommodationId,
+        );
+        if (!stillExists) {
+          _selectedAccommodation = null;
+        }
+      }
+    } on AppException catch (e) {
+      // 백엔드에서 온 에러를 그대로 저장
+      _error = e;
+      debugPrint('MapProvider 검색 에러: [${e.code}] ${e.message}');
     } catch (e, stack) {
-      _error = '숙소를 불러오는데 실패했습니다.';
+      // 예상치 못한 에러
+      _error = AppException(
+        status: 0,
+        code: 'UNEXPECTED_ERROR',
+        message: '숙소를 불러오는데 실패했습니다.',
+      );
       debugPrint('MapProvider 검색 에러: $e');
       debugPrintStack(stackTrace: stack);
     } finally {
       _isLoading = false;
+      _isSearching = false;
       notifyListeners();
     }
   }
 
-  /// 동일 위치 확인 (소수점 4자리 비교 - 약 11m 정확도)
+  /// 재시도
+  Future<void> retry() async {
+    if (_lastLatitude != null && _lastLongitude != null) {
+      final lat = _lastLatitude!;
+      final lng = _lastLongitude!;
+      _lastLatitude = null;
+      _lastLongitude = null;
+
+      await searchByLocation(latitude: lat, longitude: lng);
+    }
+  }
+
   bool _isSameLocation(double latitude, double longitude) {
     if (_lastLatitude == null || _lastLongitude == null) {
       return false;
@@ -99,15 +129,15 @@ class MapProvider extends ChangeNotifier {
     _accommodations = [];
     _error = null;
     _isLoading = false;
+    _isSearching = false;
     _lastLatitude = null;
     _lastLongitude = null;
-    _selectedAccommodation = null; // 👈 추가
+    _selectedAccommodation = null;
     notifyListeners();
   }
 
   @override
   void dispose() {
-    _service.dispose(); // MapService의 Dio 인스턴스 정리
     super.dispose();
   }
 }

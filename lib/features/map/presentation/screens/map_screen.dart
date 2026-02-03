@@ -6,14 +6,11 @@ import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
 import 'package:meomulm_frontend/features/map/data/datasources/location_service.dart';
+import 'package:meomulm_frontend/features/map/presentation/coordinators/map_coordinator.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/base_kakao_map.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/accommodation_counter.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/map_accommodation_card.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/error_message.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/loading_overlay.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/location_denied_message.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/my_location_button.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/map_view_layout.dart';
 import 'package:provider/provider.dart';
 
 class MapScreen extends StatefulWidget {
@@ -28,84 +25,88 @@ class _MapScreenState extends State<MapScreen> {
 
   KakaoMapController? _controller;
   LatLng? _myLatLng;
-  Position? _lastSearchPosition;
-  bool _locationDenied = false;
-
-  static const double _minSearchDistance = 50.0;
+  LocationError? _locationError;
+  bool _isMovingToMyLocation = false;
+  late MapCoordinator _coordinator;
 
   @override
   void initState() {
     super.initState();
+    _coordinator = MapCoordinator(context.read<MapProvider>());
     _initializeLocation();
   }
 
   @override
   void dispose() {
     _controller = null;
+    _coordinator.dispose();
     super.dispose();
   }
 
+  /// 초기 위치 설정 및 검색
   Future<void> _initializeLocation() async {
-    final position = await _locationService.getCurrentPosition();
+    final result = await _locationService.getCurrentPosition();
 
     if (!mounted) return;
 
-    if (position == null) {
-      setState(() => _locationDenied = true);
+    if (!result.isSuccess) {
+      setState(() => _locationError = result.error);
       return;
     }
 
+    final position = result.position!;
     setState(() {
       _myLatLng = LatLng(position.latitude, position.longitude);
-      _locationDenied = false;
+      _locationError = null;
     });
 
     await _searchByPosition(position);
   }
 
+  /// 위치로 숙소 검색 (Coordinator 사용)
   Future<void> _searchByPosition(Position position) async {
-    if (_shouldSkipSearch(position)) return;
-
     try {
-      await context.read<MapProvider>().searchByLocation(
+      await _coordinator.searchByPosition(
         latitude: position.latitude,
         longitude: position.longitude,
       );
-      _lastSearchPosition = position;
     } catch (e) {
       debugPrint('검색 실패: $e');
     }
   }
 
-  bool _shouldSkipSearch(Position position) {
-    if (_lastSearchPosition == null) return false;
-
-    final distance = Geolocator.distanceBetween(
-      _lastSearchPosition!.latitude,
-      _lastSearchPosition!.longitude,
-      position.latitude,
-      position.longitude,
-    );
-
-    return distance < _minSearchDistance;
-  }
-
+  /// 내 위치로 이동 및 검색 (중복 방지)
   Future<void> _moveToMyLocationAndSearch() async {
-    final position = await _locationService.getCurrentPosition();
-
-    if (position == null) {
-      setState(() => _locationDenied = true);
+    if (_isMovingToMyLocation) {
+      debugPrint('내 위치 이동 중복 호출 차단');
       return;
     }
 
-    setState(() {
-      _myLatLng = LatLng(position.latitude, position.longitude);
-      _locationDenied = false;
-    });
+    _isMovingToMyLocation = true;
 
-    await _controller?.moveCamera(CameraUpdate.newCenterPosition(_myLatLng!));
+    try {
+      final result = await _locationService.getCurrentPosition();
 
-    await _searchByPosition(position);
+      if (!mounted) return;
+
+      if (!result.isSuccess) {
+        setState(() => _locationError = result.error);
+        return;
+      }
+
+      final position = result.position!;
+      setState(() {
+        _myLatLng = LatLng(position.latitude, position.longitude);
+        _locationError = null;
+      });
+
+      await _controller?.moveCamera(CameraUpdate.newCenterPosition(_myLatLng!));
+      await _searchByPosition(position);
+    } finally {
+      if (mounted) {
+        _isMovingToMyLocation = false;
+      }
+    }
   }
 
   @override
@@ -118,49 +119,22 @@ class _MapScreenState extends State<MapScreen> {
       ),
       body: Consumer<MapProvider>(
         builder: (context, provider, _) {
-          return Stack(
-            children: [
-              BaseKakaoMap(
-                initialPosition: _myLatLng ?? MapConstants.defaultPosition,
-                myPosition: _myLatLng,
-                accommodations: provider.accommodations,
-                onMapReady: (controller) => _controller = controller,
-                // 마커 클릭 시 선택된 숙소 설정
-                onMarkerTap: (accommodation) {
-                  provider.selectAccommodation(accommodation);
-                },
-              ),
-              if (provider.isLoading) const LoadingOverlay(),
-              if (provider.error != null && !provider.isLoading)
-                ErrorMessage(message: provider.error!),
-              if (!provider.isLoading && provider.accommodations.isNotEmpty)
-                AccommodationCounter(count: provider.accommodations.length),
-              if (_locationDenied) const LocationDeniedMessage(),
+          final hasSelectedAccommodation = provider.selectedAccommodation != null;
 
-              // 선택된 숙소가 있을 때만 카드 표시
-              if (provider.selectedAccommodation != null)
-                SafeArea(
-                  child: MapAccommodationCard(
-                    accommodation: provider.selectedAccommodation!,
-                    onTap: () {
-                      // 카드 클릭 시 해당 위치로 이동
-                      _controller?.moveCamera(
-                        CameraUpdate.newCenterPosition(
-                          LatLng(
-                            provider
-                                .selectedAccommodation!
-                                .accommodationLatitude,
-                            provider
-                                .selectedAccommodation!
-                                .accommodationLongitude,
-                          ),
-                        ),
-                      );
-                    },
-                    onClose: () => provider.selectAccommodation(null),
-                  ),
+          return MapViewLayout(
+            initialPosition: _myLatLng ?? MapConstants.defaultPosition,
+            myPosition: _myLatLng,
+            onMapReady: (controller) => _controller = controller,
+            additionalOverlays: [
+              if (_locationError != null)
+                LocationDeniedMessage(
+                  errorType: _locationError!,
+                  onRetry: _initializeLocation,
                 ),
-              MyLocationButton(onPressed: _moveToMyLocationAndSearch),
+              MyLocationButton(
+                onPressed: _moveToMyLocationAndSearch,
+                hasSelectedAccommodation: hasSelectedAccommodation,
+              ),
             ],
           );
         },
