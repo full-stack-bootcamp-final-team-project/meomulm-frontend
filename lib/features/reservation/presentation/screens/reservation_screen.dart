@@ -9,6 +9,8 @@ import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
 import 'package:meomulm_frontend/core/widgets/input/custom_underline_text_field.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
+import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/reservation/data/datasources/reservation_api_service.dart';
 import 'package:meomulm_frontend/features/reservation/presentation/providers/reservation_form_provider.dart';
 import 'package:meomulm_frontend/features/reservation/presentation/providers/reservation_provider.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +23,7 @@ class ReservationScreen extends StatefulWidget {
 }
 
 class _ReservationScreenState extends State<ReservationScreen> {
+  bool isLoading = true;
   // TextEditingController는 UI 영역에 유지
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -41,6 +44,66 @@ class _ReservationScreenState extends State<ReservationScreen> {
     _emailController.addListener(_validateForm);
     _phoneController.addListener(_validateForm);
   }
+
+
+  Future<void> _makeReservation() async {
+    final reservationProvider = context.read<ReservationProvider>();
+    final accommodationProvider = context.read<AccommodationProvider>();
+    final reservationInfo = reservationProvider.reservation;
+
+    // null 체크
+    if (reservationInfo == null) {
+      debugPrint('예약 정보 또는 체크인/체크아웃 정보가 없습니다.');
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      // 토큰 가져오기
+      final token = context.read<AuthProvider>().token;
+      if (token == null) {
+        debugPrint('토큰이 없습니다. 로그인 필요');
+        return;
+      }
+
+      // 예약 API 호출
+      await ReservationApiService.postReservation(
+        token, // 수정: token 추가
+        reservationInfo.roomId,
+        _nameController.text,
+        _emailController.text,
+        _phoneController.text,
+        accommodationProvider.checkIn,
+        accommodationProvider.checkOut,
+        accommodationProvider.guestNumber,
+        'pending',
+        reservationInfo.totalPrice,
+      );
+
+      // 예약 성공 처리
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('예약 완료!')),
+      );
+
+      // 다음 화면으로 이동 (결제 화면)
+      GoRouter.of(context).push('/payment');
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('예약 실패: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+
+
 
   void _validateForm() {
     final isValid = RegexpUtils.validateName(_nameController.text) == null &&
@@ -80,11 +143,18 @@ class _ReservationScreenState extends State<ReservationScreen> {
 
     // ======= 여기에 provider에서 예약 정보 가져와서 print =======
     final reservationInfo = context.watch<ReservationProvider>().reservation;
+    final accommPro = context.watch<AccommodationProvider>();
     if (reservationInfo != null) {
       print('=== ReservationScreen 예약 정보 ===');
       print('roomId: ${reservationInfo.roomId}');
       print('productName: ${reservationInfo.productName}');
       print('price: ${reservationInfo.price}');
+      print('commaPrice: ${reservationInfo.commaPrice}');
+      print('totalPrice: ${reservationInfo.totalPrice}');
+      print('totalCommaPrice: ${reservationInfo.totalCommaPrice}');
+      print('days: ${reservationInfo.days}');
+      print('checkIn: ${accommPro.checkIn}');
+      print('checkOut: ${accommPro.checkOut}');
       print('checkInfo: ${reservationInfo.checkInfo}');
       print('peopleInfo: ${reservationInfo.peopleInfo}');
       print('===============================');
@@ -229,9 +299,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('객실 가격', style: AppTextStyles.bodyLg),
+                    const Text('총 객실 가격', style: AppTextStyles.bodyLg),
                     Text(
-                      reservationInfo?.price ?? '가격 정보 없음',
+                      reservationInfo?.totalCommaPrice ?? '가격 정보 없음',
                       style: AppTextStyles.bodyXl,
                     ),
                   ],
@@ -243,30 +313,31 @@ class _ReservationScreenState extends State<ReservationScreen> {
       ),
 
       // 하단 예약 버튼
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-              AppSpacing.xl, AppSpacing.xxs, AppSpacing.xl, AppSpacing.xl),
-          child: SizedBox(
-            height: AppSpacing.xxxl,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                _canSubmit ? AppColors.onPressed : Colors.grey,
-              ),
-              onPressed: _canSubmit
-                  ? () {
-                GoRouter.of(context).push('/payment');
-              }
-                  : null,
-              child: const Text(
-                ButtonLabels.bookNow,
-                style: AppTextStyles.buttonLg,
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.xl, AppSpacing.xxs, AppSpacing.xl, AppSpacing.xl),
+            child: SizedBox(
+              height: AppSpacing.xxxl,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
+                  _canSubmit ? AppColors.onPressed : Colors.grey,
+                ),
+                onPressed: _canSubmit
+                    ? () {
+                  // 예약 실행
+                  _makeReservation();
+                }
+                    : null,
+                child: const Text(
+                  ButtonLabels.bookNow,
+                  style: AppTextStyles.buttonLg,
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        )
     );
   }
 }

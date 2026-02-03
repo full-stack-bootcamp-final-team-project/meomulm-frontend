@@ -49,7 +49,7 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final imageHeight = screenWidth * (3 / 5);
+    final imageHeight = screenWidth * (2 / 5);
 
     return SizedBox(
       height: imageHeight,

@@ -21,7 +21,7 @@ class ProductApiService {
         required int accommodationId,   // 사용자가 고른 숙소
         required String checkInDate,     // 사용자가 고른 날짜
         required String checkOutDate,    // 사용자가 고른 날짜
-        int guestCount = 2,              // 사용자가 안 고르면 기본값
+        required int guestCount, // 사용자가 선택한 인원수
       }
       ) async {
     final res = await _dio.get(
