@@ -1,0 +1,47 @@
+import 'accommodation_image_model.dart';
+
+class NotificationResponseModel {
+  final int notificationId;
+  final int userId;
+  final String notificationContent;
+  final String notificationLinkUrl;
+  final bool is_read;
+  final String createdAt;
+
+  NotificationResponseModel({
+    required this.notificationId,
+    required this.userId,
+    required this.notificationContent,
+    required this.notificationLinkUrl,
+    required this.is_read,
+    required this.createdAt
+  });
+
+  factory NotificationResponseModel.fromJson(Map<String, dynamic> json) {
+    try {
+      return NotificationResponseModel(
+        notificationId: json['notificationId'] as int,
+        userId: json['userId'] as int,
+        notificationContent: json['notificationContent'] as String,
+        notificationLinkUrl: json['notificationLinkUrl'] as String,
+        is_read: json['is_read'] as bool,
+        createdAt: json['createdAt'] as String,
+      );
+    } catch (e, stackTrace) {
+      print('Notification.fromJson 실패: $e');
+      print(stackTrace);
+      rethrow;
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'notificationId': notificationId,
+      'userId': userId,
+      'notificationContent': notificationContent,
+      'notificationLinkUrl': notificationLinkUrl,
+      'is_read': is_read,
+      'createdAt': createdAt,
+    };
+  }
+}

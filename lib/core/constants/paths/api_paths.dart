@@ -51,6 +51,8 @@ class ApiPaths {
   static final String loginChangePasswordUrl = '$authUrl/changePassword';
   // 카카오 생각해보기
 
+  // 회원 알림 조회
+  static final String notificationUrl = '$baseUrl/notification';
   // 회원정보 조회
   static final String userUrl = '$baseUrl/users';
   // 회원정보 수정

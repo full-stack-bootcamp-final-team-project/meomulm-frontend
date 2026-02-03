@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 
@@ -63,7 +64,7 @@ class LocationSection extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Container(
-            decoration: BoxDecoration( // ← 여기에 const가 있다면 제거해보세요
+            decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
@@ -77,42 +78,54 @@ class LocationSection extends StatelessWidget {
               child: SizedBox(
                 height: mapHeight,
                 width: double.infinity,
-                child: Stack(
-                  children: [
-                    // 1. 지도 이미지 (z=16으로 확대)
-                    Positioned.fill(
-                      child: Image.network(
-                        'https://static-maps.yandex.ru/1.x/?ll=$longitude,$latitude&z=15&size=650,450&l=map',
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return Container(
-                            color: Colors.grey[200],
-                            child: const Center(child: CircularProgressIndicator()),
-                          );
-                        },
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            color: Colors.grey[200],
-                            child: const Center(
-                              child: Icon(Icons.error_outline, color: Colors.grey),
-                            ),
-                          );
-                        },
+                // child: Stack(
+                //   children: [
+                //     Positioned.fill(
+                //       child: Image.network(
+                //         'https://static-maps.yandex.ru/1.x/?ll=$longitude,$latitude&z=15&size=650,450&l=map',
+                //         fit: BoxFit.cover,
+                //         loadingBuilder: (context, child, loadingProgress) {
+                //           if (loadingProgress == null) return child;
+                //           return Container(
+                //             color: Colors.grey[200],
+                //             child: const Center(child: CircularProgressIndicator()),
+                //           );
+                //         },
+                //         errorBuilder: (context, error, stackTrace) {
+                //           return Container(
+                //             color: Colors.grey[200],
+                //             child: const Center(
+                //               child: Icon(Icons.error_outline, color: Colors.grey),
+                //             ),
+                //           );
+                //         },
+                //       ),
+                //     ),
+                //     const Center(
+                //       child: Padding(
+                //         padding: EdgeInsets.only(bottom: 35),
+                //         child: Icon(
+                //           Icons.location_on,
+                //           color: Colors.red,
+                //           size: 40,
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                child: KakaoMap(
+                  onMapReady: (controller) async {
+                    LatLng myPosition = LatLng(latitude, longitude);
+
+                    await controller.labelLayer.addPoi(
+                      myPosition,
+                      style: PoiStyle(
+                        // icon: KImage.fromAsset('assets/markers/my_location.png', 34, 50),
                       ),
-                    ),
-                    // 2. 중앙 핀 아이콘
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(bottom: 35), // 핀의 끝부분이 정중앙에 오도록 보정
-                        child: Icon(
-                          Icons.location_on,
-                          color: Colors.red,
-                          size: 40,
-                        ),
-                      ),
-                    ),
-                  ],
+                    );
+
+                    controller.moveCamera(CameraUpdate.newCenterPosition(myPosition));
+                  },
                 ),
               ),
             ),

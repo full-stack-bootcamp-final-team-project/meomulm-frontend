@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:meomulm_frontend/core/providers/filter_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/providers/user_profile_provider.dart';
@@ -14,6 +13,7 @@ import 'features/accommodation/data/datasources/accommodation_api_service.dart';
 import 'features/accommodation/data/datasources/home_accommodation_service.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/home/presentation/providers/home_provider.dart';
+import 'features/map/data/datasources/map_service.dart';
 
 class MeomulmApp extends StatelessWidget {
   final AuthProvider authProvider;
