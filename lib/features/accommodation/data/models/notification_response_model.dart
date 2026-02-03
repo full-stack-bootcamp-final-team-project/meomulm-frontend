@@ -17,15 +17,16 @@ class NotificationResponseModel {
     required this.createdAt
   });
 
+
   factory NotificationResponseModel.fromJson(Map<String, dynamic> json) {
     try {
       return NotificationResponseModel(
-        notificationId: json['notificationId'] as int,
-        userId: json['userId'] as int,
-        notificationContent: json['notificationContent'] as String,
-        notificationLinkUrl: json['notificationLinkUrl'] as String,
-        is_read: json['is_read'] as bool,
-        createdAt: json['createdAt'] as String,
+        notificationId: json['notificationId'] as int? ?? 0,
+        userId: json['userId'] as int? ?? 0,
+        notificationContent: json['notificationContent'] as String? ?? '',
+        notificationLinkUrl: json['notificationLinkUrl'] as String? ?? '',
+        is_read: json['is_read'] as bool? ?? false,
+        createdAt: json['createdAt'] as String? ?? '',
       );
     } catch (e, stackTrace) {
       print('Notification.fromJson 실패: $e');
