@@ -7,9 +7,9 @@ import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/base_kakao_map.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/accommodation_counter.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/error_message.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/error_message.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/loading_overlay.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/map_search_result_widgets/accommodation_list.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/map_accommodation_card.dart';
 import 'package:provider/provider.dart';
 
 class MapSearchResultScreen extends StatefulWidget {
@@ -25,8 +25,7 @@ class MapSearchResultScreen extends StatefulWidget {
   });
 
   @override
-  State<MapSearchResultScreen> createState() =>
-      _MapSearchResultScreenState();
+  State<MapSearchResultScreen> createState() => _MapSearchResultScreenState();
 }
 
 class _MapSearchResultScreenState extends State<MapSearchResultScreen> {
@@ -62,8 +61,7 @@ class _MapSearchResultScreenState extends State<MapSearchResultScreen> {
     }
   }
 
-  Future<void> _moveCameraToAccommodation(
-      double lat, double lng) async {
+  Future<void> _moveCameraToAccommodation(double lat, double lng) async {
     if (_controller == null) return;
 
     await _controller!.moveCamera(
@@ -85,23 +83,31 @@ class _MapSearchResultScreenState extends State<MapSearchResultScreen> {
           return Stack(
             children: [
               BaseKakaoMap(
-                initialPosition:
-                _regionCenter ?? MapConstants.defaultPosition,
+                initialPosition: _regionCenter ?? MapConstants.defaultPosition,
                 accommodations: provider.accommodations,
                 onMapReady: (controller) => _controller = controller,
+                onMarkerTap: (accommodation) {
+                  provider.selectAccommodation(accommodation);
+                },
               ),
               if (provider.isLoading) const LoadingOverlay(),
               if (provider.error != null && !provider.isLoading)
                 ErrorMessage(message: provider.error!),
-              if (!provider.isLoading &&
-                  provider.accommodations.isNotEmpty)
-                AccommodationCounter(
-                    count: provider.accommodations.length),
-              if (provider.accommodations.isNotEmpty)
-                AccommodationList(
-                  accommodations: provider.accommodations,
-                  onAccommodationTap:
-                  _moveCameraToAccommodation,
+              if (!provider.isLoading && provider.accommodations.isNotEmpty)
+                AccommodationCounter(count: provider.accommodations.length),
+
+              if (provider.selectedAccommodation != null)
+                SafeArea(
+                  child: MapAccommodationCard(
+                    accommodation: provider.selectedAccommodation!,
+                    onTap: () {
+                      _moveCameraToAccommodation(
+                        provider.selectedAccommodation!.accommodationLatitude,
+                        provider.selectedAccommodation!.accommodationLongitude,
+                      );
+                    },
+                    onClose: () => provider.selectAccommodation(null),
+                  ),
                 ),
             ],
           );

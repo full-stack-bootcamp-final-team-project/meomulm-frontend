@@ -9,6 +9,7 @@ class BaseKakaoMap extends StatefulWidget {
   final LatLng? myPosition;
   final List<SearchAccommodationResponseModel> accommodations;
   final ValueChanged<KakaoMapController>? onMapReady;
+  final ValueChanged<SearchAccommodationResponseModel>? onMarkerTap; // 👈 추가
 
   const BaseKakaoMap({
     super.key,
@@ -16,6 +17,7 @@ class BaseKakaoMap extends StatefulWidget {
     required this.accommodations,
     this.myPosition,
     this.onMapReady,
+    this.onMarkerTap, // 👈 추가
   });
 
   @override
@@ -47,6 +49,7 @@ class _BaseKakaoMapState extends State<BaseKakaoMap> {
       _markerManager!.updateMarkers(
         myPosition: widget.myPosition,
         accommodations: widget.accommodations,
+        onMarkerTap: widget.onMarkerTap, // 👈 추가
       );
     }
   }
@@ -66,6 +69,7 @@ class _BaseKakaoMapState extends State<BaseKakaoMap> {
         _markerManager!.updateMarkers(
           myPosition: widget.myPosition,
           accommodations: widget.accommodations,
+          onMarkerTap: widget.onMarkerTap, // 👈 추가
         );
 
         widget.onMapReady?.call(controller);

@@ -9,6 +9,9 @@ class MapProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
 
+  // 👇 추가: 선택된 숙소
+  SearchAccommodationResponseModel? _selectedAccommodation;
+
   // 마지막 검색 위치 저장 (중복 검색 방지)
   double? _lastLatitude;
   double? _lastLongitude;
@@ -20,6 +23,9 @@ class MapProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
+  // 👇 추가
+  SearchAccommodationResponseModel? get selectedAccommodation => _selectedAccommodation;
+
   /// 검색 결과가 있는 상태
   bool get hasResult => _accommodations.isNotEmpty;
 
@@ -30,6 +36,12 @@ class MapProvider extends ChangeNotifier {
   // =====================
   // actions
   // =====================
+
+  // 👇 추가: 숙소 선택/해제
+  void selectAccommodation(SearchAccommodationResponseModel? accommodation) {
+    _selectedAccommodation = accommodation;
+    notifyListeners();
+  }
 
   /// 위도/경도로 숙소 검색
   Future<void> searchByLocation({
@@ -59,6 +71,9 @@ class MapProvider extends ChangeNotifier {
       _lastLatitude = latitude;
       _lastLongitude = longitude;
 
+      // 👇 추가: 검색 시 선택 초기화
+      _selectedAccommodation = null;
+
     } catch (e, stack) {
       _error = '숙소를 불러오는데 실패했습니다.';
       debugPrint('MapProvider 검색 에러: $e');
@@ -86,6 +101,7 @@ class MapProvider extends ChangeNotifier {
     _isLoading = false;
     _lastLatitude = null;
     _lastLongitude = null;
+    _selectedAccommodation = null; // 👈 추가
     notifyListeners();
   }
 
