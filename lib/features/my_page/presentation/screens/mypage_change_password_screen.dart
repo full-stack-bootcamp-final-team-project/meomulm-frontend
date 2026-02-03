@@ -202,6 +202,7 @@ class _MypageChangePasswordScreenState
                         label: "기존 비밀번호",
                         hintText: "비밀번호를 입력하세요.",
                         controller: _currentCtrl,
+                        obscureText: true,
                         focusNode: _currentPwFocusNode,
                         validator: (currentPassword) =>
                             RegexpUtils.validatePassword(currentPassword),
@@ -216,6 +217,7 @@ class _MypageChangePasswordScreenState
                       label: "새 비밀번호",
                       hintText: '비밀번호를 입력하세요.',
                       controller: _newCtrl,
+                      obscureText: true,
                       focusNode: _newPwFocusNode,
                       validator: (newPassword) =>
                           RegexpUtils.validatePassword(newPassword),
@@ -227,6 +229,7 @@ class _MypageChangePasswordScreenState
                       label: "비밀번호 확인",
                       hintText: '비밀번호를 다시 입력하세요.',
                       controller: _confirmCtrl,
+                      obscureText: true,
                       focusNode: _confirmPwFocusNode,
                       validator: (confirmPassword) =>
                           RegexpUtils.validateCheckPassword(
