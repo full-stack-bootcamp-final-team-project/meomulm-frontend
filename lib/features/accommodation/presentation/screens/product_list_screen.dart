@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/features/accommodation/data/datasources/favorite_api_service.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/product_detail_widgets/product_action_buttons.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/product_detail_widgets/product_search_box.dart';
+import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
@@ -20,6 +22,7 @@ class ProductListScreen extends StatefulWidget {
 class _ProductListScreenState extends State<ProductListScreen> {
   List<Product> rooms = [];
   bool isLoading = true;
+  bool isFavorite = false;
 
   DateTimeRange? dateRange = DateTimeRange(
     start: DateTime.now(),
@@ -32,6 +35,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
     super.initState();
     loadRooms();
   }
+
 
   Future<void> loadRooms() async {
     final provider = context.read<AccommodationProvider>();
@@ -64,6 +68,62 @@ class _ProductListScreenState extends State<ProductListScreen> {
       });
     }
   }
+
+/*
+
+  Future<void> getFavorite() async {
+    final provider = context.read<AccommodationProvider>();
+    final token = context.read<AuthProvider>().token;
+
+    if (provider.selectedAccommodationId == null) {
+      debugPrint('숙소 ID가 없습니다.');
+      return;
+    }
+
+    try {
+      final favorite = await FavoriteApiService.getFavorite(
+        token!,
+        provider.selectedAccommodationId!,
+      );
+
+      debugPrint('찜 여부: $favorite');
+
+      setState(() {
+        isFavorite = favorite;
+      });
+    } catch (e) {
+      debugPrint('찜 상태 로드 실패: $e');
+      setState(() {
+        isFavorite = false;
+      });
+    }
+  }
+
+
+  Future<void> postFavorite() async {
+    final provider = context.read<AccommodationProvider>();
+    final token = context.read<AuthProvider>().token;
+
+    if (provider.selectedAccommodationId == null) {
+      debugPrint('숙소 ID가 없습니다.');
+      return;
+    }
+
+    try {
+      await FavoriteApiService.postFavorite(
+        token!,
+        provider.selectedAccommodationId!,
+      );
+
+    } catch (e) {
+      debugPrint('찜 추가 실패: $e');
+
+    }
+  }
+
+*/
+
+
 
   @override
   Widget build(BuildContext context) {

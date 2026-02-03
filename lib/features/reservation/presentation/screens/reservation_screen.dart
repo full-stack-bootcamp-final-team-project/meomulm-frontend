@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
+import 'package:meomulm_frontend/core/constants/paths/route_paths.dart' as AppRouter;
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
@@ -10,6 +11,7 @@ import 'package:meomulm_frontend/core/widgets/input/custom_underline_text_field.
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/my_page/presentation/providers/user_profile_provider.dart';
 import 'package:meomulm_frontend/features/reservation/data/datasources/reservation_api_service.dart';
 import 'package:meomulm_frontend/features/reservation/presentation/providers/reservation_form_provider.dart';
 import 'package:meomulm_frontend/features/reservation/presentation/providers/reservation_provider.dart';
@@ -38,6 +40,16 @@ class _ReservationScreenState extends State<ReservationScreen> {
   @override
   void initState() {
     super.initState();
+
+    // 토큰 체크 및 유저 프로필 로드
+    Future.microtask(() {
+      final token = context.read<AuthProvider>().token;
+      if (token != null) {
+        context.read<UserProfileProvider>().loadUserProfile(token);
+      } else {
+        context.push(AppRouter.RoutePaths.login);
+      }
+    });
 
     // 입력값 변경 시 유효성 검사
     _nameController.addListener(_validateForm);
