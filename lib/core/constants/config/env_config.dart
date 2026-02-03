@@ -2,7 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class EnvConfig {
   EnvConfig._();
-
+  // static String get apiBaseUrl => dotenv.env['API_BASE_URL'] ?? 'http://192.168.0.237:8080/api';
   static String get apiBaseUrl => dotenv.env['API_BASE_URL'] ?? 'http://localhost:8080/api';
   static String get environment => dotenv.env['ENVIRONMENT'] ?? 'development';
   static String get appName => dotenv.env['APP_NAME'] ?? 'Meomulm';
