@@ -365,7 +365,7 @@ class HotelCard extends StatelessWidget {
                               ),
                             ),
                             const Text(
-                              '원',
+                              '원 (1박)',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,

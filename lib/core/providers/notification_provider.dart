@@ -19,10 +19,12 @@ class NotificationProvider extends ChangeNotifier {
 
     stompClient = StompClient(
       config: StompConfig(
-        url: 'ws://10.0.2.2:9000/ws/websocket',   // iOS 시뮬레이터 -> localhost
+        url: 'ws://10.0.2.2:8080/ws/websocket',   // iOS 시뮬레이터 -> localhost
         onConnect: (frame) => _onConnect(frame, token),
+        reconnectDelay: const Duration(seconds: 3),
         stompConnectHeaders: {'Authorization': 'Bearer $token'},
         onWebSocketError: (error) => print("웹소켓 에러: $error"),
+        onDebugMessage: (msg) => print("STOMP 디버그: $msg"), // 상세 로그 확인용
       ),
     );
     stompClient?.activate();
@@ -43,15 +45,21 @@ class NotificationProvider extends ChangeNotifier {
   void _handleIncomingMessage(StompFrame frame) {
     if (frame.body != null) {
       final Map<String, dynamic> data = json.decode(frame.body!);
+      print("수신된 알림 데이터: $data");
 
-      // 알림 식별값 생성
-      final String uniqueId = DateTime.now().millisecondsSinceEpoch.toString();
-      final notificationData = {...data, 'id': uniqueId};
+      // 백엔드 Map 구조: {id, notificationContent, userId, timestamp, notificationLinkUrl(있을경우)}
+      // UI에서 기대하는 키값으로 매핑하거나, 전달받은 데이터 그대로 사용
+      final notificationData = {
+        'notificationId': data['id'], // 백엔드의 'id'를 'notificationId'로 매핑
+        'notificationContent': data['notificationContent'],
+        'notificationLinkUrl': data['notificationLinkUrl'], // 스케줄러에서 추가 예정
+        'userId': data['userId'],
+        'timestamp': data['timestamp'] ?? DateTime.now().millisecondsSinceEpoch,
+      };
 
       _notifications.add(notificationData);
       notifyListeners();
 
-      // 전역 Context를 사용해서 어떤 화면에서든 팝업 표시
       final context = AppRouter.navigatorKey.currentContext;
       if (context != null) {
         showOverlayNotification(context, notificationData);
