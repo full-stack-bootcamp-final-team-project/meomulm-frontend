@@ -13,19 +13,6 @@ import 'package:provider/provider.dart';
 "숙소는 어떠셨나요? 리뷰를 남겨주세요!"
 "고객님의 생일을 진심으로 축하합니다!"
   "문의하신 답변이 등록되었습니다. 바로 확인해보세요."
-
-
-생일 알림 (매일 오전 9시)
-User 테이블에서 오늘이 생일인 사용자를 조회한다.
-쿠폰 발급 로직을 실행하면서 개인 알림 전송 후, 알림 테이블에 저장한다.
-
-체크인 전날 안내 (매일 오전 10시)
-Reservation 테이블에서 check_in_date가 내일인 데이터를 조회한다.
-숙소 체크인 알림 전송 후, 알림 테이블에 저장한다.
-
-리뷰 작성 요청 (매일 오전 11시)
-Reservation 테이블에서 check_out_date가 어제인 데이터를 조회한다.
-리뷰 작성 페이지 링크와 함꼐 개인 개인 알림 전송 후, 알림 테이블에 저장한다.
  */
 
 class NotificationListScreen extends StatefulWidget {
