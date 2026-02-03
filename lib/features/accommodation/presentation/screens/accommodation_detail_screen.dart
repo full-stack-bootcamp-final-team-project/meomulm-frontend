@@ -17,6 +17,8 @@ import 'package:meomulm_frontend/features/accommodation/presentation/widgets/acc
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/policy_section.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/review_preview_section.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/title_section.dart';
+import 'package:provider/provider.dart';
+import '../providers/accommodation_provider.dart';
 import '../widgets/accommodation_detail_widgets/accommodation_image_slider.dart';
 
 class AccommodationDetailScreen extends StatefulWidget {
@@ -37,7 +39,6 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
     super.initState();
     loadAccommodationDetail(widget.accommodationId);
   }
-
   Future<void> loadAccommodationDetail(int id) async {
     setState(() => isLoading = true);
     try {
@@ -49,6 +50,14 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
         accommodation = results[0] as AccommodationDetail?;
         reviewSummary = results[1] as ReviewSummary?;
         isLoading = false;
+
+        // ← 여기에 추가. provider에 ID 저장
+        if (accommodation != null) {
+          context.read<AccommodationProvider>().setAccommodationInfo(
+            id,
+            accommodation!.accommodationName,
+          );
+        }
       });
     } catch (e) {
       setState(() {

@@ -40,11 +40,42 @@ class AppRouter {
   // ✅ 전역 navigatorKey 추가
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+  // ---------------------------------------------------------------
+  // deeplink에서 받은 초기 경로를 저장하는 정적 변수
+  // main.dart → app.dart → AppRouter 순으로 전달됨
+  // ---------------------------------------------------------------
+  static String? pendingDeepLink;
 
+  /// Custom-Scheme URI(meomulm://...)를 GoRouter 경로로 변환
+  /// 지원하지 않는 경로이면 null 반환 → 기본 initialLocation 사용
+  static String? parseDeepLinkUri(Uri uri) {
+    // uri.path 예시: /accommodation-detail/42
+    final path = uri.path;
+
+    // ── accommodation-detail/:id ──
+    final detailRegex = RegExp(r'^/accommodation-detail/(\d+)$');
+    final detailMatch = detailRegex.firstMatch(path);
+    if (detailMatch != null) {
+      final id = detailMatch.group(1);
+      return '${RoutePaths.accommodationDetail}/$id';
+    }
+
+    // ── 향후 추가할 deeplink 패턴은 여기에 계속 추가 ──
+    // 예:
+    // final reviewRegex = RegExp(r'^/accommodation-review/(\d+)$');
+    // ...
+
+    return null; // 매칭되지 않는 경로
+  }
 
   static final GoRouter router = GoRouter(
 
     navigatorKey: navigatorKey, // ✅ Key 등록
+
+    // ----------------------------------------------------------------
+    // initialLocation: pendingDeepLink가 있으면 그것을 사용, 아니면 /intro
+    // ----------------------------------------------------------------
+    initialLocation: pendingDeepLink ?? '/intro',
 
     redirect: (context, state) {
       final auth = context.read<AuthProvider>();
@@ -63,7 +94,6 @@ class AppRouter {
 
       return null;
     },
-    initialLocation: '/intro',
     routes: [
       /// =====================
       /// intro 라우팅
@@ -103,13 +133,13 @@ class AppRouter {
         builder: (context, state) => const ConfirmPasswordScreen(),
       ),
       GoRoute(
-        path: '${RoutePaths.loginChangePassword}/:userId',
-        name: "loginChangePassword",
-        builder: (context, state) {
-          final idString = state.pathParameters['userId'];
-          final userId = int.tryParse(idString ?? '');
-          return LoginChangePasswordScreen(userId: userId!);
-        }
+          path: '${RoutePaths.loginChangePassword}/:userId',
+          name: "loginChangePassword",
+          builder: (context, state) {
+            final idString = state.pathParameters['userId'];
+            final userId = int.tryParse(idString ?? '');
+            return LoginChangePasswordScreen(userId: userId!);
+          }
       ),
 
       /// =====================
