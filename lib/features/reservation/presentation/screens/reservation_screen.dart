@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart' as AppRouter;
@@ -100,7 +99,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
       );
 
       // 결제 화면으로 이동
-      GoRouter.of(context).push('/payment');
+      GoRouter.of(context).push(AppRouter.RoutePaths.payment);
 
     } catch (e) {
       if (!mounted) return;
