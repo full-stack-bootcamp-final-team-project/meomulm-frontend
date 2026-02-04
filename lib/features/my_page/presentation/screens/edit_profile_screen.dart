@@ -89,6 +89,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
+  // 연락처 대시(-) 추가
+  String _phoneNumberCheck(String phone) {
+    if(phone.length == 10) {
+      return '${phone.substring(0, 2)}-'
+          '${phone.substring(2, 6)}-'
+          '${phone.substring(6)}';
+    }
+    if(phone.length == 11) {
+      return '${phone.substring(0, 3)}-'
+          '${phone.substring(3, 7)}-'
+          '${phone.substring(7)}';
+    }
+
+    return phone;
+  }
+
   // 연락처 중복 확인 함수
   Future<void> _isDuplicatePhone() async {
     if(_phoneCtrl.text.trim() == widget.user.userPhone) {
@@ -123,7 +139,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!isSubmittable) return;
 
     final name = _nameCtrl.text.trim();
-    final phone = _phoneCtrl.text.trim();
+    final phone = _phoneNumberCheck(_phoneCtrl.text.trim());  // 대시(-) 붙여서 보내기
     final token = context.read<AuthProvider>().token;
     if (token == null) return;
 
