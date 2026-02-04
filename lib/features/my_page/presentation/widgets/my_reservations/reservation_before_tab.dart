@@ -27,8 +27,8 @@ class ReservationBeforeTab extends StatelessWidget {
           hotelName: r.accommodationName,
           accommodationImageUrl: r.accommodationImageUrl,
           roomInfo: r.subtitle,
-          checkInValue: '${r.checkInText} 15:00',
-          checkOutValue: '${r.checkOutDate} 11:00',
+          checkInValue: '${r.checkInText} ${r.productCheckInTimeOnly}',
+          checkOutValue: '${r.checkOutText} ${r.productCheckOutTimeOnly}',
           onChangeTap: () => onChangeTap(r.reservationId),
           onCancelTap: () => onCancelTap(r.reservationId),
         );
