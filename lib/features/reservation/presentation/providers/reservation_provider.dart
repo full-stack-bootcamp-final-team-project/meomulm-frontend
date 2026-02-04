@@ -1,12 +1,16 @@
-// lib/features/reservation/presentation/providers/reservation_form_provider.dart
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/features/reservation/data/models/reservation_info.dart';
 
+/// 예약 & 결제 흐름 전반에서 공유되는 상태 Provider
+///
+/// - reservation      : 객실 정보 (숙소명, 금액, 날짜 등)
+/// - reservationId    : 백엔드에서 생성된 예약 ID (결제 API에 전달)
 class ReservationProvider extends ChangeNotifier {
   ReservationInfo? _reservation;
+  int? _reservationId;
 
+  // ── reservation (객실 정보) ──
   ReservationInfo? get reservation => _reservation;
-
   bool get hasReservation => _reservation != null;
 
   void setReservation(ReservationInfo reservation) {
@@ -16,7 +20,15 @@ class ReservationProvider extends ChangeNotifier {
 
   void clearReservation() {
     _reservation = null;
+    _reservationId = null;
+    notifyListeners();
+  }
+
+  // ── reservationId (백엔드 생성 예약 ID) ──
+  int? get reservationId => _reservationId;
+
+  void setReservationId(int id) {
+    _reservationId = id;
     notifyListeners();
   }
 }
-
