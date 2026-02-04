@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meomulm_frontend/features/accommodation/data/datasources/favorite_api_service.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/widgets/product_detail_widgets/product_action_buttons.dart';
+import 'package:meomulm_frontend/core/constants/paths/route_paths.dart' as AppRouter;
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/product_detail_widgets/product_search_box.dart';
-import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
@@ -106,7 +104,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 ),
               ),
               // 좋아요 + 공유 버튼을 ActionButtons로 대체
-             /* ProductActionButtons(
+              /* ProductActionButtons(
                 accommodationId: provider.selectedAccommodationId ?? 0,
               ),*/
             ],
@@ -240,7 +238,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   images: room.images ?? [],
                   checkIn: provider.checkIn,
                   checkOut: provider.checkOut,
-                  onTapReserve: () => context.push('/reservation'),
+                  onTapReserve: () => context.push(AppRouter.RoutePaths.reservation),
                 ),
               );
             }).toList(),
