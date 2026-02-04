@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/utils/accommodation_image_utils.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_detail_screen.dart';
@@ -14,15 +16,21 @@ class HomeItemCard extends StatelessWidget {
   final double width;
   final bool isLast;
 
-  const HomeItemCard({
+  HomeItemCard({
     super.key,
     required this.item,
     required this.width,
     this.isLast = false,
   });
 
+  // 가격 포맷 (콤마)
+  final priceFormat = NumberFormat('#,###');
+
   @override
   Widget build(BuildContext context) {
+    final imageUrl = AccommodationImageUtils.getImageUrl(item);
+
+
     return GestureDetector(
       onTap: () async {
         final id = item.accommodationId; // 숙소 ID 가져오기
@@ -48,14 +56,16 @@ class HomeItemCard extends StatelessWidget {
             AspectRatio(
               aspectRatio: 3 / 4,
               child:
-                  (item.accommodationImages != null &&
-                      item.accommodationImages!.isNotEmpty)
-                  ? Image.network(
-                      item.accommodationImages!.first.accommodationImageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => ImageNone(),
-                    )
-                  : ImageNone(),
+                AccommodationImageUtils.isNetworkImage(imageUrl)
+                    ? Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => ImageNone(),
+                )
+                    : Image.asset(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                ),
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
@@ -66,7 +76,7 @@ class HomeItemCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              '${item.minPrice}원 ~',
+              '${priceFormat.format(item.minPrice)}원 ~',
               style: AppTextStyles.subTitle.copyWith(
                 fontWeight: FontWeight.w600,
               ),
