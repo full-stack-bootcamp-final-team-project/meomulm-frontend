@@ -21,8 +21,8 @@ class ReservationCanceledTab extends StatelessWidget {
         return ReservationCardCanceled(
           hotelName: r.accommodationName,
           roomInfo: r.subtitle,
-          checkInValue: '${r.checkInText} 15:00',
-          checkOutValue: '${r.checkOutText} 11:00',
+          checkInValue: '${r.checkInText} ${r.productCheckInTimeOnly}',
+          checkOutValue: '${r.checkOutText} ${r.productCheckOutTimeOnly}',
         );
       }).toList(),
     );

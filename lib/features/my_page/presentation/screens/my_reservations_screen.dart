@@ -92,6 +92,8 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
             accommodationName: r.accommodationName,
             accommodationImageUrl: image?.accommodationImageUrl,
             productName: r.productName,
+            productCheckInTime: r.productCheckInTime,
+            productCheckOutTime: r.productCheckOutTime,
             checkInDate: r.checkInDate,
             checkOutDate: r.checkOutDate,
             status: r.status,

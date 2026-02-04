@@ -12,6 +12,8 @@ class ReservationShareModel {
   final String accommodationName;
   final String? accommodationImageUrl;
   final String productName;
+  final String productCheckInTime;
+  final String productCheckOutTime;
   final String checkInDate;
   final String checkOutDate;
   final String status;
@@ -22,6 +24,8 @@ class ReservationShareModel {
     required this.accommodationName,
     this.accommodationImageUrl,
     required this.productName,
+    required this.productCheckInTime,
+    required this.productCheckOutTime,
     required this.checkInDate,
     required this.checkOutDate,
     required this.status,
@@ -53,4 +57,14 @@ class ReservationShareModel {
       '${parsedCheckInDate.month.toString().padLeft(2, '0')}.${parsedCheckInDate.day.toString().padLeft(2, "0")} (${weekdayKo(parsedCheckInDate)})';
   String get checkOutText =>
       '${parsedCheckOutDate.month.toString().padLeft(2, '0')}.${parsedCheckOutDate.day.toString().padLeft(2, "0")} (${weekdayKo(parsedCheckOutDate)})';
+
+  String get productCheckInTimeOnly {
+    final match = RegExp(r'\b\d{2}:\d{2}\b').firstMatch(productCheckInTime);
+    return match?.group(0) ?? '';
+  }
+
+  String get productCheckOutTimeOnly {
+    final match = RegExp(r'\b\d{2}:\d{2}\b').firstMatch(productCheckOutTime);
+    return match?.group(0) ?? '';
+  }
 }
