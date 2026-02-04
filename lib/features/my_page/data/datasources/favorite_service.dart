@@ -29,7 +29,7 @@ class FavoriteService {
       return data.map((json) => SelectFavoriteModel.fromJson(json)).toList();
     } catch (e) {
       print('찜 목록 조회 실패: $e');
-      throw Exception('찜 목록을 불러올 수 없습니다.');
+      return [];
     }
   }
 
