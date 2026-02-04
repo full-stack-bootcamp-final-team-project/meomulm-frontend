@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/utils/accommodation_image_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/my_page/data/datasources/favorite_service.dart';
@@ -70,8 +71,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
+  return Scaffold(
       backgroundColor: AppColors.white,
       appBar: const AppBarWidget(title: '찜 목록'),
 
@@ -105,6 +105,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
 
         itemBuilder: (context, index) {
           final item = selectFavorite[index];
+          final imageUrl = AccommodationImageUtils.getImageUrlFromFavorite(item);
+
 
           return GestureDetector(
             onTap: () {
@@ -115,7 +117,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
               key: ValueKey(item.favoriteId),
               accommodationName: item.accommodationName,
               accommodationAddress: item.accommodationAddress,
-              accommodationImageUrl: item.accommodationImageUrl ?? "",
+                accommodationImageUrl: imageUrl,
 
               onUnfavorite: () async {
                 final token = context.read<AuthProvider>().token!;

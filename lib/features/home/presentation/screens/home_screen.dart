@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
@@ -212,6 +213,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   scrollByItem: _scrollByItem,
                                 ),
                                 const SizedBox(height: AppSpacing.sm),
+
+                                const SizedBox(height: AppSpacing.xxl),
+                                const SizedBox(height: AppSpacing.xxl),
                               ],
                             ),
                           ),
@@ -224,6 +228,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.main,
+        child: const Icon(Icons.chat_bubble_rounded, color: AppColors.white,),
+        onPressed: () => context.push("/chat")
       ),
       // 탭
       bottomNavigationBar: SafeArea(

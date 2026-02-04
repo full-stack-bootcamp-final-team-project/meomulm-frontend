@@ -4,18 +4,18 @@ import 'package:meomulm_frontend/core/constants/app_constants.dart';
 
 class FavoriteApiService {
 
-static final Dio _dio = Dio(
-BaseOptions(
-baseUrl: ApiPaths.favoriteUrl,
-connectTimeout : const Duration(seconds: 5),
-receiveTimeout : const Duration(seconds: 3),
-headers:{
-'Content-Type' : 'application/json',
-},
-),
-);
+  static final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: ApiPaths.favoriteUrl,
+      connectTimeout : const Duration(seconds: 5),
+      receiveTimeout : const Duration(seconds: 3),
+      headers:{
+        'Content-Type' : 'application/json',
+      },
+    ),
+  );
 
-// 찜 조회
+  // 찜 조회
   static Future<int> getFavorite(
       String token,
       int accommodationId,
@@ -78,11 +78,6 @@ headers:{
       throw Exception('찜 조회 실패');
     }
   }
-
-
-
-
-
 }
 
 
