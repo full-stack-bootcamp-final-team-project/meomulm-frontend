@@ -3,8 +3,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
+import 'package:meomulm_frontend/core/providers/filter_provider.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_filter_screen.dart';
 import 'package:meomulm_frontend/features/map/data/datasources/location_service.dart';
 import 'package:meomulm_frontend/features/map/presentation/coordinators/map_coordinator.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
@@ -66,9 +68,14 @@ class _MapScreenState extends State<MapScreen> {
   /// 위치로 숙소 검색 (Coordinator 사용)
   Future<void> _searchByPosition(Position position) async {
     try {
+      final filterProvider = context.read<FilterProvider>();
+
       await _coordinator.searchByPosition(
         latitude: position.latitude,
         longitude: position.longitude,
+        filterParams: filterProvider.hasActiveFilters
+            ? filterProvider.filterParams
+            : null,
       );
     } catch (e) {
       debugPrint('검색 실패: $e');
@@ -109,6 +116,21 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  /// 현재 위치로 필터 재검색
+  Future<void> _reloadWithFilter() async {
+    if (_myLatLng == null) return;
+
+    final filterProvider = context.read<FilterProvider>();
+
+    await _coordinator.searchByPosition(
+      latitude: _myLatLng!.latitude,
+      longitude: _myLatLng!.longitude,
+      filterParams: filterProvider.hasActiveFilters
+          ? filterProvider.filterParams
+          : null,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,6 +138,19 @@ class _MapScreenState extends State<MapScreen> {
         dateText: DatePeopleTextUtil.todayToTomorrow(),
         peopleCount: 2,
         onSearch: () => context.push(RoutePaths.mapSearch),
+        onFilter: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AccommodationFilterScreen(),
+            ),
+          );
+
+          // 필터 적용했을 때 목록 재조회
+          if (result == true) {
+            _reloadWithFilter();
+          }
+        },
       ),
       body: Consumer<MapProvider>(
         builder: (context, provider, _) {

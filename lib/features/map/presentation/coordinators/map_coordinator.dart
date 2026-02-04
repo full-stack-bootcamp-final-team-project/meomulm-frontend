@@ -11,19 +11,21 @@ class MapCoordinator {
 
   /// 지역 중심 좌표 가져오기 (동기)
   LatLng getRegionCenter(String region) {
-    return RegionCoordinates.getCoordinates(region)
-        ?? MapConstants.defaultPosition;
+    return RegionCoordinates.getCoordinates(region) ?? MapConstants.defaultPosition;
   }
 
   /// 위치 기반 검색 (비동기)
+  /// filterParams가 있으면 /search, 없으면 /map 엔드포인트 호출
   Future<void> searchByPosition({
     required double latitude,
     required double longitude,
+    Map<String, dynamic>? filterParams,
   }) async {
     try {
       await provider.searchByLocation(
         latitude: latitude,
         longitude: longitude,
+        filterParams: filterParams,
       );
     } catch (e) {
       debugPrint('MapCoordinator: 검색 실패 - $e');
@@ -32,12 +34,16 @@ class MapCoordinator {
   }
 
   /// 지역명으로 검색 (편의 메서드)
-  Future<void> searchByRegion(String region) async {
+  Future<void> searchByRegion(
+      String region, {
+        Map<String, dynamic>? filterParams,
+      }) async {
     final center = getRegionCenter(region);
 
     await searchByPosition(
       latitude: center.latitude,
       longitude: center.longitude,
+      filterParams: filterParams,
     );
   }
 

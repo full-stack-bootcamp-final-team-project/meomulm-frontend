@@ -42,10 +42,11 @@ class MapProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// 위도/경도로 숙소 검색
+  /// 위도/경도로 숙소 검색 (필터 파라미터 추가)
   Future<void> searchByLocation({
     required double latitude,
     required double longitude,
+    Map<String, dynamic>? filterParams,
   }) async {
     // 중복 호출 차단
     if (_isSearching) {
@@ -53,8 +54,8 @@ class MapProvider extends ChangeNotifier {
       return;
     }
 
-    // 동일 위치 검색 스킵
-    if (_isSameLocation(latitude, longitude)) {
+    // 동일 위치 검색 스킵 (필터가 있으면 무조건 검색)
+    if (filterParams == null && _isSameLocation(latitude, longitude)) {
       debugPrint('동일한 위치 검색 스킵');
       return;
     }
@@ -65,9 +66,11 @@ class MapProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // MapService에 개별 파라미터로 전달
       final result = await _service.getAccommodationByLocation(
         latitude: latitude,
         longitude: longitude,
+        filterParams: filterParams,
       );
 
       _accommodations = result;
@@ -104,14 +107,18 @@ class MapProvider extends ChangeNotifier {
   }
 
   /// 재시도
-  Future<void> retry() async {
+  Future<void> retry({Map<String, dynamic>? filterParams}) async {
     if (_lastLatitude != null && _lastLongitude != null) {
       final lat = _lastLatitude!;
       final lng = _lastLongitude!;
       _lastLatitude = null;
       _lastLongitude = null;
 
-      await searchByLocation(latitude: lat, longitude: lng);
+      await searchByLocation(
+        latitude: lat,
+        longitude: lng,
+        filterParams: filterParams,
+      );
     }
   }
 
