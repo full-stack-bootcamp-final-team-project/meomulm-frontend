@@ -22,7 +22,6 @@ class MapService {
       ),
     );
 
-
     _dio.interceptors.add(
       LogInterceptor(
         requestBody: true,
@@ -33,19 +32,51 @@ class MapService {
     );
   }
 
-  /// 위도/경도로 숙소 검색
+  /// 위도/경도로 숙소 검색 (필터 적용 여부에 따라 엔드포인트 분기)
   Future<List<SearchAccommodationResponseModel>> getAccommodationByLocation({
     required double latitude,
     required double longitude,
+    Map<String, dynamic>? filterParams,
   }) async {
     try {
-      final response = await _dio.post(
-        '/map',
-        data: {
+      // 필터가 있으면 /search (GET), 없으면 /map (POST) 사용
+      final hasFilter = filterParams != null && filterParams.isNotEmpty;
+
+      debugPrint('📍 필터 적용 여부: $hasFilter');
+      debugPrint('📦 필터 데이터: $filterParams');
+
+      Response response;
+
+      if (hasFilter) {
+        // /search - GET 방식 (쿼리 파라미터)
+        final queryParams = {
+          'latitude': latitude,
+          'longitude': longitude,
+          ...filterParams,
+        };
+
+        debugPrint('🔍 GET /search 호출');
+        debugPrint('📦 쿼리 파라미터: $queryParams');
+
+        response = await _dio.get(
+          '/search',
+          queryParameters: queryParams,
+        );
+      } else {
+        // /map - POST 방식 (JSON body)
+        final requestData = {
           "latitude": latitude,
           "longitude": longitude,
-        },
-      );
+        };
+
+        debugPrint('🗺️ POST /map 호출');
+        debugPrint('📦 요청 바디: $requestData');
+
+        response = await _dio.post(
+          '/map',
+          data: requestData,
+        );
+      }
 
       // 성공 응답
       if (response.statusCode == 200) {
