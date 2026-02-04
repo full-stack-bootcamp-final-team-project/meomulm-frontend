@@ -42,7 +42,7 @@ class DateRow extends StatelessWidget {
         ),
 
 
-        const SizedBox(width: AppSpacing.md),
+        const SizedBox(width: AppSpacing.sm),
         const SizedBox(
           height: AppSpacing.xxl,
           child: VerticalDivider(

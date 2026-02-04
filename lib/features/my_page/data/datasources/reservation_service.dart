@@ -43,14 +43,15 @@ class ReservationService {
   /*
   호텔 이미지 조회 : /api/accommodation/{accommodationId}
    */
-  Future<AccommodationImageModel> loadAccommodationImage(String token, String accommodationId) async {
+  Future<AccommodationImageModel> loadAccommodationImage(String token, int accommodationId) async {
     try {
       final response = await _dio.get(
         '/accommodation/$accommodationId',
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
       );
+      // TODO: 디버깅 후 삭제
+      print("요청 경로: ${response.requestOptions.uri}");
+      print("요청 숙소 ID: $accommodationId");
+
       final Map<String, dynamic> json = response.data;
       return AccommodationImageModel.fromJson(json);
     } catch (e) {

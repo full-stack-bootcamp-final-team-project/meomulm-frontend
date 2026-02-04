@@ -58,7 +58,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _phoneCtrl = TextEditingController(text: widget.user.userPhone);
 
     _nameCtrl.addListener(_recalc);
-    _phoneCtrl.addListener(_recalc);
+    _phoneCtrl.addListener(() {
+      if(_isPhoneChecked) {
+        setState(() => _isPhoneChecked = false);
+      }
+    });
     _recalc();
   }
 

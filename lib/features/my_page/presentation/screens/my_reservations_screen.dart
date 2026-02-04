@@ -9,6 +9,7 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
 import 'package:meomulm_frontend/core/widgets/dialogs/simple_modal.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/my_page/data/datasources/reservation_service.dart';
@@ -79,7 +80,7 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
           try {
             image = await reservationService.loadAccommodationImage(
               token,
-              r.accommodationId.toString(),
+              r.accommodationId,
             );
           } catch (_) {
               image = null;
@@ -118,21 +119,20 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
       final token = context.read<AuthProvider>().token;
       if(token == null) return;
       final response = await reservationService.deleteReservation(token, reservationId);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("예약이 취소되었습니다."),
-          behavior: SnackBarBehavior.floating,
-          duration: AppDurations.snackbar,
-        ),
+      setState(() {
+        reservations.removeWhere((r) => r.reservationId == reservationId);
+      });
+      SnackMessenger.showMessage(
+        context,
+        "예약이 취소되었습니다.",
+        type: ToastType.success
       );
       context.pop(true);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("예약 취소에 실패했습니다."),
-          behavior: SnackBarBehavior.floating,
-          duration: AppDurations.snackbar,
-        ),
+      SnackMessenger.showMessage(
+        context,
+        "예약 취소에 실패했습니다.",
+        type: ToastType.error
       );
     } finally {
       setState(() => isLoading = false);
