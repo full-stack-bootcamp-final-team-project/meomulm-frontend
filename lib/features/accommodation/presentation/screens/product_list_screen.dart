@@ -69,59 +69,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
     }
   }
 
-/*
-
-  Future<void> getFavorite() async {
-    final provider = context.read<AccommodationProvider>();
-    final token = context.read<AuthProvider>().token;
-
-    if (provider.selectedAccommodationId == null) {
-      debugPrint('숙소 ID가 없습니다.');
-      return;
-    }
-
-    try {
-      final favorite = await FavoriteApiService.getFavorite(
-        token!,
-        provider.selectedAccommodationId!,
-      );
-
-      debugPrint('찜 여부: $favorite');
-
-      setState(() {
-        isFavorite = favorite;
-      });
-    } catch (e) {
-      debugPrint('찜 상태 로드 실패: $e');
-      setState(() {
-        isFavorite = false;
-      });
-    }
-  }
-
-
-  Future<void> postFavorite() async {
-    final provider = context.read<AccommodationProvider>();
-    final token = context.read<AuthProvider>().token;
-
-    if (provider.selectedAccommodationId == null) {
-      debugPrint('숙소 ID가 없습니다.');
-      return;
-    }
-
-    try {
-      await FavoriteApiService.postFavorite(
-        token!,
-        provider.selectedAccommodationId!,
-      );
-
-    } catch (e) {
-      debugPrint('찜 추가 실패: $e');
-
-    }
-  }
-
-*/
 
 
 
