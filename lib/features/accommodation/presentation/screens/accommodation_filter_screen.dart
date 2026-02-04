@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/providers/filter_provider.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_filter_widgets/accommodation_filter_price.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_filter_widgets/accommodation_filter_section.dart';
 import 'package:provider/provider.dart';
@@ -12,8 +12,8 @@ class AccommodationFilterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 통합된 AccommodationProvider를 watch하여 UI 실시간 업데이트
-    final provider = context.watch<AccommodationProvider>();
+    // AccommodationProvider → FilterProvider로 변경
+    final provider = context.watch<FilterProvider>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -45,7 +45,7 @@ class AccommodationFilterScreen extends StatelessWidget {
                   ),
                   const Divider(height: 30),
 
-                  // 1. 편의시설 섹션 (Provider의 toggle 메서드 직접 호출)
+                  // 1. 편의시설 섹션
                   AccommodationFilterSection(
                     title: '편의시설',
                     items: const [
@@ -69,7 +69,7 @@ class AccommodationFilterScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 40),
 
-                  // 3. 가격 필터 (Provider 내부의 priceRange 사용)
+                  // 3. 가격 필터
                   const AccommodationFilterPrice(),
                 ],
               ),
@@ -82,7 +82,7 @@ class AccommodationFilterScreen extends StatelessWidget {
               child: BottomActionButton(
                 label: '적용하기',
                 onPressed: () {
-                  // 이미 Provider 상태가 업데이트되었으므로 바로 닫음
+                  // FilterProvider 상태가 이미 업데이트되었으므로 바로 닫음
                   Navigator.pop(context, true);
                 },
               ),
