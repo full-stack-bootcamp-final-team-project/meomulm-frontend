@@ -101,14 +101,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
               Expanded(
                 child: Text(
                   accommodationName,
-                  style: AppTextStyles.cardTitle,
+                  style: AppTextStyles.appBarTitle,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               // 좋아요 + 공유 버튼을 ActionButtons로 대체
-              ProductActionButtons(
+             /* ProductActionButtons(
                 accommodationId: provider.selectedAccommodationId ?? 0,
-              ),
+              ),*/
             ],
           ),
         ),
@@ -187,7 +187,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         const SizedBox(width: AppSpacing.sm),
                         Text(
                           selectedDate,
-                          style: AppTextStyles.bodyMd,
+                          style: AppTextStyles.bodyLg,
                         ),
                       ],
                     ),
@@ -200,7 +200,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         const SizedBox(width: AppSpacing.sm),
                         Text(
                           selectedPeople,
-                          style: AppTextStyles.bodyMd,
+                          style: AppTextStyles.bodyLg,
                         ),
                       ],
                     ),
