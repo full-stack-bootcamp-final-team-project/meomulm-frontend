@@ -63,12 +63,11 @@ class RegexpUtils {
       return InputMessages.invalidPhone;
     }
     if (phone.length < 10) {
-      return '전화번호는 최소 10자리 이상이어야 합니다.';
+      return InputMessages.minLengthPhone;
     }
-    if (phone.length > 11) {
-      return '전화번호는 11자리 이하여야 합니다.';
+    if (phone.length > 14) {
+      return InputMessages.maxLengthPhone;
     }
     return null;
   }
-
 }

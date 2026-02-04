@@ -5,6 +5,7 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/keyboard_converter.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/signup/birth_date_selector.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/signup/signup_form_fields.dart';
@@ -95,86 +96,83 @@ class _SignupScreenState extends State<SignupScreen> {
   void _handleSignup() async {
     // 빈 필드 체크
     if (_emailController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("이메일을 입력하세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "이메일을 입력하세요.",
+          type: ToastType.error
       );
       return;
     }
 
     if (_passwordController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("비밀번호를 입력하세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "비밀번호를 입력하세요.",
+          type: ToastType.error
       );
       return;
     }
 
     if (_checkPasswordController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("비밀번호 확인을 입력하세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "비밀번호 확인을 입력하세요.",
+          type: ToastType.error
       );
       return;
     }
 
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("이름을 입력하세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "이름을 입력하세요.",
+          type: ToastType.error
       );
       return;
     }
 
     if (_phoneController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("연락처를 입력하세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "연락처를 입력하세요.",
+          type: ToastType.error
       );
       return;
     }
 
     // Form validation 체크 (정규식 검증)
     if (!_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("입력 정보를 다시 확인해주세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "입력 정보를 다시 확인해주세요.",
+          type: ToastType.error
       );
       return;
     }
 
     if (_birthController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("생년월일을 선택해주세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "생년월일을 선택해주세요.",
+          type: ToastType.error
       );
       return;
     }
 
     if (!_isKakaoSignup && !_isEmailChecked) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('이메일 중복 확인을 해주세요.')),
+      SnackMessenger.showMessage(
+          context,
+          '이메일 중복 확인을 해주세요.',
+          type: ToastType.error
       );
       return;
     }
 
     if (!_isPhoneChecked) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('전화번호 중복 확인을 해주세요.')),
+      SnackMessenger.showMessage(
+          context,
+          '전화번호 중복 확인을 해주세요.',
+          type: ToastType.error
       );
       return;
     }
@@ -191,11 +189,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
       if (KeyboardConverter.containsKorean(password)) {
         password = KeyboardConverter.convertToEnglish(password);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("비밀번호가 한글 키보드로 입력되어 자동 변환되었습니다."),
-            duration: Duration(seconds: 2),
-          ),
+        SnackMessenger.showMessage(
+            context,
+            "비밀번호가 한글 키보드로 입력되어 자동 변환되었습니다.",
         );
       }
 
@@ -216,10 +212,10 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("회원가입이 완료되었습니다."),
-          backgroundColor: AppColors.success,),
+      SnackMessenger.showMessage(
+          context,
+          "회원가입이 완료되었습니다.",
+          type: ToastType.success
       );
 
       // 회원가입 후 로그인 페이지로 이동
@@ -227,15 +223,12 @@ class _SignupScreenState extends State<SignupScreen> {
 
     } catch (e) {
       if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '회원가입에 실패했습니다: ${e.toString().replaceAll('Exception: ', '')}',
-          ),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          '회원가입에 실패했습니다: ${e.toString().replaceAll('Exception: ', '')}',
+          type: ToastType.error
       );
+
     } finally {
       if (mounted) {
         setState(() {
@@ -252,11 +245,10 @@ class _SignupScreenState extends State<SignupScreen> {
     final checkEmail = RegexpUtils.validateEmail(email);
 
     if(checkEmail != null){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(checkEmail),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          checkEmail,
+          type: ToastType.error
       );
       return;
     }
@@ -267,17 +259,20 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() {
         _isEmailChecked = isAvailable;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(isAvailable ? '사용 가능한 이메일입니다.' : '이미 사용 중인 이메일입니다.'),
-          backgroundColor: isAvailable ? Colors.green : AppColors.error,
-        ),
+
+      SnackMessenger.showMessage(
+          context,
+          isAvailable ? '사용 가능한 이메일입니다.' : '이미 사용 중인 이메일입니다.',
+          type: isAvailable ? ToastType.success : ToastType.error
       );
 
+
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('이메일 중복 확인에 실패했습니다.')));
+      SnackMessenger.showMessage(
+          context,
+          '이메일 중복 확인에 실패했습니다.',
+          type: ToastType.error
+      );
     }
   }
 
@@ -285,14 +280,13 @@ class _SignupScreenState extends State<SignupScreen> {
   void _checkPhone() async {
     final phone = _phoneController.text.trim();
 
-    final checkEmail = RegexpUtils.validatePhone(phone);
+    final checkPhone = RegexpUtils.validatePhone(phone);
 
-    if(checkEmail != null){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(checkEmail),
-          backgroundColor: AppColors.error,
-        ),
+    if(checkPhone != null){
+      SnackMessenger.showMessage(
+          context,
+          checkPhone,
+          type: ToastType.error
       );
       return;
     }
@@ -304,17 +298,18 @@ class _SignupScreenState extends State<SignupScreen> {
         _isPhoneChecked = isAvailable;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(isAvailable ? '사용 가능한 전화번호입니다.' : '이미 사용 중인 전화번호입니다.'),
-          backgroundColor: isAvailable ? Colors.green : AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          isAvailable ? '사용 가능한 전화번호입니다.' : '이미 사용 중인 전화번호입니다.',
+          type: isAvailable ? ToastType.success : ToastType.error
       );
 
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('전화번호 중복 확인에 실패했습니다.')));
+      SnackMessenger.showMessage(
+          context,
+          '전화번호 중복 확인에 실패했습니다.',
+          type: ToastType.error
+      );
     }
   }
 
