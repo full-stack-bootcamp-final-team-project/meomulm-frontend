@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
 enum ToastType { info, success, error }
 
@@ -15,7 +16,7 @@ class SnackMessenger {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();    // 이전 스낵바가 있다면 즉시 닫기
 
     final backgroundColor = switch (type) {                 // 타입에 따른 색상
-      ToastType.success => AppColors.gray2,
+      ToastType.success => AppColors.success,
       ToastType.error => AppColors.cancelled,
       _ => Colors.black87,
     };
@@ -25,10 +26,12 @@ class SnackMessenger {
         content: Text(
           message,
           textAlign: TextAlign.center,
-          style: TextStyle(
-              color: AppColors.white,
-              fontWeight: FontWeight.w700
-          ),
+          style: AppTextStyles.bodyMd.copyWith(color: AppColors.white),
+
+          // TextStyle(
+          //     color: AppColors.white,
+          //     fontWeight: FontWeight.w700
+          // ),
         ),
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
