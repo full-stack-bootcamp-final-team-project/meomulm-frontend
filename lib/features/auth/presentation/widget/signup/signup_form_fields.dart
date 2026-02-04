@@ -118,7 +118,7 @@ class SignupFormFields extends StatelessWidget {
           field: CustomTextField(
             label: "연락처",
             isRequired: true,
-            hintText: "연락처를 입력하세요.(- 제외)",
+            hintText: "연락처를 입력하세요.",
             controller: phoneController,
             focusNode: phoneFocusNode,
             keyboardType: TextInputType.phone,

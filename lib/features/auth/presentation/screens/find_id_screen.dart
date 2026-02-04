@@ -6,6 +6,7 @@ import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/find_id/find_id_input_fields.dart';
 
@@ -33,23 +34,19 @@ class _FindIdScreenState extends State<FindIdScreen> {
     final phoneRegexp = RegexpUtils.validatePhone(phone);
 
     if (nameRegexp != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(nameRegexp),
-          duration: const Duration(seconds: 2),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          nameRegexp,
+          type: ToastType.error
       );
       return;
     }
 
     if (phoneRegexp != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(phoneRegexp),
-          duration: const Duration(seconds: 2),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          phoneRegexp,
+          type: ToastType.error
       );
       return;
     }

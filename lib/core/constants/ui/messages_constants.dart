@@ -41,6 +41,8 @@ class InputMessages {
   static const emptyPhone = '연락처는 필수 입력 사항입니다.';
   static const duplicatePhone = '이미 존재하는 연락처입니다.';
   static const validPhone = "사용 가능한 전화번호입니다.";
+  static const minLengthPhone = '전화번호는 최소 10자리 이상이어야 합니다.';
+  static const maxLengthPhone = '전화번호는 14자리 미만이여야 합니다.';
 
   // 생년월일
   static const emptyBirth = '생년월일은 필수 입력 사항입니다.';

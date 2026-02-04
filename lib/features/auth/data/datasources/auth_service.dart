@@ -46,48 +46,6 @@ class AuthService {
     }
   }
 
-  // 카카오 로그인
-  static Future<LoginResponseModel> kakaoLogin(String accessToken) async {
-    try {
-      print('📤 카카오 로그인 요청 - 토큰 길이: ${accessToken.length}자');
-
-      final res = await _dio.post(
-        '${ApiPaths.authUrl}/kakao/token',
-        data: {'accessToken': accessToken},
-      );
-
-      print('📥 응답 코드: ${res.statusCode}');
-
-      if (res.statusCode == 200) {
-        print('✅ 카카오 로그인 성공');
-        return LoginResponseModel.fromJson(res.data);
-      } else if (res.statusCode == 202) {
-        // 미가입 회원인 경우
-        print('⚠️ 미가입 회원');
-        throw Exception('NEED_SIGNUP');
-      } else {
-        print('❌ 카카오 로그인 실패: ${res.statusCode}');
-        throw Exception('카카오 로그인 실패: ${res.statusCode}');
-      }
-    } on DioException catch (e) {
-      print('❌ DioException 발생');
-      print('   타입: ${e.type}');
-      print('   메시지: ${e.message}');
-
-      if (e.response != null) {
-        print('   응답 코드: ${e.response?.statusCode}');
-        print('   응답 데이터: ${e.response?.data}');
-
-        if (e.response?.statusCode == 202) {
-          throw Exception('NEED_SIGNUP');
-        }
-        throw Exception('카카오 로그인 실패: ${e.response?.statusMessage}');
-      } else {
-        throw Exception('네트워크 오류: ${e.message}');
-      }
-    }
-  }
-
   // 회원가입
   static Future<void> signup({
     required String userEmail,

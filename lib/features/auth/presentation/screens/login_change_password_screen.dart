@@ -4,6 +4,7 @@ import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/change_password/change_password_form_fields.dart';
 
@@ -59,23 +60,19 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
     final checkPasswordRegexp = RegexpUtils.validateCheckPassword(password, checkPassword);
 
     if (passwordRegexp != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(passwordRegexp),
-          duration: const Duration(seconds: 2),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          passwordRegexp,
+          type: ToastType.error
       );
       return;
     }
 
     if (checkPasswordRegexp != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(checkPasswordRegexp),
-          duration: const Duration(seconds: 2),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          checkPasswordRegexp,
+          type: ToastType.error
       );
       return;
     }
@@ -86,25 +83,28 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
       if(!mounted) return;
 
       if(res != null || res != 0){
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text("비밀번호가 변경되었습니다."),
-                backgroundColor: AppColors.success)
+        SnackMessenger.showMessage(
+            context,
+            "비밀번호가 변경되었습니다.",
+            type: ToastType.success
         );
         context.push('${RoutePaths.login}');
+
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("비밀번호 변경에 실패했습니다."),
-              backgroundColor: AppColors.error,
-            )
+        SnackMessenger.showMessage(
+            context,
+            "비밀번호 변경에 실패했습니다.",
+            type: ToastType.error
         );
       }
 
     } catch (e) {
       if(!mounted) return;
-      ScaffoldMessenger.of(context,).showSnackBar(
-          SnackBar(content: Text('오류 : $e')));
+      SnackMessenger.showMessage(
+          context,
+          '오류 : $e',
+          type: ToastType.error
+      );
     }
   }
 

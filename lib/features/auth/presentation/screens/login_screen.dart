@@ -5,6 +5,7 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/kakao_login_service.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/naver_login_service.dart';
@@ -74,23 +75,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
     if(emailRegexp != null){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(emailRegexp),
-          duration: const Duration(seconds: 2),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          emailRegexp,
+        type: ToastType.error
       );
       return;
     }
 
     if(passwordRegexp != null){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(passwordRegexp),
-          duration: const Duration(seconds: 2),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          passwordRegexp,
+          type: ToastType.error
       );
       return;
     }
@@ -107,24 +104,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
       await context.read<AuthProvider>().login(loginResponse.token);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(SnackBarMessages.loginCompleted),
-          backgroundColor: AppColors.success,
-          duration: Duration(seconds: 2),
-        ),
+      SnackMessenger.showMessage(
+          context,
+          SnackBarMessages.loginCompleted,
+          type: ToastType.success
       );
 
       context.push('${RoutePaths.home}');
 
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('아아디 또는 비밀번호가 일치하지 않습니다.'),
-          backgroundColor: AppColors.error,
-          duration: Duration(seconds: 2),
-        ),
+      SnackMessenger.showMessage(
+          context,
+          '아아디 또는 비밀번호가 일치하지 않습니다.',
+          type: ToastType.error
       );
     } finally {
       if (mounted) {
@@ -192,14 +185,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (!mounted) return;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('카카오 로그인 성공!'),
-            backgroundColor: AppColors.success,
-            duration: Duration(seconds: 2),
-          ),
+        SnackMessenger.showMessage(
+            context,
+            '카카오 로그인 성공!',
+          type: ToastType.error
         );
-
         context.go(RoutePaths.home);
 
       } else if (response['message'] == 'need_signup') {
@@ -208,12 +198,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (!mounted) return;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('미가입 회원입니다. 회원가입을 진행해주세요.'),
-            backgroundColor: AppColors.error,
-            duration: Duration(seconds: 2),
-          ),
+        SnackMessenger.showMessage(
+            context,
+            '미가입 회원입니다. 회원가입을 진행해주세요.',
+          type: ToastType.error
         );
 
         // 회원가입 페이지로 카카오 정보 전달
@@ -237,12 +225,10 @@ class _LoginScreenState extends State<LoginScreen> {
         errorMessage = '로그인이 취소되었습니다.';
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorMessage),
-          backgroundColor: AppColors.error,
-          duration: Duration(seconds: 2),
-        ),
+      SnackMessenger.showMessage(
+          context,
+          errorMessage,
+          type: ToastType.error
       );
 
     } catch (e, stackTrace) {
@@ -252,13 +238,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('로그인 중 오류가 발생했습니다.'),
-          backgroundColor: AppColors.error,
-          duration: Duration(seconds: 2),
-        ),
+      SnackMessenger.showMessage(
+          context,
+          '로그인 중 오류가 발생했습니다.',
+          type: ToastType.error
       );
+
     } finally {
       if (mounted) {
         setState(() {
@@ -316,12 +301,10 @@ class _LoginScreenState extends State<LoginScreen> {
               final naverUser =
               Map<String, dynamic>.from(response['naverUser'] as Map);
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('미가입 회원입니다. 회원가입을 진행해주세요.'),
-                  backgroundColor: AppColors.error,
-                  duration: Duration(seconds: 2),
-                ),
+              SnackMessenger.showMessage(
+                  context,
+                  '미가입 회원입니다. 회원가입을 진행해주세요.',
+                  type: ToastType.error
               );
               context.push(
                 RoutePaths.signup,
@@ -334,13 +317,12 @@ class _LoginScreenState extends State<LoginScreen> {
           } catch (e) {
             if (!mounted) return;
 
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('네이버 로그인 처리 실패: $e'),
-                backgroundColor: AppColors.error,
-                duration: const Duration(seconds: 2),
-              ),
+            SnackMessenger.showMessage(
+                context,
+                '네이버 로그인 처리 실패: $e',
+                type: ToastType.error
             );
+
           } finally {
             if (mounted) {
               setState(() => _isLoading = false);
@@ -351,24 +333,21 @@ class _LoginScreenState extends State<LoginScreen> {
         onFailure: (httpStatus, message) {
           if (!mounted) return;
           setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('네이버 로그인 실패($httpStatus): $message'),
-              backgroundColor: AppColors.error,
-              duration: const Duration(seconds: 2),
-            ),
+
+          SnackMessenger.showMessage(
+              context,
+              '네이버 로그인 실패($httpStatus): $message',
+              type: ToastType.error
           );
         },
 
         onError: (errorCode, message) {
           if (!mounted) return;
           setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('네이버 로그인 에러($errorCode): $message'),
-              backgroundColor: AppColors.error,
-              duration: const Duration(seconds: 2),
-            ),
+          SnackMessenger.showMessage(
+              context,
+              '네이버 로그인 에러($errorCode): $message',
+              type: ToastType.error
           );
         },
       ),
