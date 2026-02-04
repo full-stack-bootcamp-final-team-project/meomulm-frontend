@@ -6,6 +6,7 @@ import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_icons.dart';
 import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_reservations/date_row.dart';
+import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_reservations/reservation_image_widget.dart';
 
 /// ===============================
 /// 공통 카드 베이스
@@ -55,29 +56,7 @@ class ReservationCardBase extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 숙소 이미지 영역
-                  Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      color: AppColors.gray5,
-                      borderRadius: BorderRadius.circular(6),
-                      image: isImageExists
-                          ? DecorationImage(
-                              image: NetworkImage(accommodationImageUrl!),
-                              fit: BoxFit.cover,
-                          )
-                          : null,
-                    ),
-                    child: isImageExists
-                      ? null
-                      : const Center(
-                        child: Icon(
-                          AppIcons.image,
-                          color: AppColors.gray3,
-                        )
-                      )
-                  ),
+                  ReservationImageWidget(imageUrl: accommodationImageUrl),
 
                   const SizedBox(width: AppSpacing.md),
 
@@ -102,16 +81,18 @@ class ReservationCardBase extends StatelessWidget {
               ),
 
               const SizedBox(height: AppSpacing.lg),
-
-              DateRow(
-                checkInDate: checkInValue,
-                checkOutDate: checkOutValue,
-                labelColor: labelColor,
-                valueColor: valueColor
+              Padding(
+                padding: EdgeInsets.only(left:8),
+                child: DateRow(
+                    checkInDate: checkInValue,
+                    checkOutDate: checkOutValue,
+                    labelColor: labelColor,
+                    valueColor: valueColor
+                ),
               ),
 
               if (bottomAction != null) ...[
-                const SizedBox(height: AppSpacing.lg),
+                const SizedBox(height: AppSpacing.sm),
                 bottomAction!,
               ],
             ],

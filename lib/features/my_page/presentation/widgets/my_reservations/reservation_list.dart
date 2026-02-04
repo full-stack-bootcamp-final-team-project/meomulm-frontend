@@ -34,6 +34,7 @@ class ReservationList extends StatelessWidget {
     }
 
     return ListView.separated(
+      physics: AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.all(AppSpacing.lg),
       itemCount: children.length,
       separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.lg),

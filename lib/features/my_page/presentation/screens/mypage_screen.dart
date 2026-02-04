@@ -175,7 +175,10 @@ class _MypageScreenState extends State<MypageScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBarWidget(title: TitleLabels.myInfo),
+      appBar: AppBarWidget(
+        title: TitleLabels.myInfo,
+        onBack: () => context.go('/home'),
+      ),
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),

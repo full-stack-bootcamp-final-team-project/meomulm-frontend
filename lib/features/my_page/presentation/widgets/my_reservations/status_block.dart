@@ -56,6 +56,7 @@ class _StatusBlockStyle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      alignment: Alignment.center,
       width: 65,
       height: 27,
       decoration: BoxDecoration(

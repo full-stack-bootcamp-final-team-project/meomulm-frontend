@@ -42,7 +42,7 @@ class ReservationCardBefore extends StatelessWidget {
       checkOutValue: checkOutValue,
       bottomAction: LayoutBuilder(
         builder: (context, constraints) {
-          final isNarrow = constraints.maxWidth < 360;  // 설정되어 있는 mobile 브레이크포인트로 설정하면 이상해서 일단 이렇게 설정함.
+          final isNarrow = constraints.maxWidth < 300;  // 설정되어 있는 mobile 브레이크포인트로 설정하면 이상해서 일단 이렇게 설정함.
 
           Widget changeBtn() => OptionButton(
             // label: ButtonLabels.changeBooking, -> 현재 공통 상수에는 "예약 변경"으로 되어 있어서 일단 임시로 바꿔둠
@@ -61,7 +61,7 @@ class ReservationCardBefore extends StatelessWidget {
                 Row(
                   children: [Expanded(child: changeBtn())],
                 ),
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: AppSpacing.xs),
                 Row(
                   children: [Expanded(child: cancelBtn())],
                 )
