@@ -22,19 +22,17 @@ class NotificationCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () async {
-        // 1. 읽지 않은 알림이라면 읽음 처리 API 호출
-        if (!isRead) {
-          final auth = context.read<AuthProvider>();
+        if (!notification.isRead) {
           try {
-            // 별도의 updateRead API가 있다면 호출 (없다면 delete 방식처럼 구성)
-            // 여기서는 탭 시 콜백을 실행하여 리스트를 새로고침하거나 상태를 변경하도록 유도
+            await NotificationApiService.updateNotificationStatus(
+              notificationId: notification.notificationId,
+            );
             if (onTap != null) onTap!();
           } catch (e) {
             debugPrint('읽음 처리 실패: $e');
           }
         }
 
-        // 2. 링크가 있다면 이동
         if (notification.notificationLinkUrl.isNotEmpty) {
           context.push(notification.notificationLinkUrl);
         }
@@ -64,7 +62,7 @@ class NotificationCard extends StatelessWidget {
               height: 8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isRead ? Colors.transparent : unreadColor,
+                color: isRead ? Colors.white : unreadColor,
               ),
             ),
 

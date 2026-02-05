@@ -41,6 +41,13 @@ class _MeomulmAppState extends State<MeomulmApp> {
   void initState() {
     super.initState();
     _listenForLinks();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      if (auth.token != null) {
+        Provider.of<NotificationProvider>(context, listen: false).connect(auth.token!);
+      }
+    });
   }
 
   void _listenForLinks() {

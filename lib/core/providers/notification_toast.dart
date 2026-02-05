@@ -41,16 +41,9 @@ class NotificationToast extends StatelessWidget {
               final String? linkUrl = notification['notificationLinkUrl'];
               if (linkUrl != null && linkUrl.isNotEmpty) {
                 try {
-                  final uri = Uri.parse(linkUrl);
-                  final String? parsedPath = AppRouter.parseDeepLinkUri(uri);
-                  if (parsedPath != null) {
-                    debugPrint('알림 클릭 이동 경로: $parsedPath');
-                    context.push(parsedPath);
-                  } else {
-                    debugPrint('해당 딥링크를 해석할 수 없습니다: $linkUrl');
-                  }
+                  context.push(linkUrl);
                 } catch (e) {
-                  debugPrint("URI 파싱 에러: $e");
+                  debugPrint("linkUrl 에러: $e");
                 }
               }
               onDismiss();
