@@ -56,7 +56,7 @@ class ReservationService {
   /*
   에약 취소 : /api/reservation (delete)
    */
-  Future<bool> deleteReservation(String token, int reservationId) async {
+  Future<bool> putReservation(String token, int reservationId) async {
     try {
       final response = await _dio.delete(
         '/reservation',
@@ -89,6 +89,26 @@ class ReservationService {
     } catch (e) {
       print('예약 수정 실패: $e');
       throw Exception('예약 수정에 실패했습니다.');
+    }
+  }
+
+
+  /*
+  에약 취소 : /api/reservation (delete)
+   */
+  Future<bool> deleteReservation(String token, int reservationId) async {
+    try {
+      final response = await _dio.delete(
+        '/reservation',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+        data: {'reservationId': reservationId},
+      );
+      return true;
+    } catch (e) {
+      print('예약 취소 실패: $e');
+      throw Exception('예약 취소에 실패했습니다.');
     }
   }
 }

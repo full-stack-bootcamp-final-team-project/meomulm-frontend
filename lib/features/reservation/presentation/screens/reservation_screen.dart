@@ -43,7 +43,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
       if (token != null) {
         context.read<UserProfileProvider>().loadUserProfile(token);
       } else {
-        context.push(AppRouter.RoutePaths.login);
+        context.go(AppRouter.RoutePaths.login);
       }
     });
 
@@ -94,9 +94,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
       debugPrint('[ReservationScreen] 예약 완료 | reservationId=$reservationId');
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('예약 완료!')),
-      );
+
 
       // 결제 화면으로 이동
       GoRouter.of(context).push(AppRouter.RoutePaths.payment);
@@ -322,7 +320,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 }
                     : null,
                 child: const Text(
-                  ButtonLabels.bookNow,
+                  TitleLabels.payment,
                   style: AppTextStyles.buttonLg,
                 ),
               ),

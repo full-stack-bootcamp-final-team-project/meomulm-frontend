@@ -9,6 +9,7 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/my_page/data/datasources/reservation_service.dart';
 import 'package:meomulm_frontend/features/reservation/data/datasources/stripe_service.dart';
 import 'package:meomulm_frontend/features/reservation/data/models/payment_intent_dto.dart';
 import 'package:meomulm_frontend/features/reservation/presentation/providers/reservation_provider.dart';
@@ -190,6 +191,65 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
+  void _cancel(){
+    _cancelReservation();
+  }
+
+  Future<void> _cancelReservation() async {
+    final reservationProvider = context.read<ReservationProvider>();
+
+    // 예약이 없으면 바로 종료
+    final reservationId = reservationProvider.reservationId;
+    if (reservationId == null) {
+      debugPrint('취소할 예약이 없습니다.');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true; // 로딩 상태 시작
+    });
+
+    try {
+      // 토큰 가져오기
+      final token = context.read<AuthProvider>().token;
+      if (token == null) {
+        return;
+      }
+
+      final reservationService = ReservationService();
+
+      // ── 예약 취소 API 호출 ──
+      final bool cancelSuccess = await reservationService.deleteReservation(
+        token,
+        reservationId,
+      );
+
+      if (!mounted) return;
+
+      if (cancelSuccess) {
+        // 취소 성공 시 Provider 초기화
+        // reservationProvider.clearReservation();
+
+        // 취소 후 화면 닫기
+        Navigator.of(context).maybePop();
+        debugPrint('예약이 성공적으로 취소되었습니다.');
+      } else {
+        debugPrint('예약 취소 실패: API 응답 실패');
+      }
+
+    } catch (e) {
+      debugPrint('예약 취소 실패: $e');
+    } finally {
+      // mounted 체크 후 로딩 종료
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+
   // ─────────────────────────────────────────────
   // build
   // ─────────────────────────────────────────────
@@ -204,8 +264,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: const AppBarWidget(
+      appBar: AppBarWidget(
         title: TitleLabels.payment,
+        onBack: _cancel,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
