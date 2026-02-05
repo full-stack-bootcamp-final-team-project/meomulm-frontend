@@ -86,7 +86,6 @@ class NotificationApiService {
 
   static Future<void> deleteNotification({
     required int notificationId,
-    // required String token,
   }) async {
     try {
       final res = await _dio.delete(

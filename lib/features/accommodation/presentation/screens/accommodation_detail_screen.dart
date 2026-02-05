@@ -9,6 +9,7 @@ import 'package:meomulm_frontend/features/accommodation/data/datasources/accommo
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_detail_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/review_summary.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/customer_divider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/facility_list.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/facility_section.dart';
@@ -63,6 +64,14 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
         accommodation = results[0] as AccommodationDetail?;
         reviewSummary = results[1] as ReviewSummary?;
         isLoading = false;
+
+        // ← 여기에 추가. provider에 ID 저장
+        if (accommodation != null) {
+          context.read<AccommodationProvider>().setAccommodationInfo(
+            id,
+            accommodation!.accommodationName,
+          );
+        }
       });
     } catch (e) {
       setState(() {

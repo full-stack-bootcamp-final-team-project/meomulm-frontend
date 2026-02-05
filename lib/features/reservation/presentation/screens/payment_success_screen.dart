@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart' as AppRouter;
+import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
 class PaymentSuccessScreen extends StatelessWidget {
@@ -57,7 +58,7 @@ class PaymentSuccessScreen extends StatelessWidget {
               height: AppSpacing.xxxl,
               child: OutlinedButton(
                 onPressed: () {
-                  context.go('${AppRouter.RoutePaths.myPage}${AppRouter.RoutePaths.myReservation}');
+                  context.go('${RoutePaths.myPage}${RoutePaths.myReservation}?tab=0');
                 },
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(

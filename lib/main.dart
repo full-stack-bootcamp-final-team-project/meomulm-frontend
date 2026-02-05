@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -10,6 +11,7 @@ import 'package:naver_login_sdk/naver_login_sdk.dart';
 
 import 'app.dart';
 import 'core/constants/config/env_config.dart';
+import 'core/router/app_router.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 
 Future<void> main() async {
@@ -51,6 +53,24 @@ Future<void> main() async {
     }
   } else {
     debugPrint("Web 환경: Kakao Map SDK 초기화 생략");
+  }
+
+  // ---------------------------------------------------------------
+  // 초기 deeplink 캐치 (앱이 완전히 종료된 상태에서 링크로 열린 경우)
+  // ---------------------------------------------------------------
+  try {
+    final appLinks = AppLinks();
+    final Uri? initialUri = await appLinks.getInitialLink();
+    if (initialUri != null) {
+      debugPrint('🔗 초기 deeplink URI 캐치: $initialUri');
+      final parsedPath = AppRouter.parseDeepLinkUri(initialUri);
+      if (parsedPath != null) {
+        debugPrint('🔗 파싱된 경로: $parsedPath');
+        AppRouter.pendingDeepLink = parsedPath;
+      }
+    }
+  } catch (e) {
+    debugPrint('⚠️ 초기 deeplink 캐치 실패: $e');
   }
 
   final authProvider = AuthProvider();
