@@ -6,6 +6,7 @@ import 'package:meomulm_frontend/core/constants/paths/route_paths.dart' as AppRo
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/core/widgets/input/custom_underline_text_field.dart';
 import 'package:meomulm_frontend/core/widgets/input/phone_number_formatter.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
@@ -38,6 +39,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _nameFocusNode.requestFocus();
+    });
 
     // Provider에서 기존 예약자 정보 불러오기
     final reservationProvider = context.read<ReservationProvider>();
@@ -78,12 +83,17 @@ class _ReservationScreenState extends State<ReservationScreen> {
       isLoading = true;
     });
 
+    if(!_canSubmit){
+      SnackMessenger.showMessage(context, "값을 정확히 입력해주세요.",type: ToastType.error);
+      return;
+    }
     try {
       final token = context.read<AuthProvider>().token;
       if (token == null) {
         debugPrint('토큰이 없습니다. 로그인 필요');
         return;
       }
+
 
       // ── 예약 API 호출 → reservationId 반환 ──
       final int reservationId = await ReservationApiService.postReservation(
@@ -271,6 +281,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   controller: _nameController,
                   focusNode: _nameFocusNode,
                   validator: (value) => RegexpUtils.validateName(value),
+                  onFieldSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(_emailFocusNode);
+                  },
+                  textInputAction: TextInputAction.next,
                 ),
 
                 const SizedBox(height: AppSpacing.xl),
@@ -280,7 +294,12 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   hintText: InputMessages.emptyEmail,
                   controller: _emailController,
                   focusNode: _emailFocusNode,
+                  keyboardType: TextInputType.emailAddress,
                   validator: (value) => RegexpUtils.validateEmail(value),
+                  onFieldSubmitted: (_) {
+                    FocusScope.of(context).requestFocus(_phoneFocusNode);
+                  },
+                  textInputAction: TextInputAction.next,
                 ),
 
                 const SizedBox(height: AppSpacing.xl),
@@ -290,10 +309,12 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   hintText: InputMessages.emptyPhone,
                   controller: _phoneController,
                   focusNode: _phoneFocusNode,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      PhoneNumberFormatter(),
-                    ],
+                  onFieldSubmitted: (_) => _makeReservation(),
+                  keyboardType: TextInputType.phone,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    PhoneNumberFormatter(),
+                  ],
                   validator: (value) => RegexpUtils.validatePhone(value),
                 ),
 
