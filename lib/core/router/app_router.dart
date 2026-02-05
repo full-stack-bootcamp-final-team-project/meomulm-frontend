@@ -298,8 +298,8 @@ class AppRouter {
             path: RoutePaths.myReviewWrite,
             name: "myReviewWrite",
             builder: (context, state) {
-              final data = state.extra as ReservationShareModel;
-              return MyReviewWriteScreen(reservationShare: data,);
+              final reservation = state.extra as ReservationShareModel;
+              return MyReviewWriteScreen(reservationShare: reservation,);
             },
           ),
           GoRoute(
