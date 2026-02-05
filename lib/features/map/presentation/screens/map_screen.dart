@@ -6,6 +6,7 @@ import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/providers/filter_provider.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_filter_screen.dart';
 import 'package:meomulm_frontend/features/map/data/datasources/location_service.dart';
 import 'package:meomulm_frontend/features/map/presentation/coordinators/map_coordinator.dart';
@@ -133,11 +134,14 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<AccommodationProvider>();
+
     return Scaffold(
       appBar: SearchBarWidget(
-        dateText: DatePeopleTextUtil.todayToTomorrow(),
-        peopleCount: 2,
+        dateText: DatePeopleTextUtil.range(provider.checkIn, provider.checkOut),
+        peopleCount: provider.guestNumber,
         onSearch: () => context.push(RoutePaths.mapSearch),
+        onBack: ()=> context.go(RoutePaths.home),
         onFilter: () async {
           final result = await Navigator.push(
             context,
@@ -146,7 +150,6 @@ class _MapScreenState extends State<MapScreen> {
             ),
           );
 
-          // 필터 적용했을 때 목록 재조회
           if (result == true) {
             _reloadWithFilter();
           }

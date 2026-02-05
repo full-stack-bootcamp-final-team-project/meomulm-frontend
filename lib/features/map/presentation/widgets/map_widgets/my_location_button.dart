@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/constants/config/app_config.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
-/// 내 위치로 이동하는 버튼 (LayoutBuilder 사용)
+/// 내 위치로 이동하는 버튼
 class MyLocationButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool hasSelectedAccommodation;
@@ -14,21 +16,21 @@ class MyLocationButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      right: 16,
+      right: AppSpacing.lg,
       bottom: 0,
       child: SafeArea(
         child: AnimatedPadding(
-          duration: const Duration(milliseconds: 300),
+          duration:AppDurations.medium,
           curve: Curves.easeInOut,
           padding: EdgeInsets.only(
             bottom: hasSelectedAccommodation ? 380.0 : 16.0,
           ),
           child: FloatingActionButton(
             onPressed: onPressed,
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black87,
+            backgroundColor: AppColors.white,
+            foregroundColor: AppColors.gray1,
             elevation: 4,
-            child: const Icon(Icons.my_location),
+            child: const Icon(AppIcons.location),
           ),
         ),
       ),

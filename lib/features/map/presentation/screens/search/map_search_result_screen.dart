@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
+import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
+import 'package:meomulm_frontend/core/providers/filter_provider.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_filter_screen.dart';
 import 'package:meomulm_frontend/features/map/presentation/coordinators/map_coordinator.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_view_layout.dart';
@@ -10,14 +14,10 @@ import 'package:provider/provider.dart';
 
 class MapSearchResultScreen extends StatefulWidget {
   final String region;
-  final DateTimeRange dateRange;
-  final int guestCount;
 
   const MapSearchResultScreen({
     super.key,
     required this.region,
-    required this.dateRange,
-    required this.guestCount,
   });
 
   @override
@@ -33,12 +33,8 @@ class _MapSearchResultScreenState extends State<MapSearchResultScreen> {
   void initState() {
     super.initState();
     _coordinator = MapCoordinator(context.read<MapProvider>());
-
-    // ✅ 1. 좌표는 동기적으로 즉시 가져오기
     _regionCenter = _coordinator.getRegionCenter(widget.region);
-
-    // ✅ 2. 검색은 비동기적으로 백그라운드 실행
-    _coordinator.searchByRegion(widget.region);
+    _searchByRegion();
   }
 
   @override
@@ -48,22 +44,55 @@ class _MapSearchResultScreenState extends State<MapSearchResultScreen> {
     super.dispose();
   }
 
+  /// region 좌표로 검색 (필터 포함)
+  Future<void> _searchByRegion() async {
+    try {
+      final filterProvider = context.read<FilterProvider>();
+
+      await _coordinator.searchByRegion(
+        widget.region,
+        filterParams: filterProvider.hasActiveFilters
+            ? filterProvider.filterParams
+            : null,
+      );
+    } catch (e) {
+      debugPrint('검색 실패: $e');
+    }
+  }
+  /// 필터 재적용
+  Future<void> _reloadWithFilter() async {
+    await _searchByRegion();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<AccommodationProvider>();
+
     return Scaffold(
       appBar: SearchBarWidget(
         keyword: widget.region,
-        dateText: DatePeopleTextUtil.todayToTomorrow(),
-        peopleCount: widget.guestCount,
+        dateText: DatePeopleTextUtil.range(provider.checkIn, provider.checkOut),
+        peopleCount: provider.guestNumber,
         onClear: () => context.pop(),
+        onBack: ()=> context.go(RoutePaths.home),
+        onFilter: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AccommodationFilterScreen(),
+            ),
+          );
+
+          if (result == true) {
+            _reloadWithFilter();
+          }
+        },
       ),
       body: MapViewLayout(
-        // ✅ 즉시 올바른 지역 중심으로 렌더링
         initialPosition: _regionCenter,
         onMapReady: (controller) => _controller = controller,
         additionalOverlays: const [],
       ),
-      // ✅ 로딩은 MapViewLayout 내부의 LoadingOverlay가 처리
     );
   }
 }

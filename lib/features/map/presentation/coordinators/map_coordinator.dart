@@ -9,13 +9,12 @@ class MapCoordinator {
 
   MapCoordinator(this.provider);
 
-  /// 지역 중심 좌표 가져오기 (동기)
   LatLng getRegionCenter(String region) {
-    return RegionCoordinates.getCoordinates(region) ?? MapConstants.defaultPosition;
+    return RegionCoordinates.getCoordinates(region) ??
+        MapConstants.defaultPosition;
   }
 
-  /// 위치 기반 검색 (비동기)
-  /// filterParams가 있으면 /search, 없으면 /map 엔드포인트 호출
+  /// 위치 기반 검색 (필터 포함)
   Future<void> searchByPosition({
     required double latitude,
     required double longitude,
@@ -33,7 +32,7 @@ class MapCoordinator {
     }
   }
 
-  /// 지역명으로 검색 (편의 메서드)
+  /// 지역명으로 검색 (filterParams 지원)
   Future<void> searchByRegion(
       String region, {
         Map<String, dynamic>? filterParams,
@@ -47,7 +46,6 @@ class MapCoordinator {
     );
   }
 
-  /// 정리
   void dispose() {
     provider.clear();
   }

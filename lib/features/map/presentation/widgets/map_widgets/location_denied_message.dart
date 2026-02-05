@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
 import 'package:meomulm_frontend/features/map/data/datasources/location_service.dart';
 
 /// 위치 권한 거부/에러 메시지
@@ -15,18 +18,18 @@ class LocationDeniedMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 16,
-      left: 16,
-      right: 16,
+      top: AppSpacing.lg,
+      left: AppSpacing.lg,
+      right: AppSpacing.lg,
       child: Material(
         elevation: 4,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(AppBorderRadius.sm),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.orange.shade200),
+            color: AppColors.gray3,
+            borderRadius: BorderRadius.circular(AppBorderRadius.sm),
+            border: Border.all(color: AppColors.gray3),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,32 +37,15 @@ class LocationDeniedMessage extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(
-                    _getIcon(),
-                    color: Colors.orange.shade700,
-                    size: 24,
-                  ),
-                  const SizedBox(width: 12),
+                  Icon(_getIcon(), color: AppColors.sub, size: AppIcons.sizeLg),
+                  const SizedBox(width: AppSpacing.md),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          _getTitle(),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.orange.shade700,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          _getMessage(),
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade700,
-                          ),
-                        ),
+                        Text(_getTitle(), style: AppTextStyles.dialogLg),
+                        const SizedBox(height: AppSpacing.xs),
+                        Text(_getMessage(), style: AppTextStyles.bodyMd),
                       ],
                     ),
                   ),
@@ -68,22 +54,8 @@ class LocationDeniedMessage extends StatelessWidget {
 
               // 재시도 버튼 (특정 에러 타입에만 표시)
               if (_canRetry() && onRetry != null) ...[
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: onRetry,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange.shade700,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text('다시 시도'),
-                  ),
-                ),
+                const SizedBox(height: AppSpacing.md),
+                LargeButton(label: LocationMessages.retryButton, onPressed: onRetry!, enabled: true),
               ],
             ],
           ),
@@ -109,32 +81,33 @@ class LocationDeniedMessage extends StatelessWidget {
   String _getTitle() {
     switch (errorType) {
       case LocationError.serviceDisabled:
-        return '위치 서비스가 비활성화되어 있습니다';
+        return LocationMessages.serviceDisabledTitle;
       case LocationError.permissionDenied:
-        return '위치 권한이 필요합니다';
+        return LocationMessages.permissionDeniedTitle;
       case LocationError.permissionDeniedForever:
-        return '위치 권한이 거부되었습니다';
+        return LocationMessages.permissionDeniedForeverTitle;
       case LocationError.timeout:
-        return '위치를 가져올 수 없습니다';
+        return LocationMessages.timeoutTitle;
       case LocationError.unknown:
-        return '위치 정보 오류';
+        return LocationMessages.unknownTitle;
     }
   }
 
   String _getMessage() {
     switch (errorType) {
       case LocationError.serviceDisabled:
-        return '기기의 위치 서비스를 켜주세요.';
+        return LocationMessages.serviceDisabledMessage;
       case LocationError.permissionDenied:
-        return '주변 숙소를 찾기 위해 위치 권한이 필요합니다.';
+        return LocationMessages.permissionDeniedMessage;
       case LocationError.permissionDeniedForever:
-        return '설정에서 위치 권한을 허용해주세요.';
+        return LocationMessages.permissionDeniedForeverMessage;
       case LocationError.timeout:
-        return '위치 정보를 가져오는데 시간이 초과되었습니다.';
+        return LocationMessages.timeoutMessage;
       case LocationError.unknown:
-        return '위치 정보를 가져오는데 문제가 발생했습니다.';
+        return LocationMessages.unknownMessage;
     }
   }
+
 
   bool _canRetry() {
     // 재시도 가능한 에러 타입

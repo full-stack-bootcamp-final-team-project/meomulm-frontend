@@ -197,15 +197,13 @@ class AppRouter {
         builder: (context, state) => const MapSearchRegionScreen(),
       ),
 
+
       GoRoute(
         path: RoutePaths.mapSearchResult,
-        name: 'mapSearchResult',
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
+          final region = state.extra as String;
           return MapSearchResultScreen(
-            region: extra['region'] as String,
-            dateRange: extra['dateRange'] as DateTimeRange,
-            guestCount: extra['guestCount'] as int,
+            region: region,
           );
         },
       ),

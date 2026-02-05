@@ -88,7 +88,6 @@ class MapMarkerManager {
       } catch (e) {
         failCount++;
         debugPrint('마커 추가 실패 [${acc.accommodationName}]: $e');
-        // 일부 마커 추가 실패해도 계속 진행
       }
     }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
 /// 지도에서 에러 메시지를 표시하는 위젯
 class ErrorMessage extends StatelessWidget {
@@ -19,54 +20,41 @@ class ErrorMessage extends StatelessWidget {
       right: 0,
       child: SafeArea(
         child: Container(
-          margin: const EdgeInsets.all(16),
-          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.all(AppSpacing.lg),
+          padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
-            color: Colors.red[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.red[200]!),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
+            color: AppColors.main,
+            borderRadius: BorderRadius.circular(AppBorderRadius.lg),
+            border: Border.all(color: AppColors.error),
+            boxShadow: AppShadows.small,
           ),
           child: Row(
             children: [
               Icon(
-                Icons.error_outline,
-                color: Colors.red[700],
-                size: 24,
+                AppIcons.errorOutline,
+                size: AppIcons.sizeLg,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Text(
                   message,
-                  style: TextStyle(
-                    color: Colors.red[900],
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: AppTextStyles.textError,
                 ),
               ),
               if (onRetry != null) ...[
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.sm),
                 TextButton(
                   onPressed: onRetry,
                   style: TextButton.styleFrom(
-                    foregroundColor: Colors.red[700],
+                    foregroundColor: AppColors.error,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
                     ),
                   ),
                   child: const Text(
                     '재시도',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: AppTextStyles.bodyXl
                   ),
                 ),
               ],
