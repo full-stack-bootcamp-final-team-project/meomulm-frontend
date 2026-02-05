@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/input/form_label.dart';
 
@@ -8,6 +9,7 @@ class CustomUnderlineTextField extends StatelessWidget {
   final String hintText;
   final TextEditingController controller;
   final FocusNode focusNode;
+  final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
   final bool obscureText;
   final String? Function(String?)? validator;
@@ -19,6 +21,7 @@ class CustomUnderlineTextField extends StatelessWidget {
     required this.hintText,
     required this.controller,
     required this.focusNode,
+    this.inputFormatters,
     this.keyboardType,
     this.obscureText = false,
     this.validator,
@@ -33,6 +36,7 @@ class CustomUnderlineTextField extends StatelessWidget {
         TextFormField(
           controller: controller,
           focusNode: focusNode,
+          inputFormatters: inputFormatters,
           keyboardType: keyboardType,
           obscureText: obscureText,
           // 실시간 검증을 위해 autovalidateMode 설정
