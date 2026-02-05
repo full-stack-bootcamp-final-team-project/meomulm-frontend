@@ -42,12 +42,7 @@ class _MeomulmAppState extends State<MeomulmApp> {
     super.initState();
     _listenForLinks();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final auth = Provider.of<AuthProvider>(context, listen: false);
-      if (auth.token != null) {
-        Provider.of<NotificationProvider>(context, listen: false).connect(auth.token!);
-      }
-    });
+    widget.authProvider.loadSavedToken();
   }
 
   void _listenForLinks() {
@@ -92,14 +87,65 @@ class _MeomulmAppState extends State<MeomulmApp> {
       ],
       child: Consumer2<ThemeProvider, AuthProvider>(
         builder: (context, themeProvider, auth, child) {
-          return MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            title: EnvConfig.appName,
-            theme: themeProvider.themeData,
-            routerConfig: AppRouter.router,
+          return _NotificationConnectionManager(
+            token: auth.token,
+            child: MaterialApp.router(
+              debugShowCheckedModeBanner: false,
+              title: EnvConfig.appName,
+              theme: themeProvider.themeData,
+              routerConfig: AppRouter.router,
+            ),
           );
         },
       ),
     );
   }
+}
+
+
+/// ✅ 토큰의 유무를 감시하여 NotificationProvider의 연결 상태를 제어하는 위젯
+class _NotificationConnectionManager extends StatefulWidget {
+  final String? token;
+  final Widget child;
+  const _NotificationConnectionManager({required this.token, required this.child});
+
+  @override
+  State<_NotificationConnectionManager> createState() => _NotificationConnectionManagerState();
+}
+
+class _NotificationConnectionManagerState extends State<_NotificationConnectionManager> {
+  @override
+  void didUpdateWidget(_NotificationConnectionManager oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 토큰이 없다가 생겼을 때 (로그인 성공)
+    if (oldWidget.token == null && widget.token != null) {
+      _connect();
+    }
+    // 토큰이 있다가 없어졌을 때 (로그아웃)
+    else if (oldWidget.token != null && widget.token == null) {
+      _disconnect();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // 초기 로딩 시 토큰이 이미 있다면 연결
+    if (widget.token != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _connect());
+    }
+  }
+
+  void _connect() {
+    if (widget.token != null) {
+      context.read<NotificationProvider>().connect(widget.token!);
+    }
+  }
+
+  void _disconnect() {
+    context.read<NotificationProvider>().stompClient?.deactivate();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

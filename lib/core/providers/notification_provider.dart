@@ -53,7 +53,8 @@ class NotificationProvider extends ChangeNotifier {
         'notificationContent': data['notificationContent'] ?? '알림 내용이 없습니다.',
         'notificationLinkUrl': data['notificationLinkUrl'] ?? '',
         'userId': data['userId'],
-        'timestamp': data['timestamp'] ?? DateTime.now().millisecondsSinceEpoch,
+        'isRead': false,
+        'createdAt': DateTime.now().toIso8601String(),
       };
 
       _notifications.add(notificationData);

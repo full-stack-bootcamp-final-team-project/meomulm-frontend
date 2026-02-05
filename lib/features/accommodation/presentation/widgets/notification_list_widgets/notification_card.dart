@@ -19,6 +19,7 @@ class NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isRead = notification.isRead;
     final Color unreadColor = const Color(0xFF007AFF);
+    final Color backgroundColor = isRead ? const Color(0xFFF2F2F7) : Colors.white;
 
     return GestureDetector(
       onTap: () async {
@@ -42,7 +43,7 @@ class NotificationCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12), // Dismissible과 결합을 위해 Padding 대신 Margin 사용
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -62,7 +63,7 @@ class NotificationCard extends StatelessWidget {
               height: 8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isRead ? Colors.white : unreadColor,
+                color: isRead ? Colors.transparent : unreadColor,   // 읽었을 때 점을 아예 없애려면 Colors.transparent
               ),
             ),
 
