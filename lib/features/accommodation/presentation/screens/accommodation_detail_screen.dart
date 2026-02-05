@@ -34,6 +34,8 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
   bool isLoading = true;
   AccommodationDetail? accommodation;
   ReviewSummary? reviewSummary;
+  bool isFavorite = false;
+
 
   @override
   void initState() {
@@ -98,6 +100,7 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
                         .map((img) => img.accommodationImageUrl)
                         .where((url) => url.isNotEmpty)
                         .toList(),
+                    accommodationId: widget.accommodationId,
                     initialIndex: 0,
                   ),
                   Transform.translate(
