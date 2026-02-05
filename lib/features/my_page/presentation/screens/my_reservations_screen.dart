@@ -16,6 +16,7 @@ import 'package:meomulm_frontend/features/my_page/data/datasources/reservation_s
 import 'package:meomulm_frontend/features/my_page/data/models/accommodation_image_model.dart';
 import 'package:meomulm_frontend/features/my_page/data/models/reservation_response_model.dart';
 import 'package:meomulm_frontend/features/my_page/data/models/reservation_share_model.dart';
+import 'package:meomulm_frontend/features/my_page/presentation/providers/my_reservation_provider.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_reservations/reservation_after_tab.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_reservations/reservation_before_tab.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_reservations/reservation_canceled_tab.dart';
@@ -49,7 +50,10 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
     super.initState();
     _tabController = TabController(length: 3, vsync: this, initialIndex: widget.initialTab);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final token = context.read<AuthProvider>().token;
+      if(token == null) return;
+      await context.read<MyReservationProvider>().loadReservations(token);
       loadReservations();
       // TODO: 디버깅 후 삭제
       print('reservations count: ${reservations.length}');
@@ -118,29 +122,51 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
 
   // 예약 취소 로직
   Future<void> cancelReservation(int reservationId) async {
+    final token = context.read<AuthProvider>().token;
+    if(token == null) return;
+
     setState(() => isLoading = true);
-    try {
-      final token = context.read<AuthProvider>().token;
-      if(token == null) return;
-      final response = await reservationService.putReservation(token, reservationId);
-      setState(() {
-        reservations.removeWhere((r) => r.reservationId == reservationId);
-      });
+
+    final ok = await context.read<MyReservationProvider>()
+        .cancelReservation(token, reservationId);
+
+    if(ok) {
+      context.pop(true);
+      _tabController.animateTo(2);  // 취소됨 탭으로 이동
       SnackMessenger.showMessage(
         context,
         "예약이 취소되었습니다.",
         type: ToastType.success
       );
-      context.pop(true);
-    } catch (e) {
+    } else {
       SnackMessenger.showMessage(
         context,
         "예약 취소에 실패했습니다.",
         type: ToastType.error
       );
-    } finally {
-      setState(() => isLoading = false);
     }
+
+    // try {
+    //
+    //   final response = await reservationService.putReservation(token, reservationId);
+    //   setState(() {
+    //     reservations.removeWhere((r) => r.reservationId == reservationId);
+    //   });
+    //   SnackMessenger.showMessage(
+    //     context,
+    //     "예약이 취소되었습니다.",
+    //     type: ToastType.success
+    //   );
+    //   context.pop(true);
+    // } catch (e) {
+    //   SnackMessenger.showMessage(
+    //     context,
+    //     "예약 취소에 실패했습니다.",
+    //     type: ToastType.error
+    //   );
+    // } finally {
+    //   setState(() => isLoading = false);
+    // }
   }
 
   /// 예약 취소 모달
@@ -179,15 +205,17 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
   }
 
   // 상태별 예약내역
-  List<ReservationShareModel> get reservationsBefore =>
-      reservations.where((r) => r.status == "PAID").toList();
-  List<ReservationShareModel> get reservationsAfter  =>
-      reservations.where((r) => r.status == "USED").toList();
-  List<ReservationShareModel> get reservationsCanceled  =>
-      reservations.where((r) => r.status == "CANCELED").toList();
+  // List<ReservationShareModel> get reservationsBefore =>
+  //     reservations.where((r) => r.status == "PAID").toList();
+  // List<ReservationShareModel> get reservationsAfter  =>
+  //     reservations.where((r) => r.status == "USED").toList();
+  // List<ReservationShareModel> get reservationsCanceled  =>
+  //     reservations.where((r) => r.status == "CANCELED").toList();
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<MyReservationProvider>();
+
     final w = MediaQuery.of(context).size.width;
     final maxWidth = w >= 600 ? w : double.infinity;
 
@@ -222,12 +250,12 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
                   controller: _tabController,
                   children: [
                     ReservationBeforeTab(
-                      reservations: reservationsBefore,
+                      reservations: provider.reservationsBefore,
                       onCancelTap: (reservationId) => _showCancelDialog(reservationId),
                       onChangeTap: (reservationId) => _showChangeDialog(reservationId),
                     ),
                     ReservationAfterTab(
-                      reservations: reservationsAfter,
+                      reservations: provider.reservationsAfter,
                       onReviewTap: (mode) {
                         if (mode == ReviewMode.write) {
                           context.push(
@@ -241,7 +269,7 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
                       },
                     ),
                     ReservationCanceledTab(
-                      reservations: reservationsCanceled,
+                      reservations: provider.reservationsCanceled,
                     ),
                   ],
                 ),
