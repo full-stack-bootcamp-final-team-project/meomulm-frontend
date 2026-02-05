@@ -19,6 +19,7 @@ class ReservationCanceledTab extends StatelessWidget {
       emptyText: '취소된 예약 내역이 없습니다.',
       children: reservations.map((r) {
         return ReservationCardCanceled(
+          accommodationImageUrl: r.accommodationImageUrl,
           hotelName: r.accommodationName,
           roomInfo: r.subtitle,
           checkInValue: '${r.checkInText} ${r.productCheckInTimeOnly}',

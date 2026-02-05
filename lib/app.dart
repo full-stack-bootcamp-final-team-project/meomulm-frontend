@@ -3,6 +3,7 @@ import 'package:meomulm_frontend/core/providers/filter_provider.dart';
 import 'package:meomulm_frontend/core/providers/notification_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
+import 'package:meomulm_frontend/features/my_page/presentation/providers/my_reservation_provider.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/providers/user_profile_provider.dart';
 import 'package:meomulm_frontend/features/reservation/presentation/providers/reservation_form_provider.dart';
 import 'package:meomulm_frontend/features/reservation/presentation/providers/reservation_provider.dart';
@@ -39,6 +40,7 @@ class MeomulmApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => HomeProvider()),
         ChangeNotifierProvider(create: (_) => ReservationProvider()),
         ChangeNotifierProvider(create: (_) => ReservationFormProvider()),
+        ChangeNotifierProvider(create: (_) => MyReservationProvider()),
       ],
       child: Consumer2<ThemeProvider, AuthProvider>(
         builder: (context, themeProvider, auth, child) {

@@ -45,7 +45,12 @@ class ReservationService {
         '/accommodation/$accommodationId',
       );
 
-      final Map<String, dynamic> json = response.data;
+      if (response.data is! Map) {
+        throw Exception('Unexpected response type: ${response.data.runtimeType}');
+      }
+
+      // final Map<String, dynamic> json = response.data;
+      final json = Map<String, dynamic>.from(response.data as Map);
       return AccommodationImageModel.fromJson(json);
     } catch (e) {
       print('숙소 이미지 조회 실패: $e');
