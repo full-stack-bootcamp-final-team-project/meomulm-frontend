@@ -31,7 +31,6 @@ class ReservationApiService {
       DateTime checkInDate,
       DateTime checkOutDate,
       int guestCount,
-      String status,
       int totalPrice,
       ) async {
     final res = await _dio.post(
@@ -47,7 +46,6 @@ class ReservationApiService {
         'checkInDate': checkInDate.toIso8601String(),
         'checkOutDate': checkOutDate.toIso8601String(),
         'guestCount': guestCount,
-        'status': status,
         'totalPrice': totalPrice,
       },
     );
