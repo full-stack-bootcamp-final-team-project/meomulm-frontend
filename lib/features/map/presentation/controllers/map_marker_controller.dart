@@ -26,7 +26,7 @@ class MapMarkerController {
     );
 
     if (!myPositionChanged && !accommodationsChanged) {
-      return; // 변경사항 없음
+      return;
     }
 
     await _markerManager.updateMarkers(
@@ -58,9 +58,7 @@ class MapMarkerController {
     final oldIds = oldList.map((e) => e.accommodationId).toSet();
     final newIds = newList.map((e) => e.accommodationId).toSet();
 
-    if (oldIds.length != newIds.length) return true;
-    return !oldIds.containsAll(newIds);
-
+    return oldIds.difference(newIds).isNotEmpty;
   }
 
   Future<void> dispose() async {

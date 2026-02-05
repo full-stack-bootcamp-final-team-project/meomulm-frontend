@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/features/map/presentation/controllers/map_marker_controller.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/base_kakao_map.dart';
@@ -10,7 +11,6 @@ import 'package:meomulm_frontend/features/map/presentation/widgets/map_accommoda
 import 'package:provider/provider.dart';
 
 /// 지도 뷰 공통 레이아웃
-/// 책임: 지도 화면의 전체 레이아웃 구성 및 마커 업데이트 조정
 class MapViewLayout extends StatefulWidget {
   final LatLng initialPosition;
   final LatLng? myPosition;
@@ -69,7 +69,6 @@ class _MapViewLayoutState extends State<MapViewLayout> {
     return Consumer<MapProvider>(
       builder: (context, provider, _) {
         // Provider 상태 변경 시 마커 업데이트
-        // Consumer가 rebuild되면 자동으로 호출됨
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _updateMarkers();
         });
@@ -109,7 +108,7 @@ class _MapViewLayoutState extends State<MapViewLayout> {
                 bottom: 0,
                 child: SafeArea(
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(AppSpacing.lg),
                     child: MapAccommodationCard(
                       accommodation: provider.selectedAccommodation!,
                       onClose: () => provider.selectAccommodation(null),

@@ -12,7 +12,6 @@ class AccommodationFilterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // AccommodationProvider → FilterProvider로 변경
     final provider = context.watch<FilterProvider>();
 
     return Scaffold(

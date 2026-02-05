@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/price_formatter.dart';
+import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
+import 'package:provider/provider.dart';
 
 /// 숙소 카드의 정보 섹션
 class AccommodationCardInfo extends StatelessWidget {
@@ -21,29 +25,25 @@ class AccommodationCardInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 숙소 이름
           Text(
             name,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
+            style: AppTextStyles.bodyXl,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: AppSpacing.xs),
 
           // 주소
           _buildAddressRow(),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.sm),
 
           // 가격
           _buildPriceText(),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
 
           // 상세정보 버튼
           _buildDetailButton(context),
@@ -56,19 +56,12 @@ class AccommodationCardInfo extends StatelessWidget {
   Widget _buildAddressRow() {
     return Row(
       children: [
-        Icon(
-          Icons.location_on_outlined,
-          size: 16,
-          color: Colors.grey[600],
-        ),
-        const SizedBox(width: 4),
+        Icon(AppIcons.locationOnOutline, size: AppIcons.sizeSm),
+        const SizedBox(width: AppSpacing.xs),
         Expanded(
           child: Text(
             address,
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey[600],
-            ),
+            style: AppTextStyles.bodySm,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -79,43 +72,22 @@ class AccommodationCardInfo extends StatelessWidget {
 
   /// 가격 표시 위젯
   Widget _buildPriceText() {
-    return Text(
-      '${minPrice.formatPrice()}원~',
-      style: const TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 18,
-        color: Colors.blue,
-      ),
-    );
+    return Text('${minPrice.formatPrice()}원~', style: AppTextStyles.bodyXl);
   }
 
   /// 상세정보 버튼
   Widget _buildDetailButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          context.push(
-            '${RoutePaths.accommodationDetail}/$accommodationId',
-          );
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          elevation: 0,
-        ),
-        child: const Text(
-          '상세정보 보기',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
+    return SmallButton(
+      label: '상세정보 보기',
+      enabled: true,
+      onPressed: () {
+        context.read<AccommodationProvider>().setAccommodationInfo(
+          accommodationId,
+          name,
+        );
+        context.push('${RoutePaths.accommodationDetail}/$accommodationId');
+      },
     );
   }
+
 }

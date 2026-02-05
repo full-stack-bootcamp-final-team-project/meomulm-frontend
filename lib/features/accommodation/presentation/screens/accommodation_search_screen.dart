@@ -17,32 +17,28 @@ class AccommodationSearchScreen extends StatefulWidget {
 }
 
 class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
-  String tempLocation = '';
-  DateTimeRange? tempDateRange;
-  int tempGuestCount = 2;
   late TextEditingController _locationController;
+
+  String? tempLocation;
+  DateTimeRange? tempDateRange;
+  int? tempGuestCount;
 
   @override
   void initState() {
     super.initState();
     final provider = context.read<AccommodationProvider>();
-    tempLocation = provider.keyword ?? '';
+
+    tempLocation = provider.keyword;
     tempDateRange = provider.dateRange;
-    tempGuestCount = provider.guestNumber ?? 2;
+    tempGuestCount = provider.guestNumber;
 
-    _locationController = TextEditingController(text: tempLocation);
-    _locationController.addListener(_onLocationTextChanged);
-  }
-
-  void _onLocationTextChanged() {
-    setState(() {
-      tempLocation = _locationController.text;
-    });
+    _locationController = TextEditingController(text: tempLocation ?? '');
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final provider = context.watch<AccommodationProvider>();
 
     return Scaffold(
       appBar: AppBarWidget(title: "숙소 검색"),
@@ -53,8 +49,8 @@ class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
           SearchBox(
             width: size.width * 0.9,
             firstRow: LocationInputRow(controller: _locationController),
-            dateRange: tempDateRange,
-            guestCount: tempGuestCount,
+            dateRange: tempDateRange ?? provider.dateRange,
+            guestCount: tempGuestCount ?? provider.guestNumber,
             onDateChanged: (v) => setState(() => tempDateRange = v),
             onGuestChanged: (v) => setState(() => tempGuestCount = v),
           ),
@@ -71,37 +67,31 @@ class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
   }
 
   void _onSearch() {
-    // 검색어 유효성 검사
-    final trimmedLocation = tempLocation.trim();
+    final trimmedLocation = _locationController.text.trim();
 
     if (trimmedLocation.isEmpty) {
-      // 검색어가 비어있을 때 스낵바 표시
       SnackMessenger.showMessage(
-          context,
-          "숙소명 또는 지역을 입력해주세요.",
-          bottomPadding: 85,
-          type: ToastType.error
+        context,
+        "숙소명 또는 지역을 입력해주세요.",
+        bottomPadding: 85,
+        type: ToastType.error,
       );
       return;
     }
 
     final provider = context.read<AccommodationProvider>();
+
     provider.setSearchDate(
       keywordValue: trimmedLocation,
-      dateRangeValue: tempDateRange,
-      guestNumberValue: tempGuestCount,
+      dateRangeValue: tempDateRange ?? provider.dateRange,
+      guestNumberValue: tempGuestCount ?? provider.guestNumber,
     );
-
-    debugPrint('지역: $trimmedLocation');
-    debugPrint('날짜: $tempDateRange');
-    debugPrint('인원: $tempGuestCount');
 
     context.push("/accommodation-result");
   }
 
   @override
   void dispose() {
-    _locationController.removeListener(_onLocationTextChanged);
     _locationController.dispose();
     super.dispose();
   }
