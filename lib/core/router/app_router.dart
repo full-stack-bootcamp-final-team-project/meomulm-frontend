@@ -61,8 +61,6 @@ class AppRouter {
       return '${RoutePaths.accommodationDetail}/$id';
     }
 
-
-
     // ── 향후 추가할 deeplink 패턴은 여기에 계속 추가 ──
     // 예:
     // final reviewRegex = RegExp(r'^/accommodation-review/(\d+)$');
