@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/input/form_label.dart';
 
-class CustomUnderlineTextField extends StatelessWidget {
+class CustomUnderlineTextField extends StatefulWidget {
   final String label;
   final bool isRequired;
   final String hintText;
@@ -13,6 +13,8 @@ class CustomUnderlineTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final bool obscureText;
   final String? Function(String?)? validator;
+  final ValueChanged<String>? onFieldSubmitted;
+  final TextInputAction? textInputAction;
 
   const CustomUnderlineTextField({
     super.key,
@@ -25,26 +27,38 @@ class CustomUnderlineTextField extends StatelessWidget {
     this.keyboardType,
     this.obscureText = false,
     this.validator,
+    this.onFieldSubmitted,
+    this.textInputAction,
   });
+
+
+  @override
+  State<CustomUnderlineTextField> createState() => _CustomUnderlineTextFieldState();
+}
+
+class _CustomUnderlineTextFieldState extends State<CustomUnderlineTextField> {
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        FormLabel(label: label, isRequired: isRequired),
+        FormLabel(label: widget.label, isRequired: widget.isRequired),
         TextFormField(
-          controller: controller,
-          focusNode: focusNode,
-          inputFormatters: inputFormatters,
-          keyboardType: keyboardType,
-          obscureText: obscureText,
+          controller: widget.controller,
+          focusNode: widget.focusNode,
+          inputFormatters: widget.inputFormatters,
+          keyboardType: widget.keyboardType,
+          obscureText: widget.obscureText,
+          onFieldSubmitted: widget.onFieldSubmitted,
+          textInputAction: widget.textInputAction,
           // 실시간 검증을 위해 autovalidateMode 설정
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: AppInputDecorations.underline(),
-          validator: validator,
+          validator: widget.validator,
         ),
       ],
     );
   }
+
 }

@@ -62,10 +62,10 @@ class RegexpUtils {
     if (!RegexpConstants.phone.hasMatch(phone)) {
       return InputMessages.invalidPhone;
     }
-    if (phone.length < 10) {
+    if (phone.length < 11) {
       return InputMessages.minLengthPhone;
     }
-    if (phone.length > 14) {
+    if (phone.length > 13) {
       return InputMessages.maxLengthPhone;
     }
     return null;
