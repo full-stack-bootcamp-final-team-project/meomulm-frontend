@@ -191,9 +191,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     }
   }
 
-  void _cancel(){
-    _cancelReservation();
-  }
+
 
   Future<void> _cancelReservation() async {
     final reservationProvider = context.read<ReservationProvider>();
@@ -266,7 +264,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       backgroundColor: AppColors.white,
       appBar: AppBarWidget(
         title: TitleLabels.payment,
-        onBack: _cancel,
+        onBack: _cancelReservation,
       ),
       body: SafeArea(
         child: SingleChildScrollView(

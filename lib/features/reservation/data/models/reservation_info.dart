@@ -10,6 +10,7 @@ class ReservationInfo {
   final String checkInfo;
   final String peopleInfo;
 
+
   ReservationInfo({
     required this.roomId,
     required this.productName,
