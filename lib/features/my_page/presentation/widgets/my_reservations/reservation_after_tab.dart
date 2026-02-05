@@ -24,6 +24,7 @@ class ReservationAfterTab extends StatelessWidget {
       emptyText: '이용후 예약 내역이 없습니다.',
       children: reservations.map((r) {
         return ReservationCardAfter(
+          accommodationImageUrl: r.accommodationImageUrl,
           hotelName: r.accommodationName,
           roomInfo: r.subtitle,
           checkInValue: '${r.checkInText} ${r.productCheckInTimeOnly}',

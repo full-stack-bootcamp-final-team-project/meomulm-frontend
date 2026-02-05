@@ -16,9 +16,9 @@ class ReservationImageWidget extends StatefulWidget {
 class _ReservationImageWidget extends State<ReservationImageWidget> {
   @override
   Widget build(BuildContext context) {
+    final imageUrl = widget.imageUrl?.trim() ?? '';
 
-    if(widget.imageUrl == null || widget.imageUrl!.isEmpty) {
-      // TODO: 추후 reservation_image_widget으로 변경하기
+    if(imageUrl.isEmpty) {
       return Container(
         width: 64,
         height: 64,
@@ -35,7 +35,7 @@ class _ReservationImageWidget extends State<ReservationImageWidget> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppBorderRadius.md),
       child: Image.network(
-        widget.imageUrl!,
+        imageUrl,
         width: 64,
         height: 64,
         fit: BoxFit.cover,
@@ -43,8 +43,8 @@ class _ReservationImageWidget extends State<ReservationImageWidget> {
         loadingBuilder: (context, child, loadingProgress) {
           if(loadingProgress == null) return child;
           return Container(
-            width: 100,
-            height: 140,
+            width: 64,
+            height: 64,
             color: AppColors.gray5,
             alignment: Alignment.center,
             child: const CircularProgressIndicator(strokeWidth: 2,)
