@@ -5,7 +5,7 @@ class NotificationResponseModel {
   final int userId;
   final String notificationContent;
   final String notificationLinkUrl;
-  final bool isRead;
+  bool isRead;
   final String createdAt;
 
   NotificationResponseModel({
@@ -41,7 +41,7 @@ class NotificationResponseModel {
       'userId': userId,
       'notificationContent': notificationContent,
       'notificationLinkUrl': notificationLinkUrl,
-      'is_read': isRead,
+      'isRead': isRead,
       'createdAt': createdAt,
     };
   }
