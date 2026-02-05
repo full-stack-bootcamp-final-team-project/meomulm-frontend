@@ -23,6 +23,15 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
   // FocusNode
   final FocusNode _emailFocusNode = FocusNode();
 
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _emailFocusNode.requestFocus();
+    });
+  }
+
   // 본인 인증
   void _confirmPassword() async {
     // 입력값 검증
@@ -80,15 +89,10 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
 
   }
 
-  // 로그인 스크린으로 이동
-  void _moveLogin() {
-    context.push('${RoutePaths.login}');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(title: TitleLabels.verifyIdentity, onBack: _moveLogin),
+      appBar: AppBarWidget(title: TitleLabels.verifyIdentity),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(

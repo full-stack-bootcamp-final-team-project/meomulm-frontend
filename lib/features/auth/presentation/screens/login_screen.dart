@@ -28,14 +28,20 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // FocusNode
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+
   bool _isLoading = false;
   bool _saveCheckBox = false;
 
   @override
   void initState() {
     super.initState();
+
+    _passwordController.clear();
     _loadSaveEmail();
-    
+
     // 중복여부에 따른 이메일 표기
     _emailController.addListener(() {
       if (_saveCheckBox) {
@@ -52,6 +58,16 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _emailController.text = saveEmail;
         _saveCheckBox = true;
+      });
+    }
+
+    if(_emailController.text.isEmpty){
+      WidgetsBinding.instance.addPostFrameCallback((_){
+        _emailFocusNode.requestFocus();
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_){
+        _passwordFocusNode.requestFocus();
       });
     }
   }
@@ -104,13 +120,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
       await context.read<AuthProvider>().login(loginResponse.token);
 
+      FocusManager.instance.primaryFocus?.unfocus();
       SnackMessenger.showMessage(
           context,
           SnackBarMessages.loginCompleted,
           type: ToastType.success
       );
-
-      context.push('${RoutePaths.home}');
+      context.go('${RoutePaths.home}');
 
     } catch (e) {
       if (!mounted) return;
@@ -187,8 +203,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
         SnackMessenger.showMessage(
             context,
-            '카카오 로그인 성공!',
-          type: ToastType.error
+          '카카오 로그인 성공!',
+          type: ToastType.success
         );
         context.go(RoutePaths.home);
 
@@ -200,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         SnackMessenger.showMessage(
             context,
-            '미가입 회원입니다. 회원가입을 진행해주세요.',
+          '미가입 회원입니다. 회원가입을 진행해주세요.',
           type: ToastType.error
         );
 
@@ -228,7 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
       SnackMessenger.showMessage(
           context,
           errorMessage,
-          type: ToastType.error
+        type: ToastType.error
       );
 
     } catch (e, stackTrace) {
@@ -243,6 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
           '로그인 중 오류가 발생했습니다.',
           type: ToastType.error
       );
+
 
     } finally {
       if (mounted) {
@@ -285,12 +302,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
               await context.read<AuthProvider>().login(token);
               if (!mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('네이버 로그인 성공'),
-                  backgroundColor: AppColors.success,
-                  duration: Duration(seconds: 2),
-                ),
+              SnackMessenger.showMessage(
+                  context,
+                  '네이버 로그인 성공',
+                  type: ToastType.success
               );
               context.go(RoutePaths.home);
               return;
@@ -362,7 +377,7 @@ class _LoginScreenState extends State<LoginScreen> {
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => context.push('${RoutePaths.home}'),
+          onPressed: () => context.go('${RoutePaths.home}'),
         ),
       ),
       body: SafeArea(
@@ -379,6 +394,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       emailController: _emailController,
                       passwordController: _passwordController,
                       onSubmit: _handleLogin,
+                      emailFocusNode: _emailFocusNode,
+                      passwordFocusNode: _passwordFocusNode,
                     ),
 
                     // 체크박스
@@ -421,6 +438,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 }

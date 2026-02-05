@@ -35,6 +35,10 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _passwordFocusNode.requestFocus();
+    });
+
     _passwordController.addListener(() {
       final password = _passwordController.text.trim();
       setState(() {
@@ -108,15 +112,10 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
     }
   }
 
-  // 로그인 스크린으로 이동
-  void _moveLogin() {
-    context.push('${RoutePaths.login}');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(title: TitleLabels.loginChangePassword, onBack: _moveLogin),
+      appBar: AppBarWidget(title: TitleLabels.loginChangePassword),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(
@@ -132,6 +131,7 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
               checkPasswordFocusNode: _checkPasswordFocusNode,
               isPasswordChecked: _isPasswordChecked,
               isCheckPasswordChecked: _isCheckPasswordChecked,
+              onSubmit: _changePassword,
             ),
             const SizedBox(height: 40),
 

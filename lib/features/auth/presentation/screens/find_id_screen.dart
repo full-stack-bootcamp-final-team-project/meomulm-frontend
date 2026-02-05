@@ -25,6 +25,16 @@ class _FindIdScreenState extends State<FindIdScreen> {
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
 
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _nameFocusNode.requestFocus();
+    });
+  }
+
   // 유저 정보 확인(이름, 전화번호)
   void _checkUser() async {
     // 입력값 검증
@@ -163,15 +173,10 @@ class _FindIdScreenState extends State<FindIdScreen> {
     return phone; // 형식이 다르면 원본 반환
   }
 
-  // 로그인 스크린으로 이동
-  void _moveLogin() {
-    context.push(RoutePaths.login);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(title: TitleLabels.findId, onBack: _moveLogin),
+      appBar: AppBarWidget(title: TitleLabels.findId),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -183,7 +188,7 @@ class _FindIdScreenState extends State<FindIdScreen> {
                   phoneController: _phoneController,
                   nameFocusNode: _nameFocusNode,
                   phoneFocusNode: _phoneFocusNode,
-                  onFindId: _checkUser
+                  onSubmit: _checkUser
               )
             ],
           ),

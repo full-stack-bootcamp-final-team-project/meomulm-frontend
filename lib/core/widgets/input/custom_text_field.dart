@@ -16,6 +16,8 @@ class CustomTextField extends StatefulWidget {
   final TextStyle? helperStyle;
   final bool readOnly;
   final List<TextInputFormatter>? inputFormatters; // 연락처 자동 변경 처리
+  final ValueChanged<String>? onFieldSubmitted;
+  final TextInputAction? textInputAction;
 
   const CustomTextField({
     super.key,
@@ -31,6 +33,8 @@ class CustomTextField extends StatefulWidget {
     this.helperStyle,
     this.readOnly = false,
     this.inputFormatters,
+    this.onFieldSubmitted,
+    this.textInputAction,
   });
 
   @override
@@ -55,6 +59,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
           inputFormatters: widget.inputFormatters,
           obscureText: isPasswordField ? _obscureText : false,
           readOnly: widget.readOnly,
+          onFieldSubmitted: widget.onFieldSubmitted,
+          textInputAction: widget.textInputAction,
           // 실시간 검증을 위해 autovalidateMode 설정
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(

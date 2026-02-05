@@ -65,9 +65,16 @@ class _SignupScreenState extends State<SignupScreen> {
       _isNameChecked = true;
     }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _emailFocusNode.requestFocus();
-    });
+    if(_emailController.text.isEmpty){
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _emailFocusNode.requestFocus();
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _passwordFocusNode.requestFocus();
+      });
+    }
+
 
     _passwordController.addListener(() {
       final password = _passwordController.text.trim();
@@ -330,15 +337,10 @@ class _SignupScreenState extends State<SignupScreen> {
     return phone; // 형식이 다르면 원본 반환
   }
 
-  // 로그인 스크린 이동 (AppBar)
-  void _moveLogin() {
-    context.push("/login");
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(title: "회원가입", onBack: _moveLogin),
+      appBar: AppBarWidget(title: "회원가입"),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
