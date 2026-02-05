@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
 import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
+import 'package:meomulm_frontend/core/widgets/input/phone_number_formatter.dart';
 
 class SignupFormFields extends StatelessWidget {
   final TextEditingController emailController;
@@ -24,7 +26,6 @@ class SignupFormFields extends StatelessWidget {
   final bool isPhoneChecked;
   final bool isNameChecked;
   final bool isKakaoSignup;
-
 
   const SignupFormFields({
     super.key,
@@ -64,7 +65,8 @@ class SignupFormFields extends StatelessWidget {
             validator: (email) => RegexpUtils.validateEmail(email),
             helperText: isEmailChecked ? InputMessages.validEmail : null,
             helperStyle: TextStyle(color: AppColors.success),
-            readOnly: isKakaoSignup
+            readOnly: isKakaoSignup,
+            onFieldSubmitted: (_) => onCheckEmail?.call(),
           ),
           onPressed: isKakaoSignup ? null : onCheckEmail,
           label: "중복확인",
@@ -82,6 +84,10 @@ class SignupFormFields extends StatelessWidget {
           validator: (password) => RegexpUtils.validatePassword(password),
           helperText: isPasswordChecked ? InputMessages.validPassword : null,
           helperStyle: TextStyle(color: AppColors.success),
+          onFieldSubmitted: (_) {
+            FocusScope.of(context).requestFocus(checkPasswordFocusNode);
+          },
+          textInputAction: TextInputAction.next,
         ),
         const SizedBox(height: AppSpacing.xl),
 
@@ -93,9 +99,22 @@ class SignupFormFields extends StatelessWidget {
           controller: checkPasswordController,
           focusNode: checkPasswordFocusNode,
           obscureText: true,
-          validator: (password) => RegexpUtils.validateCheckPassword(password, passwordController.text),
-          helperText: isCheckPasswordChecked ? InputMessages.matchPassword : null,
+          validator: (password) => RegexpUtils.validateCheckPassword(
+            password,
+            passwordController.text,
+          ),
+          helperText: isCheckPasswordChecked
+              ? InputMessages.matchPassword
+              : null,
           helperStyle: TextStyle(color: AppColors.success),
+          onFieldSubmitted: (_) {
+            if (nameController.text.isEmpty) {
+              FocusScope.of(context).requestFocus(nameFocusNode);
+            } else {
+              FocusScope.of(context).requestFocus(phoneFocusNode);
+            }
+          },
+          textInputAction: TextInputAction.next,
         ),
         const SizedBox(height: AppSpacing.xl),
 
@@ -110,6 +129,10 @@ class SignupFormFields extends StatelessWidget {
           helperText: isNameChecked ? InputMessages.validName : null,
           helperStyle: TextStyle(color: AppColors.success),
           readOnly: isKakaoSignup,
+          onFieldSubmitted: (_) {
+            FocusScope.of(context).requestFocus(phoneFocusNode);
+          },
+          textInputAction: TextInputAction.next,
         ),
         const SizedBox(height: AppSpacing.xl),
 
@@ -125,6 +148,11 @@ class SignupFormFields extends StatelessWidget {
             validator: (phone) => RegexpUtils.validatePhone(phone),
             helperText: isPhoneChecked ? InputMessages.validPhone : null,
             helperStyle: TextStyle(color: AppColors.success),
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              PhoneNumberFormatter(),
+            ],
+            onFieldSubmitted: (_) => onCheckPhone.call(),
           ),
           onPressed: onCheckPhone,
           label: "중복확인",

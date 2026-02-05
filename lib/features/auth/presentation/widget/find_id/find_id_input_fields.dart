@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meomulm_frontend/core/constants/ui/labels_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
+import 'package:meomulm_frontend/core/widgets/input/phone_number_formatter.dart';
 
 class FindIdInputFields extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController phoneController;
   final FocusNode nameFocusNode;
   final FocusNode phoneFocusNode;
-  final VoidCallback onFindId;
+  final VoidCallback onSubmit;
 
   const FindIdInputFields({
     super.key,
     required this.nameController,
     required this.phoneController,
-    required this.onFindId,
+    required this.onSubmit,
     required this.nameFocusNode,
     required this.phoneFocusNode,
   });
@@ -36,6 +38,10 @@ class FindIdInputFields extends StatelessWidget {
           controller: nameController,
           focusNode: nameFocusNode,
           validator: (name) => RegexpUtils.validateName(name),
+          onFieldSubmitted: (_) {
+            FocusScope.of(context).requestFocus(phoneFocusNode);
+          },
+          textInputAction: TextInputAction.next,
         ),
         const SizedBox(height: 20),
 
@@ -48,6 +54,11 @@ class FindIdInputFields extends StatelessWidget {
           focusNode: phoneFocusNode,
           keyboardType: TextInputType.phone,
           validator: (phone) => RegexpUtils.validatePhone(phone),
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            PhoneNumberFormatter(),
+          ],
+          onFieldSubmitted: (_) => onSubmit(),
         ),
         SizedBox(height: 40),
 
@@ -56,7 +67,7 @@ class FindIdInputFields extends StatelessWidget {
           width: double.infinity,
           height: 52,
           child: ElevatedButton(
-            onPressed: onFindId,
+            onPressed: onSubmit,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.gray6,
               foregroundColor: AppColors.gray2,
@@ -66,7 +77,10 @@ class FindIdInputFields extends StatelessWidget {
                 side: BorderSide(color: AppColors.gray4),
               ),
             ),
-            child: const Text(ButtonLabels.findId, style: AppTextStyles.inputTextMd),
+            child: const Text(
+              ButtonLabels.findId,
+              style: AppTextStyles.inputTextMd,
+            ),
           ),
         ),
       ],
