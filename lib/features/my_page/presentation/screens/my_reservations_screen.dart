@@ -120,7 +120,7 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
     try {
       final token = context.read<AuthProvider>().token;
       if(token == null) return;
-      final response = await reservationService.deleteReservation(token, reservationId);
+      final response = await reservationService.putReservation(token, reservationId);
       setState(() {
         reservations.removeWhere((r) => r.reservationId == reservationId);
       });
