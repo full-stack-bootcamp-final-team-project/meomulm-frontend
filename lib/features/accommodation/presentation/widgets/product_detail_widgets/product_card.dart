@@ -87,8 +87,8 @@ class _ProductCardState extends State<ProductCard> {
                       Text(
                         widget.title,
                         style: AppTextStyles.cardTitle,
-                        maxLines: 2, // 🔥 최대 2줄
-                        overflow: TextOverflow.ellipsis, // 🔥 넘치면 ...
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         softWrap: true,
                       ),
                       const SizedBox(height: AppSpacing.xxs),
