@@ -32,7 +32,7 @@ class PhoneNumberFormatter extends TextInputFormatter {
       } else if(digits.length <= 7) {
         formatted = '${digits.substring(0, 3)}-${digits.substring(3)}';
       } else {
-        formatted = '${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7, 11)}';
+        formatted = '${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}';
       }
     }
 
@@ -45,7 +45,7 @@ class PhoneNumberFormatter extends TextInputFormatter {
       } else if(digits.length <= 10) {
         formatted = '${digits.substring(0, 3)}-${digits.substring(3, 6)}-${digits.substring(6)}';
       } else {
-        formatted = '${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7, 11)}';
+        formatted = '${digits.substring(0, 3)}-${digits.substring(3, 7)}-${digits.substring(7)}';
       }
     }
     
