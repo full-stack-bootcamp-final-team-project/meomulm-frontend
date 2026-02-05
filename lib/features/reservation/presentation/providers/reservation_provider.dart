@@ -9,6 +9,11 @@ class ReservationProvider extends ChangeNotifier {
   ReservationInfo? _reservation;
   int? _reservationId;
 
+  // ── 예약자 정보 추가 ──
+  String? _bookerName;
+  String? _bookerEmail;
+  String? _bookerPhone;
+
   // ── reservation (객실 정보) ──
   ReservationInfo? get reservation => _reservation;
   bool get hasReservation => _reservation != null;
@@ -21,6 +26,10 @@ class ReservationProvider extends ChangeNotifier {
   void clearReservation() {
     _reservation = null;
     _reservationId = null;
+
+    _bookerName = null;
+    _bookerEmail = null;
+    _bookerPhone = null;
     notifyListeners();
   }
 
@@ -29,6 +38,26 @@ class ReservationProvider extends ChangeNotifier {
 
   void setReservationId(int id) {
     _reservationId = id;
+    notifyListeners();
+  }
+
+  // ── 예약자 정보 getter/setter ──
+  String? get bookerName => _bookerName;
+  String? get bookerEmail => _bookerEmail;
+  String? get bookerPhone => _bookerPhone;
+
+  void setBookerInfo({required String name, required String email, required String phone}) {
+    _bookerName = name;
+    _bookerEmail = email;
+    _bookerPhone = phone;
+    notifyListeners();
+  }
+
+  // 예약자 정보만 초기화
+  void clearBookerInfo() {
+    _bookerName = null;
+    _bookerEmail = null;
+    _bookerPhone = null;
     notifyListeners();
   }
 }
