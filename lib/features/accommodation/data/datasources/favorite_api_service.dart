@@ -8,7 +8,7 @@ class FavoriteApiService {
     BaseOptions(
       baseUrl: ApiPaths.favoriteUrl,
       connectTimeout : const Duration(seconds: 5),
-      receiveTimeout : const Duration(seconds: 3),
+      receiveTimeout : const Duration(seconds: 30),
       headers:{
         'Content-Type' : 'application/json',
       },

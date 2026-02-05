@@ -11,7 +11,7 @@ class StripeService {
     BaseOptions(
       baseUrl: ApiPaths.paymentUrl, // http://localhost:8080/api/payment
       connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 30),
       headers: {
         'Content-Type': 'application/json',
       },

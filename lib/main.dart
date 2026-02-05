@@ -23,8 +23,7 @@ Future<void> main() async {
   if (EnvConfig.isDevelopment) EnvConfig.printEnvInfo();
 
   // ✅ 추가: 모바일(Android/iOS) 여부 체크
-  final bool isMobile =
-      !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+  final bool isMobile = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
   // ─── Stripe SDK 초기화 (모바일에서만) ───
   if (isMobile) {
@@ -76,18 +75,17 @@ Future<void> main() async {
   final authProvider = AuthProvider();
 
   // ✅ Kakao SDK 초기화 먼저
-  KakaoSdk.init(
-    nativeAppKey: EnvConfig.kakaoLoginNativeKey,
-  );
+  KakaoSdk.init(nativeAppKey: EnvConfig.kakaoLoginNativeKey);
 
-  if (Platform.isAndroid || Platform.isIOS) {
-    await NaverLoginSDK.initialize(
-      clientId: EnvConfig.naverLoginClientId,
-      clientSecret: EnvConfig.naverLoginClientSecret,
-      clientName: EnvConfig.naverLoginClientName,
-    );
+  if (!kIsWeb) {
+    if (Platform.isAndroid || Platform.isIOS) {
+      await NaverLoginSDK.initialize(
+        clientId: EnvConfig.naverLoginClientId,
+        clientSecret: EnvConfig.naverLoginClientSecret,
+        clientName: EnvConfig.naverLoginClientName,
+      );
+    }
   }
 
   runApp(MeomulmApp(authProvider: authProvider));
 }
-
