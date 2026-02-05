@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -311,10 +312,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   focusNode: _phoneFocusNode,
                   onFieldSubmitted: (_) => _makeReservation(),
                   keyboardType: TextInputType.phone,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      PhoneNumberFormatter(),
-                    ],
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    PhoneNumberFormatter(),
+                  ],
                   validator: (value) => RegexpUtils.validatePhone(value),
                 ),
 
