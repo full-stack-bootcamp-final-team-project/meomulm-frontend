@@ -17,7 +17,7 @@ class MapService {
       BaseOptions(
         baseUrl: ApiPaths.accommodationUrl,
         connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 3),
+        receiveTimeout: const Duration(seconds: 30),
         headers: {'Content-Type': 'application/json'},
         validateStatus: (status) => status != null && status < 500,
       ),

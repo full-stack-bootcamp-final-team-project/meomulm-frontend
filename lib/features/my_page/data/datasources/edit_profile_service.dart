@@ -6,7 +6,7 @@ class EditProfileService {
     BaseOptions(
       baseUrl: ApiPaths.authUrl,  // /api/auth
       connectTimeout: const Duration(seconds: 5),  // 5초 타임아웃
-      receiveTimeout: const Duration(seconds: 3),  // 3초 타임아웃
+      receiveTimeout: const Duration(seconds: 30),  // 3초 타임아웃
       headers: {
         'Content-Type': 'application/json',
       },
