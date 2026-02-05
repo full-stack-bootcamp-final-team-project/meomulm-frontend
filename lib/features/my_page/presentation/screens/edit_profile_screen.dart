@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/constants/config/app_config.dart';
@@ -14,6 +15,7 @@ import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart'
 import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
 import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
+import 'package:meomulm_frontend/core/widgets/input/phone_number_formatter.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/my_page/data/datasources/edit_profile_service.dart';
@@ -232,6 +234,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           hintText: "연락처를 입력하세요. (- 제외)",
                           controller: _phoneCtrl,
                           focusNode: _phoneFocusNode,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            PhoneNumberFormatter(),
+                          ],
                           validator: (phone) => RegexpUtils.validatePhone(phone),
                           helperText: _isPhoneChecked ? '사용 가능한 전화번호입니다.' : null,
                           helperStyle: TextStyle(color: AppColors.success),
