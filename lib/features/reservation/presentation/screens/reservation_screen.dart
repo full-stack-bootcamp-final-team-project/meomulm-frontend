@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart' as AppRouter;
@@ -6,6 +7,7 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/input/custom_underline_text_field.dart';
+import 'package:meomulm_frontend/core/widgets/input/phone_number_formatter.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/providers/user_profile_provider.dart';
@@ -288,6 +290,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
                   hintText: InputMessages.emptyPhone,
                   controller: _phoneController,
                   focusNode: _phoneFocusNode,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      PhoneNumberFormatter(),
+                    ],
                   validator: (value) => RegexpUtils.validatePhone(value),
                 ),
 
