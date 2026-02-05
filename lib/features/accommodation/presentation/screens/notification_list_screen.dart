@@ -138,7 +138,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         itemCount: notifications.length,
         itemBuilder: (context, index) {
-          final item = notifications[index];
+          NotificationResponseModel item = notifications[index];
 
           // 스와이프 삭제 위젯 적용
           return Dismissible(
@@ -161,15 +161,20 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                   color: Colors.white,
                   size: 28
               ),
-            ),// 알림 카드 클릭 이벤트 추가
+            ),
             child: GestureDetector(
-              onTap: () {
+              onTap: () async {
                 final linkUrl = item.notificationLinkUrl; // 서버에서 준 링크 (예: meomulm://...)
 
                 if (!item.isRead) {
                   setState(() {
                     item.isRead = true;
                   });
+
+                  NotificationApiService.updateNotificationStatus(
+                    notificationId: item.notificationId,
+                  ).catchError((e) => debugPrint('서버 읽음 처리 실패: $e'));
+                }
 
                 if (linkUrl != null && linkUrl.isNotEmpty) {
                   try {
@@ -181,9 +186,6 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                       debugPrint('알림 클릭 이동 경로: $parsedPath');
                       // 해석된 경로로 이동
                       context.push(parsedPath);
-                      NotificationApiService.updateNotificationStatus(
-                          notificationId: item.notificationId
-                      );
                     } else {
                       debugPrint('해당 딥링크를 해석할 수 없습니다: $linkUrl');
                     }
