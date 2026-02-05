@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/notification_response_model.dart';
-import 'package:meomulm_frontend/features/accommodation/data/datasources/notification_service.dart';
+import 'package:meomulm_frontend/features/accommodation/data/datasources/notification_api_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 

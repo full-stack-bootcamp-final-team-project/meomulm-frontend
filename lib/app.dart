@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/providers/filter_provider.dart';
+import 'package:meomulm_frontend/core/providers/notification_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/providers/user_profile_provider.dart';
@@ -28,6 +30,7 @@ class MeomulmApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => AccommodationProvider()),
         ChangeNotifierProvider(create: (_) => FilterProvider()),
         ChangeNotifierProvider.value(value: authProvider),
@@ -42,8 +45,8 @@ class MeomulmApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ReservationProvider()),
         ChangeNotifierProvider(create: (_) => ReservationFormProvider()),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
+      child: Consumer2<ThemeProvider, AuthProvider>(
+        builder: (context, themeProvider, auth, child) {
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
             title: EnvConfig.appName,

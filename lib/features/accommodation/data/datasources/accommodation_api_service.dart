@@ -130,7 +130,7 @@ class AccommodationApiService {
   static Future<List<AccommodationReview>> getReviewsByAccommodationId(int id) async {
     try {
       // 백엔드 엔드포인트: @GetMapping("/accommodationId/{accommodationId}")
-      final res = await _dio.get('/reviews/accommodationId/$id');
+      final res = await _dio.get('/review/accommodationId/$id');
       if (res.statusCode == 200) {
         return (res.data as List)
             .map((json) => AccommodationReview.fromJson(json))

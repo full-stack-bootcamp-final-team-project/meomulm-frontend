@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
-import 'package:meomulm_frontend/features/accommodation/data/datasources/notification_service.dart';
+import 'package:meomulm_frontend/features/accommodation/data/datasources/notification_api_service.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/notification_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/notification_list_widgets/notification_card.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
@@ -47,7 +47,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
 
     try {
       // 1. 서비스 호출 시 토큰 전달
-      final response = await NotificationService.getNotifications(
+      final response = await NotificationApiService.getNotifications(
         token: authProvider.token ?? '',
       );
 
@@ -76,7 +76,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     });
 
     try {
-      await NotificationService.deleteNotification(
+      await NotificationApiService.deleteNotification(
         notificationId: id,
       );
     } catch (e) {

@@ -7,7 +7,7 @@ import 'package:meomulm_frontend/features/accommodation/data/models/search_accom
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_review.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/review_summary.dart';
 
-class NotificationService {
+class NotificationApiService {
 
   static final Dio _dio = Dio(
     BaseOptions(
@@ -41,9 +41,9 @@ class NotificationService {
     try {
       final res = await _dio.get(
         '/list',
-        // options: Options(headers: {
-        //   'Authorization': 'Bearer $token',
-        // }),
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
       );
 
       if (res.statusCode == 200) {
