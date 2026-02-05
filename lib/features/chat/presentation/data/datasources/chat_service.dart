@@ -1,104 +1,56 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_request.dart';
+import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_response.dart';
+
 class ChatService {
-  // 간단한 QnA 데이터베이스
-  static final Map<String, String> _qnaDatabase = {
-    // 인사
-    '안녕': '안녕하세요 😊 숙소 예약 관련 안내를 제공합니다.',
-    '안녕하세요': '반갑습니다! 어디로 여행 가시나요? 저는 숙소 예약 관련 안내를 제공하고 있어요.',
-    'hi': 'Hi! I can help you find a place to stay.',
-    'hello': 'Hello 😊 Looking for a hotel or accommodation?',
+  // 본인 컴퓨터에서 실행 중일 때: Android 에뮬레이터는 10.0.2.2, iOS는 localhost
+  static const String baseUrl = "http://localhost:8080/api/chat";
 
-    // 숙소 검색
-    '숙소': '메인 화면에서 지역, 날짜, 인원을 선택해 숙소를 검색할 수 있어요.',
-    '호텔': '메인 화면 > 숙소 검색 결과에서 호텔 유형을 선택할 수 있어요.',
-    '예약': '숙소 상세 화면 하단의 [예약하기] 버튼을 통해 예약할 수 있어요.',
-    '검색': '메인 화면 상단 검색 영역에서 숙소 검색이 가능해요.',
+  /// 백엔드 서버로 메시지를 보내고 응답을 받는 함수
+  static Future<ChatResponse> sendMessage(ChatRequest request) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/message'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode(request.toJson()),
+      );
 
-    // 체크인 / 체크아웃
-    '체크인': '숙소 상세 화면 > 모든 객실 보기에서 체크인 시간을 확인할 수 있어요.',
-    '체크아웃': '숙소 상세 화면 > 모든 객실 보기에서 체크아웃 시간을 확인할 수 있어요.',
-    '입실': '마이페이지 > 예약내역 > 예약 상세에서 입실 시간을 확인할 수 있어요.',
-    '퇴실': '마이페이지 > 예약내역 > 예약 상세에서 퇴실 시간을 확인할 수 있어요.',
-
-    // 취소 / 환불
-    '취소': '마이페이지 > 예약내역 > 예약 상세에서 취소 가능 여부를 확인할 수 있어요.',
-    '환불': '예약 상세 화면에 표시된 환불 정책을 확인해주세요.',
-
-    // 결제
-    '결제': '예약 과정 중 결제 화면에서 결제 수단을 선택할 수 있어요.',
-    '카드': '결제 화면에서 신용카드를 선택할 수 있어요.',
-    '페이': '간편결제는 지원하지 않고 있어요.',
-
-    // 고객 지원
-    '문의': '어떤 점이 불편하신가요? 자세히 말씀해 주세요.',
-    '고객센터': '고객센터 연결을 도와드릴게요.',
-    '상담': '상담이 필요하시면 문의 내용을 남겨주세요.',
-
-    // 기타
-    '고마워': '천만에요 😊 즐거운 여행 되세요!',
-    '감사': '도움이 되어 기뻐요!',
-  };
-
-  // 키워드 기반 응답
-  static final Map<String, String> _keywordResponses = {
-    '지역': '어느 지역으로 여행을 계획하고 계신가요?',
-    '날짜': '체크인과 체크아웃 날짜를 알려주세요.',
-    '인원': '총 몇 분이서 이용하실 예정인가요?',
-    '가격': '예산 범위가 있다면 알려주세요.',
-    '추천': '선호하시는 숙소 타입이 있나요? (호텔, 펜션 등)',
-    '리뷰': '리뷰 점수가 높은 숙소부터 안내해드릴게요.',
-    '주차': '주차 가능 여부는 숙소 상세 정보에서 확인할 수 있어요.',
-    '조식': '조식 제공 여부는 숙소 상세 정보에서 확인할 수 있어요.',
-  };
-
-  static Future<String> AIsendMessage(
-      String message,
-      List<Map<String, String>> conversationHistory
-      ) async {
-    // 메시지를 소문자로 변환하고 공백 제거
-    final lowerMessage = message.toLowerCase().trim();
-
-    // 짧은 지연으로 실제 채팅처럼 보이게
-    await Future.delayed(const Duration(milliseconds: 500));
-
-    // 정확한 매칭 확인
-    for (var entry in _qnaDatabase.entries) {
-      if (lowerMessage.contains(entry.key.toLowerCase())) {
-        return entry.value;
+      if (response.statusCode == 200) {
+        // 한글 깨짐 방지를 위해 utf8.decode 처리
+        final decodedBody = utf8.decode(response.bodyBytes);
+        return ChatResponse.fromJson(jsonDecode(decodedBody));
+      } else {
+        throw Exception('서버 응답 오류: ${response.statusCode}');
       }
+    } catch (e) {
+      print("통신 에러 발생: $e");
+      throw Exception('서버와 연결할 수 없습니다. 네트워크를 확인해주세요.');
     }
-
-    // 키워드 매칭
-    for (var entry in _keywordResponses.entries) {
-      if (lowerMessage.contains(entry.key)) {
-        return entry.value;
-      }
-    }
-
-    // 물음표가 있으면 질문으로 간주
-    if (message.contains('?') || message.contains('？')) {
-      return _getRandomQuestionResponse();
-    }
-
-    // 기본 응답
-    return _getRandomDefaultResponse();
   }
 
-  static String _getRandomQuestionResponse() {
-    final responses = [
-      '좋은 질문이에요 😊 지역, 날짜, 인원을 알려주시면 바로 도와드릴게요.',
-      '숙소 예약과 관련된 질문이라면 자세히 안내해드릴 수 있어요.',
-      '조금 더 구체적으로 말씀해주시면 정확히 안내할게요.',
-    ];
-    return responses[DateTime.now().millisecond % responses.length];
-  }
+  /// 특정 대화방의 이전 기록을 가져오고 싶을 때 사용
+  static Future<List<dynamic>> getHistory(int conversationId) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/conversations/$conversationId'),
+        headers: {
+          'Accept': 'application/json', // JSON으로 결과를 보내달라고 요청
+        },
+      );
 
-  static String _getRandomDefaultResponse() {
-    final responses = [
-      '숙소, 예약, 체크인 같은 키워드로 질문해보세요 😊',
-      '지역과 날짜를 알려주시면 숙소를 찾아드릴게요.',
-      '어떤 도움이 필요하신가요? 자유롭게 말씀해주세요.',
-      '여행 계획 중이신가요? 제가 도와드릴게요!',
-    ];
-    return responses[DateTime.now().millisecond % responses.length];
+      if (response.statusCode == 200) {
+        // 리스트 형태로 온 메세지 UTF-8 변환 반환
+        final String decodedBody = utf8.decode(response.bodyBytes);
+        return jsonDecode(decodedBody);
+      } else {
+        throw Exception('이력 로드 에러! 코드: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('이력을 가져오지 못했습니다: $e');
+    }
   }
 }
