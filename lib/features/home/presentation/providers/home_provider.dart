@@ -7,11 +7,10 @@ import 'package:meomulm_frontend/features/accommodation/data/models/search_accom
 
 class HomeProvider with ChangeNotifier {
   // 인기 숙소 조회
-  final HomeAccommodationService _homeService;
-  // 최근 본 숙소 조회
-  final AccommodationApiService _accommodationService;
 
-  HomeProvider(this._homeService, this._accommodationService);
+  final HomeAccommodationService _homeService = HomeAccommodationService() ;
+  // 최근 본 숙소 조회
+  final AccommodationApiService _accommodationService = AccommodationApiService();
 
   bool isLoading = false;
 

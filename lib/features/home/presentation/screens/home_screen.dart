@@ -2,15 +2,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/home/presentation/widgets/bottom_nav_bar_widget.dart';
 import 'package:meomulm_frontend/features/home/presentation/widgets/home_ad_section_widget.dart';
+import 'package:meomulm_frontend/features/home/presentation/widgets/home_header_widget.dart';
 import 'package:meomulm_frontend/features/home/presentation/widgets/home_section_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../widgets/home_header_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -141,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, constraints) {
           final width = constraints.maxWidth;
           final adHeight = width * 0.28;
-          final sectionHeight = width * 0.5;
+          final sectionHeight = width * 0.6;
 
           return AnimatedContainer(
             width: double.infinity,
@@ -214,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 const SizedBox(height: AppSpacing.sm),
 
-                                const SizedBox(height: AppSpacing.xxl),
+                                const SizedBox(height: AppSpacing.xl),
                                 const SizedBox(height: AppSpacing.xxl),
                               ],
                             ),
@@ -231,8 +232,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColors.main,
-        child: const Icon(Icons.chat_bubble_rounded, color: AppColors.white,),
-        onPressed: () => context.push("/chat")
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: const Icon(Icons.smart_toy, color: AppColors.white),
+        onPressed: () => context.push('${RoutePaths.chat}')
       ),
       // 탭
       bottomNavigationBar: SafeArea(

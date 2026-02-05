@@ -88,4 +88,10 @@ class RoutePaths{
   static const String reservation = '/reservation';
   // 결제 완료 스크린 (payment_success_screen)
   static const String paymentSuccess = '/payment-success';
+
+  /// =====================
+  /// chatbot 라우팅 경로
+  /// =====================
+  // 챗봇 스크린 (chat_screen)
+  static const String chat = '/chat';
 }
