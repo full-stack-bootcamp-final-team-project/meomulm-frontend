@@ -10,7 +10,7 @@ enum ReviewMode { write, view }
 
 class ReservationAfterTab extends StatelessWidget {
   final List<ReservationShareModel> reservations;
-  final void Function(ReviewMode mode) onReviewTap;
+  final void Function(ReviewMode mode, ReservationShareModel resevation) onReviewTap;
 
   const ReservationAfterTab({
     super.key,
@@ -30,7 +30,7 @@ class ReservationAfterTab extends StatelessWidget {
           checkInValue: '${r.checkInText} ${r.productCheckInTimeOnly}',
           checkOutValue: '${r.checkOutText} ${r.productCheckOutTimeOnly}',
           reviewLabel: '리뷰 입력',
-          onReviewTap: () => onReviewTap(ReviewMode.write),
+          onReviewTap: () => onReviewTap(ReviewMode.write, r),
         );
       }).toList(),
     );

@@ -179,10 +179,11 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
                     ),
                     ReservationAfterTab(
                       reservations: provider.reservationsAfter,
-                      onReviewTap: (mode) {
+                      onReviewTap: (mode, reservation) {
                         if (mode == ReviewMode.write) {
                           context.push(
                             '${RoutePaths.myPage}${RoutePaths.myReviewWrite}',
+                            extra: reservation,
                           );
                         } else {
                           context.push(
