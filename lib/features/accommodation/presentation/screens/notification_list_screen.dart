@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/router/app_router.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/notification_api_service.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/notification_response_model.dart';
@@ -155,12 +157,43 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.only(right: 20),
               child: const Icon(
-                Icons.delete_sweep_rounded,
-                color: Colors.white,
-                size: 28
+                  Icons.delete_sweep_rounded,
+                  color: Colors.white,
+                  size: 28
               ),
+            ),// 알림 카드 클릭 이벤트 추가
+            child: GestureDetector(
+              onTap: () {
+                final linkUrl = item.notificationLinkUrl; // 서버에서 준 링크 (예: meomulm://...)
+
+                if (!item.isRead) {
+                  setState(() {
+                    item.isRead = true;
+                  });
+
+                if (linkUrl != null && linkUrl.isNotEmpty) {
+                  try {
+                    final uri = Uri.parse(linkUrl);
+                    // 쌤이 만드신 경로 해석
+                    final parsedPath = AppRouter.parseDeepLinkUri(uri);
+
+                    if (parsedPath != null) {
+                      debugPrint('알림 클릭 이동 경로: $parsedPath');
+                      // 해석된 경로로 이동
+                      context.push(parsedPath);
+                      NotificationApiService.updateNotificationStatus(
+                          notificationId: item.notificationId
+                      );
+                    } else {
+                      debugPrint('해당 딥링크를 해석할 수 없습니다: $linkUrl');
+                    }
+                  } catch (e) {
+                    debugPrint('URI 파싱 에러: $e');
+                  }
+                }
+              },
+              child: NotificationCard(notification: item),
             ),
-            child: NotificationCard(notification: item),
           );
         },
       ),

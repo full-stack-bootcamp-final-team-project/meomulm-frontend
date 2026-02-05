@@ -17,7 +17,7 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isRead = notification.is_read;
+    final bool isRead = notification.isRead;
     final Color unreadColor = const Color(0xFF007AFF);
 
     return GestureDetector(
