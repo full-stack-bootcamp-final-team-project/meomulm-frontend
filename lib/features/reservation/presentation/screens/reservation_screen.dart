@@ -84,7 +84,6 @@ class _ReservationScreenState extends State<ReservationScreen> {
         accommodationProvider.checkIn,
         accommodationProvider.checkOut,
         accommodationProvider.guestNumber,
-        'pending',
         reservationInfo.totalPrice,
       );
 
