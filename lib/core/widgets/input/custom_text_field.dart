@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/input/form_label.dart';
 
@@ -14,8 +15,9 @@ class CustomTextField extends StatefulWidget {
   final String? helperText;
   final TextStyle? helperStyle;
   final bool readOnly;
+  final List<TextInputFormatter>? inputFormatters; // 연락처 자동 변경 처리
 
-  const   CustomTextField({
+  const CustomTextField({
     super.key,
     required this.label,
     this.isRequired = false,
@@ -28,6 +30,7 @@ class CustomTextField extends StatefulWidget {
     this.helperText,
     this.helperStyle,
     this.readOnly = false,
+    this.inputFormatters,
   });
 
   @override
@@ -49,6 +52,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           controller: widget.controller,
           focusNode: widget.focusNode,
           keyboardType: widget.keyboardType,
+          inputFormatters: widget.inputFormatters,
           obscureText: isPasswordField ? _obscureText : false,
           readOnly: widget.readOnly,
           // 실시간 검증을 위해 autovalidateMode 설정
