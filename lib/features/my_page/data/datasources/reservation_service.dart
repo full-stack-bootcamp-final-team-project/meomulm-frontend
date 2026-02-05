@@ -58,7 +58,7 @@ class ReservationService {
    */
   Future<bool> putReservation(String token, int reservationId) async {
     try {
-      final response = await _dio.delete(
+      final response = await _dio.put(
         '/reservation',
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
