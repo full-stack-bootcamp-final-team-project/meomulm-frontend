@@ -5,7 +5,7 @@ class NotificationResponseModel {
   final int userId;
   final String notificationContent;
   final String notificationLinkUrl;
-  final bool is_read;
+  final bool isRead;
   final String createdAt;
 
   NotificationResponseModel({
@@ -13,7 +13,7 @@ class NotificationResponseModel {
     required this.userId,
     required this.notificationContent,
     required this.notificationLinkUrl,
-    required this.is_read,
+    required this.isRead,
     required this.createdAt
   });
 
@@ -25,7 +25,7 @@ class NotificationResponseModel {
         userId: json['userId'] as int? ?? 0,
         notificationContent: json['notificationContent'] as String? ?? '',
         notificationLinkUrl: json['notificationLinkUrl'] as String? ?? '',
-        is_read: json['is_read'] as bool? ?? false,
+        isRead: json['isRead'] as bool? ?? false,
         createdAt: json['createdAt'] as String? ?? '',
       );
     } catch (e, stackTrace) {
@@ -41,7 +41,7 @@ class NotificationResponseModel {
       'userId': userId,
       'notificationContent': notificationContent,
       'notificationLinkUrl': notificationLinkUrl,
-      'is_read': is_read,
+      'is_read': isRead,
       'createdAt': createdAt,
     };
   }

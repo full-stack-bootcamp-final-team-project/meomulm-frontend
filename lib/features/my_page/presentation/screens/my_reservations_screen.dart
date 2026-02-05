@@ -26,7 +26,9 @@ import 'package:provider/provider.dart';
  * 마이페이지 - 예약내역 스크린
  */
 class MyReservationsScreen extends StatefulWidget {
-  const MyReservationsScreen({super.key});
+  // 초기 탭 인덱스 변수 추가
+  final int initialTab;
+  const MyReservationsScreen({super.key, this.initialTab = 0});
 
   @override
   State<MyReservationsScreen> createState() => _MyReservationsScreenState();
@@ -45,7 +47,7 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 3, vsync: this, initialIndex: widget.initialTab);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadReservations();

@@ -60,6 +60,9 @@ dependencies:
   stomp_dart_client: ^3.0.1
   flutter_local_notifications: ^20.0.0
 
+  # [Deeplink]
+  app_links: ^6.0.0             # Custom Scheme / Universal Link deeplink 처리
+
 
 dev_dependencies:
   flutter_test:
