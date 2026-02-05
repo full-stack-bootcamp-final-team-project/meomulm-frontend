@@ -36,12 +36,7 @@ class MeomulmApp extends StatelessWidget {
         ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider(create: (_) => UserProfileProvider()),
         ChangeNotifierProvider(create: (_) => MapProvider()),
-        ChangeNotifierProvider(
-            create: (_) => HomeProvider(
-              HomeAccommodationService(),
-              AccommodationApiService(),
-            )
-        ),
+        ChangeNotifierProvider(create: (_) => HomeProvider()),
         ChangeNotifierProvider(create: (_) => ReservationProvider()),
         ChangeNotifierProvider(create: (_) => ReservationFormProvider()),
       ],
