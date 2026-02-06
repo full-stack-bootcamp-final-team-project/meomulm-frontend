@@ -8,7 +8,7 @@
     <application
             android:label="meomulm_frontend"
             android:name="${applicationName}"
-            android:icon="@mipmap/ic_launcher"
+            android:icon="@mipmap/meomulm"
             android:enableOnBackInvokedCallback="true"
             android:theme="@style/NormalTheme"> <!-- ✅ 앱 전체 테마 적용 -->
 
