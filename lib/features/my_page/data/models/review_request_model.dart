@@ -15,6 +15,6 @@ class ReviewRequestModel {
   Map<String, dynamic> toJson() => {
     'accommodationId': accommodationId,
     'rating': rating,
-    'reviewCount': reviewContent,
+    'reviewContent': reviewContent,
   };
 }

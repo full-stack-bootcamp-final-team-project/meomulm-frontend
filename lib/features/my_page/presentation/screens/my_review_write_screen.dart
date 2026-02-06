@@ -10,6 +10,7 @@ import 'package:meomulm_frontend/core/theme/app_input_decorations.dart';
 import 'package:meomulm_frontend/core/theme/app_input_styles.dart';
 import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 import 'package:meomulm_frontend/core/widgets/layouts/star_rating_widget.dart';
@@ -27,10 +28,7 @@ import 'package:provider/provider.dart';
 class MyReviewWriteScreen extends StatefulWidget {
   final ReservationShareModel reservationShare;
 
-  const MyReviewWriteScreen({
-    super.key,
-    required this.reservationShare,
-  });
+  const MyReviewWriteScreen({super.key, required this.reservationShare});
 
   @override
   State<MyReviewWriteScreen> createState() => _MyReviewWriteScreenState();
@@ -42,7 +40,6 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
 
   double _rating = 0.0;
   final TextEditingController _controller = TextEditingController();
-
 
   @override
   void initState() {
@@ -61,7 +58,7 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
   void _recalc() {
     final isSubmittable = _rating != 0.0 && _controller.text.trim().isNotEmpty;
 
-    if(isSubmittable != _canSubmit) {
+    if (isSubmittable != _canSubmit) {
       setState(() => _canSubmit = isSubmittable);
     }
   }
@@ -76,19 +73,22 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
   // 제출 함수
   Future<void> _onSubmit() async {
     if (!_canSubmit) return;
+
+    setState(() => isLoading = true);
+
     final rating = (_rating * 2).toInt();
     final reviewContent = _controller.text.trim();
 
     final request = ReviewRequestModel(
-        accommodationId: widget.reservationShare.accommodationId,
-        rating: rating,
-        reviewContent: reviewContent,
+      accommodationId: widget.reservationShare.accommodationId,
+      rating: rating,
+      reviewContent: reviewContent,
     );
 
     try {
       final reviewService = ReviewService();
       final token = context.read<AuthProvider>().token;
-      if(token == null) {
+      if (token == null) {
         return;
       }
       final result = await reviewService.uploadReview(token, request);
@@ -102,10 +102,10 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
       );
       context.pop(true);
     } catch (e) {
-      if(!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("리뷰 등록에 실패했습니다."))
-      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("리뷰 등록에 실패했습니다.")));
     } finally {
       setState(() => isLoading = false);
     }
@@ -123,65 +123,76 @@ class _MyReviewWriteScreenState extends State<MyReviewWriteScreen> {
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),
           child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                children: [
-                  // 상단 예약 정보 카드
-                  ReservationInfoCard(reservationShare: widget.reservationShare,),
-
-                  const SizedBox(height: AppSpacing.xl),
-
-                  RatingRow(
-                    rating: _rating,
-                    onChanged: (v) => setState(() => _rating = v),
-                    ratingFromDx: _ratingFromDx,
-                  ),
-
-                  const SizedBox(height: AppSpacing.md),
-
-                  // 리뷰 입력 박스
-                  Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.gray3),
-                        borderRadius: AppBorderRadius.mediumRadius,
-                        color: AppColors.white,
-                      ),
-                      child: TextField(
-                        controller: _controller,
-                        maxLines: null,
-                        expands: true,
-                        textAlignVertical: TextAlignVertical.top,
-                        decoration: const InputDecoration(
-                          isCollapsed: true,
-                          border: InputBorder.none,
-                          hintText: '리뷰를 입력하세요.',
-                          hintStyle: AppTextStyles.inputPlaceholder,
-                        ),
-                        style: AppTextStyles.inputTextMd.copyWith(height: 1.35),
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.md),
-
-                  // 등록 버튼
-                  LargeButton(
-                      label: ButtonLabels.register,
-                      onPressed: () async {
-                        await _onSubmit();
-                      },
-                      enabled: _canSubmit
-                  ),
-                ],
+            child: ListView(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg + MediaQuery.of(context).viewInsets.bottom,
               ),
+              children: [
+                // 상단 예약 정보 카드
+                ReservationInfoCard(reservationShare: widget.reservationShare),
+
+                const SizedBox(height: AppSpacing.xl),
+
+                RatingRow(
+                  rating: _rating,
+                  onChanged: (v) {
+                    setState(() => _rating = v);
+                    _recalc();
+                  },
+                  ratingFromDx: _ratingFromDx,
+                ),
+
+                const SizedBox(height: AppSpacing.md),
+
+                Container(
+                  height: 180,
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.gray3),
+                    borderRadius: AppBorderRadius.mediumRadius,
+                    color: AppColors.white,
+                  ),
+                  child: TextField(
+                    controller: _controller,
+                    maxLines: null,
+                    expands: true,
+                    textAlignVertical: TextAlignVertical.top,
+                    decoration: const InputDecoration(
+                      isCollapsed: true,
+                      border: InputBorder.none,
+                      hintText: '리뷰를 입력하세요.',
+                      hintStyle: AppTextStyles.inputPlaceholder,
+                    ),
+                    style: AppTextStyles.inputTextMd.copyWith(height: 1.35),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.md),
+              ],
             ),
           ),
         ),
       ),
+
+        bottomNavigationBar: AnimatedPadding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          duration: AppDurations.slow,
+          curve: Curves.easeOut,
+          child: SafeArea(
+              child: SizedBox(
+                height: 100,
+                child: BottomActionButton(
+                  label: ButtonLabels.register,
+                  onPressed: _canSubmit ? _onSubmit : null,
+                ),
+              )
+          ),
+        )
     );
   }
 }
