@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 import 'accommodation_image_model.dart';
 
 class NotificationResponseModel {
@@ -25,7 +27,7 @@ class NotificationResponseModel {
         userId: json['userId'] as int? ?? 0,
         notificationContent: json['notificationContent'] as String? ?? '',
         notificationLinkUrl: json['notificationLinkUrl'] as String? ?? '',
-        isRead: json['isRead'] as bool? ?? false,
+        isRead: json['read'] as bool? ?? false,
         createdAt: json['createdAt'] as String? ?? '',
       );
     } catch (e, stackTrace) {

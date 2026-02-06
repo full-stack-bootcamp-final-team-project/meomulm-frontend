@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/notification_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/notification_api_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
@@ -17,9 +18,10 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("${notification.notificationId} : ${notification.isRead}");
     final bool isRead = notification.isRead;
-    final Color unreadColor = const Color(0xFF007AFF);
-    final Color backgroundColor = isRead ? const Color(0xFFF2F2F7) : Colors.white;
+    final unreadColor = const Color(0xFF007AFF);
+    final backgroundColor = isRead ? AppColors.gray5 : Colors.white;
 
     return GestureDetector(
       onTap: () async {
@@ -74,9 +76,9 @@ class NotificationCard extends StatelessWidget {
                   Text(
                     notification.notificationContent,
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 16,
                       fontWeight: isRead ? FontWeight.w400 : FontWeight.w600,
-                      color: isRead ? const Color(0xFF8E8E93) : const Color(0xFF1C1C1E),
+                      color: isRead ? AppColors.gray2 : AppColors.black,
                       height: 1.4,
                       letterSpacing: -0.3,
                     ),
@@ -86,7 +88,7 @@ class NotificationCard extends StatelessWidget {
                     _formatDate(notification.createdAt),
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Color(0xFFC7C7CC),
+                      color: AppColors.gray2,
                       letterSpacing: -0.2,
                     ),
                   ),
@@ -98,7 +100,7 @@ class NotificationCard extends StatelessWidget {
               const Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 14,
-                color: Color(0xFFD1D1D6),
+                color: AppColors.gray2,
               ),
           ],
         ),
