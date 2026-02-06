@@ -1,5 +1,5 @@
 class ChatRequest {
-  final String userId;
+  final int userId;
   final String message;
   final int? conversationId;
 

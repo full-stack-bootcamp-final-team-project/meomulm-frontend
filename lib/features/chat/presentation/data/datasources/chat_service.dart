@@ -1,28 +1,29 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_message.dart';
 import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_request.dart';
 import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_response.dart';
 
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
+
 class ChatService {
-  // 본인 컴퓨터에서 실행 중일 때: Android 에뮬레이터는 10.0.2.2, iOS는 localhost
-  static const String baseUrl = "http://localhost:8080/api/chat";
+  static final Dio _dio = Dio(BaseOptions(
+    baseUrl: ApiPaths.chatUrl,
+    connectTimeout: const Duration(seconds: 5),
+    receiveTimeout: const Duration(seconds: 30),
+    contentType: 'application/json',
+    responseType: ResponseType.json,
+  ));
 
   /// 백엔드 서버로 메시지를 보내고 응답을 받는 함수
   static Future<ChatResponse> sendMessage(ChatRequest request) async {
     try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/message'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode(request.toJson()),
+      final response = await _dio.post(
+        '/message',
+        data: request.toJson(),
       );
 
       if (response.statusCode == 200) {
-        // 한글 깨짐 방지를 위해 utf8.decode 처리
-        final decodedBody = utf8.decode(response.bodyBytes);
-        return ChatResponse.fromJson(jsonDecode(decodedBody));
+        return ChatResponse.fromJson(response.data);
       } else {
         throw Exception('서버 응답 오류: ${response.statusCode}');
       }
@@ -32,25 +33,35 @@ class ChatService {
     }
   }
 
-  /// 특정 대화방의 이전 기록을 가져오고 싶을 때 사용
-  static Future<List<dynamic>> getHistory(int conversationId) async {
+  // 방 목록을 가져옴
+  static Future<List<ChatResponse>> getUserConversations(String token) async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/conversations/$conversationId'),
-        headers: {
-          'Accept': 'application/json', // JSON으로 결과를 보내달라고 요청
-        },
+      final response = await _dio.get(
+        '/conversations',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
+      final List<dynamic> data = response.data;
+      return data.map((json) => ChatResponse.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('방 목록 로드 실패: $e');
+    }
+  }
+
+  /// 메시지 내역을 가져옴
+  static Future<List<ChatMessage>> getChatHistory(int conversationId, String token) async {
+    try {
+      final response = await _dio.get('/conversations/$conversationId',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
       if (response.statusCode == 200) {
-        // 리스트 형태로 온 메세지 UTF-8 변환 반환
-        final String decodedBody = utf8.decode(response.bodyBytes);
-        return jsonDecode(decodedBody);
+        final List<dynamic> data = response.data;
+        return data.map((json) => ChatMessage.fromJson(json)).toList();
       } else {
-        throw Exception('이력 로드 에러! 코드: ${response.statusCode}');
+        throw Exception('메세지 내역을 불러오지 못했습니다.');
       }
     } catch (e) {
-      throw Exception('이력을 가져오지 못했습니다: $e');
+      throw Exception('메시지 내역 로드 실패: $e');
     }
   }
 }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/utils/accommodation_image_utils.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_detail_screen.dart';
-import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'image_none.dart';
@@ -30,22 +30,15 @@ class HomeItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageUrl = AccommodationImageUtils.getImageUrl(item);
 
-
     return GestureDetector(
-      onTap: () async {
+      onTap: () {
         final id = item.accommodationId; // 숙소 ID 가져오기
         final name = item.accommodationName;
 
         // Provider 업데이트
         final provider = context.read<AccommodationProvider>();
         provider.setAccommodationInfo(id, name);
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => AccommodationDetailScreen(accommodationId: id),
-          ),
-        );
+        context.push('${RoutePaths.accommodationDetail}/$id');
       },
       child: Container(
         width: width,

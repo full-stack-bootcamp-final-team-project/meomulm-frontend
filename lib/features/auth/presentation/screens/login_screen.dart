@@ -12,6 +12,7 @@ import 'package:meomulm_frontend/features/auth/data/datasources/naver_login_serv
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/login/login_button_fields.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/login/login_input_fields.dart';
+import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
 import 'package:naver_login_sdk/naver_login_sdk.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -120,6 +121,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       await context.read<AuthProvider>().login(loginResponse.token);
 
+      // 최근 본 숙소를 위한 뷰
+      await context.read<HomeProvider>().loadHome(isLoggedIn: true);
+
       FocusManager.instance.primaryFocus?.unfocus();
       SnackMessenger.showMessage(
           context,
@@ -199,6 +203,9 @@ class _LoginScreenState extends State<LoginScreen> {
         print('5️⃣ JWT 토큰 저장 및 로그인 처리');
         await context.read<AuthProvider>().login(response['token']);
 
+        // 최근 본 숙소를 위한 뷰
+        await context.read<HomeProvider>().loadHome(isLoggedIn: true);
+
         if (!mounted) return;
 
         SnackMessenger.showMessage(
@@ -206,6 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
           '카카오 로그인 성공!',
           type: ToastType.success
         );
+
         context.go(RoutePaths.home);
 
       } else if (response['message'] == 'need_signup') {
@@ -301,6 +309,10 @@ class _LoginScreenState extends State<LoginScreen> {
               final token = response['token'] as String;
 
               await context.read<AuthProvider>().login(token);
+
+              // 최근 본 숙소를 위한 뷰
+              await context.read<HomeProvider>().loadHome(isLoggedIn: true);
+
               if (!mounted) return;
               SnackMessenger.showMessage(
                   context,

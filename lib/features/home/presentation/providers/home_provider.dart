@@ -23,7 +23,7 @@ class HomeProvider with ChangeNotifier {
   List<SearchAccommodationResponseModel> jejuList = [];
 
   /// 홈 전체 로드
-  Future<void> loadHome() async {
+  Future<void> loadHome({required bool isLoggedIn}) async {
     isLoading = true;
     notifyListeners();
 
@@ -38,7 +38,7 @@ class HomeProvider with ChangeNotifier {
       busanList = results[1];
       jejuList = results[2];
 
-      await loadRecentFromLocal();
+      await loadRecentFromLocal(isLoggedIn: isLoggedIn);
     } catch (e) {
       debugPrint('Home load 실패: $e');
     } finally {
@@ -48,7 +48,11 @@ class HomeProvider with ChangeNotifier {
   }
 
   /// 최근 본 숙소 ID 저장 + 리스트 갱신
-  Future<void> addRecentAccommodationId(int id) async {
+  Future<void> addRecentAccommodationId(
+      int id,
+      {required bool isLoggedIn}
+    ) async {
+    if (!isLoggedIn) return;
     final prefs = await SharedPreferences.getInstance();
     final ids = prefs.getStringList('recent_ids') ?? [];
 
@@ -60,11 +64,18 @@ class HomeProvider with ChangeNotifier {
     await prefs.setStringList('recent_ids', ids);
 
     // 로컬 -> 서버 조회 후 recentList 갱신
-    await loadRecentFromLocal();
+    await loadRecentFromLocal(isLoggedIn: true);
   }
 
   /// 최근 본 숙소 서버 조회
-  Future<void> loadRecentFromLocal() async {
+  Future<void> loadRecentFromLocal({required bool isLoggedIn}) async {
+    // 비로그인 → 최근 본 숙소 안 씀
+    if (!isLoggedIn) {
+    recentList = [];
+    notifyListeners();
+    return;
+    }
+
     final prefs = await SharedPreferences.getInstance();
     // 아이디 리스트
     final ids = prefs.getStringList('recent_ids') ?? [];

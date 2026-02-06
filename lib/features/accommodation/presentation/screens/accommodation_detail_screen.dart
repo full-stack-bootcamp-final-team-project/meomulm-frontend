@@ -19,6 +19,7 @@ import 'package:meomulm_frontend/features/accommodation/presentation/widgets/acc
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/policy_section.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/review_preview_section.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/title_section.dart';
+import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
 import 'package:provider/provider.dart';
 import '../widgets/accommodation_detail_widgets/accommodation_image_slider.dart';
@@ -54,9 +55,24 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
 
       // ========================= 최근 숙소 저장 =========================
       WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final token = context.read<AuthProvider>().token;
+
+        // 비로그인 → 저장 안 함
+        if (token == null || token.isEmpty) {
+          debugPrint('비로그인 상태 → 최근 본 숙소 저장 안 함');
+          return;
+        }
+
+        // 로그인 → 저장
         final homeProvider = context.read<HomeProvider>();
-        await homeProvider.addRecentAccommodationId(widget.accommodationId);
-        await homeProvider.loadRecentFromLocal(); // 최신 데이터 로드
+        await homeProvider.addRecentAccommodationId(
+          widget.accommodationId,
+          isLoggedIn: true,
+        );
+
+        await homeProvider.loadRecentFromLocal(
+          isLoggedIn: true,
+        );
       });
       // =================================================================
 

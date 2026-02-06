@@ -6,5 +6,17 @@ class ChatMessage {
   // 메세지를 전달 시간
   final DateTime time;
 
-  ChatMessage(this.message, this.isUser, this.time);
+  ChatMessage({
+    required this.message,
+    required this.isUser,
+    required this.time
+  });
+
+  factory ChatMessage.fromJson(Map<String, dynamic> json) {
+    return ChatMessage(
+      message: json['message'] ?? '',
+      isUser: json['isUserMessage'] ?? false,
+      time: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),
+    );
+  }
 }
