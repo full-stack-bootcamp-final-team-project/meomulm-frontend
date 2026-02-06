@@ -4,7 +4,7 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
 import 'package:meomulm_frontend/features/map/data/datasources/location_service.dart';
 
-/// 위치 권한 거부/에러 메시지
+/// 위치 권한 거부 / 위치 오류 상태를 사용자에게 안내하는 UI 위젯
 class LocationDeniedMessage extends StatelessWidget {
   final LocationError errorType;
   final VoidCallback? onRetry;
@@ -64,6 +64,7 @@ class LocationDeniedMessage extends StatelessWidget {
     );
   }
 
+  /// 에러 타입별 아이콘 반환
   IconData _getIcon() {
     switch (errorType) {
       case LocationError.serviceDisabled:
@@ -78,6 +79,7 @@ class LocationDeniedMessage extends StatelessWidget {
     }
   }
 
+  /// 에러 타입별 제목 반환
   String _getTitle() {
     switch (errorType) {
       case LocationError.serviceDisabled:
@@ -93,6 +95,7 @@ class LocationDeniedMessage extends StatelessWidget {
     }
   }
 
+  /// 에러 타입별 상세 메시지 반환
   String _getMessage() {
     switch (errorType) {
       case LocationError.serviceDisabled:
@@ -108,7 +111,7 @@ class LocationDeniedMessage extends StatelessWidget {
     }
   }
 
-
+  /// 재시도 버튼 표시 여부
   bool _canRetry() {
     // 재시도 가능한 에러 타입
     return errorType == LocationError.permissionDenied ||

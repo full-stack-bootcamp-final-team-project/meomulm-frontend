@@ -7,7 +7,7 @@ import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:provider/provider.dart';
 
-/// 숙소 카드의 정보 섹션
+/// 숙소 카드의 정보 섹션 위젯
 class AccommodationCardInfo extends StatelessWidget {
   final int accommodationId;
   final String name;

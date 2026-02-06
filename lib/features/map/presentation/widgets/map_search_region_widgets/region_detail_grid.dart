@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
+/// 선택된 "세부 지역 목록"을 그리드 형태로 보여주는 위젯
 class RegionDetailGrid extends StatelessWidget {
   final List<String> details;
   final int crossAxisCount;

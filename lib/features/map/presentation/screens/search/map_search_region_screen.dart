@@ -6,6 +6,7 @@ import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_search_region_widgets/region_detail_grid.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_search_region_widgets/region_list_panel.dart';
 
+/// 지도 검색 지역 선택 스크린
 class MapSearchRegionScreen extends StatefulWidget {
   const MapSearchRegionScreen({super.key});
 

@@ -3,7 +3,7 @@ import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/map/presentation/utils/map_marker_manager.dart';
 
-/// 마커 업데이트를 감지하고 처리하는 컨트롤러
+/// 현재 위치와 숙소 목록의 변경 여부를 감지하여 지도 마커 업데이트를 제어하는 컨트롤러
 class MapMarkerController {
   final MapMarkerManager _markerManager;
 
@@ -11,9 +11,9 @@ class MapMarkerController {
   List<SearchAccommodationResponseModel> _lastAccommodations = [];
 
   MapMarkerController(KakaoMapController mapController)
-      : _markerManager = MapMarkerManager(mapController);
+    : _markerManager = MapMarkerManager(mapController);
 
-  /// 마커 업데이트 (변경 감지 포함)
+  /// 마커 업데이트
   Future<void> update({
     LatLng? myPosition,
     required List<SearchAccommodationResponseModel> accommodations,
@@ -50,9 +50,9 @@ class MapMarkerController {
 
   /// 숙소 리스트 변경 여부 확인 (개선 버전)
   bool _isAccommodationsChanged(
-      List<SearchAccommodationResponseModel> oldList,
-      List<SearchAccommodationResponseModel> newList,
-      ) {
+    List<SearchAccommodationResponseModel> oldList,
+    List<SearchAccommodationResponseModel> newList,
+  ) {
     if (oldList.length != newList.length) return true;
 
     final oldIds = oldList.map((e) => e.accommodationId).toSet();

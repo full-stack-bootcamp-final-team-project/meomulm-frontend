@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/accommodation_image_utils.dart';
 
-/// 숙소 카드의 이미지 섹션
+/// 숙소 카드의 이미지 섹션 위젯
 class AccommodationCardImage extends StatelessWidget {
   final String imageUrl;
   final int accommodationId;

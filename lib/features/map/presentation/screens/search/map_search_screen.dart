@@ -9,6 +9,7 @@ import 'package:meomulm_frontend/features/accommodation/presentation/providers/a
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_search_widgets/location_select_row.dart';
 import 'package:provider/provider.dart';
 
+/// 지도 검색 조건을 설정하는 스크린
 class MapSearchScreen extends StatefulWidget {
   const MapSearchScreen({super.key});
 

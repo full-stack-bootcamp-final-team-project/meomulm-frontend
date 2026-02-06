@@ -16,6 +16,7 @@ import 'package:meomulm_frontend/features/map/presentation/widgets/map_widgets/m
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_view_layout.dart';
 import 'package:provider/provider.dart';
 
+/// 현재 위치 기반 지도 초기화와 숙소 검색 흐름을 관리하는 스크린
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
 

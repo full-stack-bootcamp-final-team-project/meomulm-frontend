@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/constants/config/app_config.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
-/// 내 위치로 이동하는 버튼
+/// 내 위치로 이동하는 버튼 위젯
 class MyLocationButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool hasSelectedAccommodation;

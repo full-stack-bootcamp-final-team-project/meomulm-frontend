@@ -23,6 +23,7 @@ enum LocationError {
   unknown,
 }
 
+/// 위치 서비스 및 권한을 관리하고 현재 위치 조회/실시간 위치 추적 기능을 제공하는 유틸 서비스
 class LocationService {
   static const Duration _timeoutDuration = Duration(seconds: 10);
 

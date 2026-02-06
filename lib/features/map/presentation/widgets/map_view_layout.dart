@@ -10,7 +10,7 @@ import 'package:meomulm_frontend/features/map/presentation/widgets/loading_overl
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_accommodation_card.dart';
 import 'package:provider/provider.dart';
 
-/// 지도 뷰 공통 레이아웃
+/// 지도 화면에서 공통으로 사용하는 메인 레이아웃 위젯
 class MapViewLayout extends StatefulWidget {
   final LatLng initialPosition;
   final LatLng? myPosition;
@@ -31,6 +31,7 @@ class MapViewLayout extends StatefulWidget {
 
 class _MapViewLayoutState extends State<MapViewLayout> {
   MapMarkerController? _markerController;
+  bool _isUpdatingMarkers = false;
 
   @override
   void dispose() {
@@ -40,28 +41,32 @@ class _MapViewLayoutState extends State<MapViewLayout> {
 
   /// 지도 준비 완료 시 마커 컨트롤러 초기화 및 콜백 호출
   void _onMapReady(KakaoMapController controller) {
+    _markerController?.dispose();
     _markerController = MapMarkerController(controller);
-
-    // 초기 마커 설정
     _updateMarkers();
-
-    // 외부 콜백 호출
     widget.onMapReady?.call(controller);
   }
 
+
   /// 마커 업데이트
-  void _updateMarkers() {
-    if (_markerController == null) return;
+  Future<void> _updateMarkers() async {
+    if (_markerController == null || _isUpdatingMarkers) return;
 
-    final provider = context.read<MapProvider>();
-
-    _markerController!.update(
-      myPosition: widget.myPosition,
-      accommodations: provider.accommodations,
-      onMarkerTap: (accommodation) {
-        provider.selectAccommodation(accommodation);
-      },
-    );
+    _isUpdatingMarkers = true;
+    try {
+      final provider = context.read<MapProvider>();
+      await _markerController!.update(
+        myPosition: widget.myPosition,
+        accommodations: provider.accommodations,
+        onMarkerTap: (accommodation) {
+          provider.selectAccommodation(accommodation);
+        },
+      );
+    } catch (e) {
+      debugPrint('마커 업데이트 실패: $e');
+    } finally {
+      _isUpdatingMarkers = false;
+    }
   }
 
   @override
@@ -77,7 +82,7 @@ class _MapViewLayoutState extends State<MapViewLayout> {
 
         return Stack(
           children: [
-            // ===== 지도 (순수 렌더링만 담당) =====
+            // ===== 지도 =====
             BaseKakaoMap(
               initialPosition: widget.initialPosition,
               onMapReady: _onMapReady,
@@ -93,7 +98,7 @@ class _MapViewLayoutState extends State<MapViewLayout> {
                 onRetry: () => provider.retry(),
               ),
 
-            // ===== 숙소 개수 카운터 =====
+            // ===== 숙소 개수 =====
             if (!provider.isLoading && provider.accommodations.isNotEmpty)
               AccommodationCounter(count: provider.accommodations.length),
 

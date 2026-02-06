@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 
+/// "상위 지역 목록"을 왼쪽 패널 형태로 보여주는 위젯
 class RegionListPanel extends StatelessWidget {
   final List<String> regions;
   final int selectedIndex;

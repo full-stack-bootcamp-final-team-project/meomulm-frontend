@@ -3,7 +3,7 @@ import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
 
-/// 지도 초기화 및 검색을 조정하는 클래스
+/// 지도 검색 흐름을 조정하고 위치/지역 기반 숙소 검색을 위임하는 코디네이터
 class MapCoordinator {
   final MapProvider provider;
 

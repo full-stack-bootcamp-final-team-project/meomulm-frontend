@@ -5,6 +5,7 @@ import 'package:meomulm_frontend/core/error/app_exception.dart';
 import 'package:meomulm_frontend/core/error/error_parser.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 
+/// 위치 좌표 기반 숙소 검색 API 통신을 담당하는 서비스
 class MapService {
   static final MapService _instance = MapService._internal();
 
@@ -16,7 +17,7 @@ class MapService {
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiPaths.accommodationUrl,
-        connectTimeout: const Duration(seconds: 5),
+        connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 30),
         headers: {'Content-Type': 'application/json'},
         validateStatus: (status) => status != null && status < 500,
