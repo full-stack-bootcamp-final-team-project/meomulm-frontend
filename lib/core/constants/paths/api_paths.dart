@@ -65,4 +65,7 @@ class ApiPaths {
   static final String currentPasswordUrl = '$userUrl/currentPassword';
   // 비밀번호 변경(마이페이지)
   static final String changePasswordUrl = '$userUrl/password';
+
+  // 챗봇
+  static final String chatUrl = '$baseUrl/chat';
 }

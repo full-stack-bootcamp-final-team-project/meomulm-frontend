@@ -51,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+
     _currentGradient = AppGradients.byTime();
     _timer = Timer.periodic(
       const Duration(minutes: 1),
@@ -62,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final auth = context.read<AuthProvider>();
 
-        context.read<HomeProvider>().loadHome();
+        context.read<HomeProvider>().loadHome(isLoggedIn: auth.isLoggedIn,);
       });
     });
   }

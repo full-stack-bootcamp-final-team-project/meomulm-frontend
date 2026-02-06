@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/accommodation_image_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
@@ -9,6 +9,7 @@ import 'package:meomulm_frontend/features/my_page/data/datasources/favorite_serv
 import 'package:meomulm_frontend/features/my_page/data/models/select_favorite_model.dart';
 import 'package:meomulm_frontend/features/my_page/presentation/widgets/favorite/favorite_item_widget.dart';
 import 'package:provider/provider.dart';
+
 
 class FavoriteScreen extends StatefulWidget  {
   const FavoriteScreen({super.key});
@@ -20,30 +21,6 @@ class FavoriteScreen extends StatefulWidget  {
 class _FavoriteScreenState extends State<FavoriteScreen> {
   List<SelectFavoriteModel> selectFavorite = [];
   bool isLoading = true;
-
-  // // 테스트용 더미 데이터
-  // final List<Map<String, dynamic>> wishItems = [
-  //   {
-  //     'accommodationName': '파주 테라피크닉',
-  //     'location': '파주시 프로방스마을',
-  //     'imageUrls': ['https://picsum.photos/id/10/200/300','https://picsum.photos/id/10/200/300']
-  //   },
-  //   {
-  //     'accommodationName': '강릉 블리스펜션',
-  //     'location': '강릉 바다 바로 앞',
-  //     'imageUrls': ['https://picsum.photos/id/11/200/300'],
-  //   },
-  //   {
-  //     'accommodationName': '라마다 속초 호텔',
-  //     'location': '대포항',
-  //     'imageUrls': [],
-  //   },
-  //   {
-  //     'accommodationName': '반얀트리 클럽 앤 스파',
-  //     'location': '버티고개 1번출구',
-  //     'imageUrls': ['https://picsum.photos/id/13/200/300'],
-  //   },
-  // ];
 
   @override
   void initState() {
@@ -73,7 +50,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   Widget build(BuildContext context) {
   return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: const AppBarWidget(title: '찜 목록'),
+      appBar: const AppBarWidget(title: TitleLabels.wishlist),
 
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -82,14 +59,11 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.favorite_border, size: 64, color: AppColors.gray3),
-            SizedBox(height: 16),
+            Icon(AppIcons.favorite, size: AppIcons.sizeXxl, color: AppColors.gray3),
+            SizedBox(height: AppSpacing.lg),
             Text(
               '아직 찜한 숙소가 없습니다',
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.gray2,
-              ),
+              style: AppTextStyles.bodySm.copyWith(color: AppColors.gray2),
             ),
           ],
         ),

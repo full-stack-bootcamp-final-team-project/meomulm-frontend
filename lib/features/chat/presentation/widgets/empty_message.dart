@@ -6,13 +6,16 @@ class EmptyMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.chat_bubble_outline, size: AppIcons.sizeXxl, color: AppColors.gray3),
-          SizedBox(height: AppSpacing.lg),
-          Text('대화를 시작하세요', style: TextStyle(color: AppColors.gray2)),
+          const Icon(Icons.chat_bubble_outline, size: AppIcons.sizeXxl, color: AppColors.gray3),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            '대화를 시작하세요',
+            style: AppTextStyles.bodySm.copyWith(color: AppColors.gray2),
+          ),
         ],
       ),
     );

@@ -76,6 +76,8 @@ class TitleLabels {
   static const String booking = '예약하기';
   static const String payment = '결제하기';
   static const String selectRegion = '지역 선택';
+  
+  static const String chat = '머묾 챗봇';
 
   static String accommodationName(String name) => name;
 }
