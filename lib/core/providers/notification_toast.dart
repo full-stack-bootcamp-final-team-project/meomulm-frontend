@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/router/app_router.dart';
 
 class NotificationToast extends StatelessWidget {
   final Map<String, dynamic> notification;
@@ -34,15 +35,17 @@ class NotificationToast extends StatelessWidget {
           ),
           child: InkWell(
             onTap: () {
-              // 1. 읽음 처리 (DB 업데이트 등)
-              onRead(notification['notificationId'] ?? 0);
-              // 2. 링크 이동
+              final int id = notification['notificationId'] ?? 0;
+              onRead(id);
+
               final String? linkUrl = notification['notificationLinkUrl'];
-              // null 체크와 빈 문자열 체크를 동시에 (AND 연산자 사용)
               if (linkUrl != null && linkUrl.isNotEmpty) {
-                context.push(linkUrl);
+                try {
+                  context.push(linkUrl);
+                } catch (e) {
+                  debugPrint("linkUrl 에러: $e");
+                }
               }
-              // 3. 토스트 닫기
               onDismiss();
             },
             child: Row(

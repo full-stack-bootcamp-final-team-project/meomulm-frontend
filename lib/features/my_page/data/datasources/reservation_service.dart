@@ -8,8 +8,8 @@ class ReservationService {
   final Dio _dio = Dio(
     BaseOptions(
       baseUrl: ApiPaths.baseUrl,
-      connectTimeout: const Duration(seconds: 5),  // 5초 타임아웃
-      receiveTimeout: const Duration(seconds: 3),  // 3초 타임아웃
+      connectTimeout: const Duration(seconds: 10),  // 10초 타임아웃
+      receiveTimeout: const Duration(seconds: 30),  // 30초 타임아웃
       headers: {
         'Content-Type': 'application/json',
       },
@@ -20,8 +20,6 @@ class ReservationService {
   예약 내역 조회 : /api/users/reservation
    */
   Future<List<ReservationResponseModel>> loadReservations(String token) async {
-    // TODO: 디버깅 후 삭제
-    print("예약 조회 함수 호출");
     try {
       final response = await _dio.get(
         '/users/reservation',
@@ -29,8 +27,6 @@ class ReservationService {
           headers: {'Authorization': 'Bearer $token'},
         ),
       );
-      // TODO: 디버깅 후 삭제
-      print(response.data);
 
       final List<dynamic> data = response.data;
       return data.map((json) => ReservationResponseModel.fromJson(json)).toList();
@@ -43,15 +39,18 @@ class ReservationService {
   /*
   호텔 이미지 조회 : /api/accommodation/{accommodationId}
    */
-  Future<AccommodationImageModel> loadAccommodationImage(String token, String accommodationId) async {
+  Future<AccommodationImageModel> loadAccommodationImage(String token, int accommodationId) async {
     try {
       final response = await _dio.get(
         '/accommodation/$accommodationId',
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
       );
-      final Map<String, dynamic> json = response.data;
+
+      if (response.data is! Map) {
+        throw Exception('Unexpected response type: ${response.data.runtimeType}');
+      }
+
+      // final Map<String, dynamic> json = response.data;
+      final json = Map<String, dynamic>.from(response.data as Map);
       return AccommodationImageModel.fromJson(json);
     } catch (e) {
       print('숙소 이미지 조회 실패: $e');
@@ -62,9 +61,9 @@ class ReservationService {
   /*
   에약 취소 : /api/reservation (delete)
    */
-  Future<bool> deleteReservation(String token, int reservationId) async {
+  Future<bool> putReservation(String token, int reservationId) async {
     try {
-      final response = await _dio.delete(
+      final response = await _dio.put(
         '/reservation',
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
@@ -95,6 +94,26 @@ class ReservationService {
     } catch (e) {
       print('예약 수정 실패: $e');
       throw Exception('예약 수정에 실패했습니다.');
+    }
+  }
+
+
+  /*
+  에약 취소 : /api/reservation (delete)
+   */
+  Future<bool> deleteReservation(String token, int reservationId) async {
+    try {
+      final response = await _dio.delete(
+        '/reservation',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+        data: {'reservationId': reservationId},
+      );
+      return true;
+    } catch (e) {
+      print('예약 취소 실패: $e');
+      throw Exception('예약 취소에 실패했습니다.');
     }
   }
 }

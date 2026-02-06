@@ -6,6 +6,7 @@ import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/find_id/find_id_input_fields.dart';
 
@@ -24,6 +25,16 @@ class _FindIdScreenState extends State<FindIdScreen> {
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
 
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _nameFocusNode.requestFocus();
+    });
+  }
+
   // 유저 정보 확인(이름, 전화번호)
   void _checkUser() async {
     // 입력값 검증
@@ -33,23 +44,19 @@ class _FindIdScreenState extends State<FindIdScreen> {
     final phoneRegexp = RegexpUtils.validatePhone(phone);
 
     if (nameRegexp != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(nameRegexp),
-          duration: const Duration(seconds: 2),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          nameRegexp,
+          type: ToastType.error
       );
       return;
     }
 
     if (phoneRegexp != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(phoneRegexp),
-          duration: const Duration(seconds: 2),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          phoneRegexp,
+          type: ToastType.error
       );
       return;
     }
@@ -166,15 +173,10 @@ class _FindIdScreenState extends State<FindIdScreen> {
     return phone; // 형식이 다르면 원본 반환
   }
 
-  // 로그인 스크린으로 이동
-  void _moveLogin() {
-    context.push(RoutePaths.login);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(title: TitleLabels.findId, onBack: _moveLogin),
+      appBar: AppBarWidget(title: TitleLabels.findId),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -186,7 +188,7 @@ class _FindIdScreenState extends State<FindIdScreen> {
                   phoneController: _phoneController,
                   nameFocusNode: _nameFocusNode,
                   phoneFocusNode: _phoneFocusNode,
-                  onFindId: _checkUser
+                  onSubmit: _checkUser
               )
             ],
           ),

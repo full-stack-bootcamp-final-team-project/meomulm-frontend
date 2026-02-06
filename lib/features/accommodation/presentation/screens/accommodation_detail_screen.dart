@@ -8,6 +8,8 @@ import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart'
 import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_detail_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/review_summary.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/customer_divider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/facility_list.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/facility_section.dart';
@@ -17,8 +19,9 @@ import 'package:meomulm_frontend/features/accommodation/presentation/widgets/acc
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/policy_section.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/review_preview_section.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/title_section.dart';
+import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
 import 'package:provider/provider.dart';
-import '../providers/accommodation_provider.dart';
 import '../widgets/accommodation_detail_widgets/accommodation_image_slider.dart';
 
 class AccommodationDetailScreen extends StatefulWidget {
@@ -31,14 +34,17 @@ class AccommodationDetailScreen extends StatefulWidget {
 
 class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
   bool isLoading = true;
-  AccommodationDetail? accommodation;
-  ReviewSummary? reviewSummary;
+  AccommodationDetailModel? accommodation;
+  ReviewSummaryModel? reviewSummary;
+  bool isFavorite = false;
+
 
   @override
   void initState() {
     super.initState();
     loadAccommodationDetail(widget.accommodationId);
   }
+
   Future<void> loadAccommodationDetail(int id) async {
     setState(() => isLoading = true);
     try {
@@ -46,9 +52,33 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
         AccommodationApiService.getAccommodationById(id),
         AccommodationApiService.getReviewSummary(id),
       ]);
+
+      // ========================= 최근 숙소 저장 =========================
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final token = context.read<AuthProvider>().token;
+
+        // 비로그인 → 저장 안 함
+        if (token == null || token.isEmpty) {
+          debugPrint('비로그인 상태 → 최근 본 숙소 저장 안 함');
+          return;
+        }
+
+        // 로그인 → 저장
+        final homeProvider = context.read<HomeProvider>();
+        await homeProvider.addRecentAccommodationId(
+          widget.accommodationId,
+          isLoggedIn: true,
+        );
+
+        await homeProvider.loadRecentFromLocal(
+          isLoggedIn: true,
+        );
+      });
+      // =================================================================
+
       setState(() {
-        accommodation = results[0] as AccommodationDetail?;
-        reviewSummary = results[1] as ReviewSummary?;
+        accommodation = results[0] as AccommodationDetailModel?;
+        reviewSummary = results[1] as ReviewSummaryModel?;
         isLoading = false;
 
         // ← 여기에 추가. provider에 ID 저장
@@ -95,6 +125,7 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
                         .map((img) => img.accommodationImageUrl)
                         .where((url) => url.isNotEmpty)
                         .toList(),
+                    accommodationId: widget.accommodationId,
                     initialIndex: 0,
                   ),
                   Transform.translate(

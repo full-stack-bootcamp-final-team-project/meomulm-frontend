@@ -4,6 +4,7 @@ import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/signup/birth_date_selector.dart';
@@ -22,6 +23,15 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
   // FocusNode
   final FocusNode _emailFocusNode = FocusNode();
 
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _emailFocusNode.requestFocus();
+    });
+  }
+
   // 본인 인증
   void _confirmPassword() async {
     // 입력값 검증
@@ -30,23 +40,19 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
     final emailRegexp = RegexpUtils.validateEmail(email);
 
     if(emailRegexp != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(emailRegexp),
-          duration: const Duration(seconds: 2),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          emailRegexp,
+          type: ToastType.error
       );
       return;
     }
 
     if(birth.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(InputMessages.emptyBirth),
-          duration: const Duration(seconds: 2),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          InputMessages.emptyBirth,
+          type: ToastType.error
       );
       return;
     }
@@ -54,44 +60,39 @@ class _ConfirmPasswordScreenState extends State<ConfirmPasswordScreen> {
     try {
       final userId = await AuthService.confirmPassword(email, birth);
 
-      if(mounted){
+      if(!mounted) return;
         if(userId != null){
           print(userId);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("본인인증에 성공했습니다. 비밀번호 변경 페이지로 이동합니다."),
-            backgroundColor: AppColors.success)
+          SnackMessenger.showMessage(
+              context,
+              "본인인증에 성공했습니다. 비밀번호 변경 페이지로 이동합니다.",
+              type: ToastType.success
           );
           context.push('${RoutePaths.loginChangePassword}/${userId}', extra: userId);
+
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text("본인인증에 실패했습니다. 다시 입력해주세요."),
-                backgroundColor: AppColors.error,
-              )
+          SnackMessenger.showMessage(
+              context,
+              "본인인증에 실패했습니다. 다시 입력해주세요.",
+              type: ToastType.error
           );
         }
-      }
 
     } catch(e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('오류 : $e')));
-      }
+      if (!mounted) return;
+        SnackMessenger.showMessage(
+            context,
+            '오류 : $e',
+            type: ToastType.error
+        );
     }
 
-  }
-
-  // 로그인 스크린으로 이동
-  void _moveLogin() {
-    context.push('${RoutePaths.login}');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(title: TitleLabels.verifyIdentity, onBack: _moveLogin),
+      appBar: AppBarWidget(title: TitleLabels.verifyIdentity),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Column(

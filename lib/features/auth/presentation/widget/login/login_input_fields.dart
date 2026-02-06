@@ -8,11 +8,17 @@ import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 class LoginInputFields extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final VoidCallback onSubmit;
+  final FocusNode emailFocusNode;
+  final FocusNode passwordFocusNode;
 
   const LoginInputFields({
     super.key,
     required this.emailController,
     required this.passwordController,
+    required this.onSubmit,
+    required this.emailFocusNode,
+    required this.passwordFocusNode,
   });
 
   @override
@@ -44,6 +50,11 @@ class LoginInputFields extends StatelessWidget {
           hintText: "이메일를 입력하세요",
           style: AppInputStyles.standard,
           controller: emailController,
+          onFieldSubmitted: (_) {
+            FocusScope.of(context).requestFocus(passwordFocusNode);
+          },
+          textInputAction: TextInputAction.next,
+          focusNode: emailFocusNode,
         ),
         SizedBox(height: AppSpacing.lg),
 
@@ -51,6 +62,8 @@ class LoginInputFields extends StatelessWidget {
           hintText: "비밀번호를 입력하세요",
           style: AppInputStyles.password,
           controller: passwordController,
+          onFieldSubmitted: (_) => onSubmit(),
+          focusNode: passwordFocusNode,
         ),
         SizedBox(height: AppSpacing.sm),
       ],

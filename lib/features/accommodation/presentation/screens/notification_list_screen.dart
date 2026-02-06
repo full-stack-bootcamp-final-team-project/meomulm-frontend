@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/router/app_router.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
-import 'package:meomulm_frontend/features/accommodation/data/datasources/notification_service.dart';
+import 'package:meomulm_frontend/features/accommodation/data/datasources/notification_api_service.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/notification_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/notification_list_widgets/notification_card.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
@@ -47,7 +49,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
 
     try {
       // 1. 서비스 호출 시 토큰 전달
-      final response = await NotificationService.getNotifications(
+      final response = await NotificationApiService.getNotifications(
         token: authProvider.token ?? '',
       );
 
@@ -76,7 +78,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     });
 
     try {
-      await NotificationService.deleteNotification(
+      await NotificationApiService.deleteNotification(
         notificationId: id,
       );
     } catch (e) {
@@ -136,7 +138,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         itemCount: notifications.length,
         itemBuilder: (context, index) {
-          final item = notifications[index];
+          NotificationResponseModel item = notifications[index];
 
           // 스와이프 삭제 위젯 적용
           return Dismissible(
@@ -155,12 +157,45 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.only(right: 20),
               child: const Icon(
-                Icons.delete_sweep_rounded,
-                color: Colors.white,
-                size: 28
+                  Icons.delete_sweep_rounded,
+                  color: Colors.white,
+                  size: 28
               ),
             ),
-            child: NotificationCard(notification: item),
+            child: GestureDetector(
+              onTap: () async {
+                final linkUrl = item.notificationLinkUrl; // 서버에서 준 링크 (예: meomulm://...)
+
+                if (!item.isRead) {
+                  setState(() {
+                    item.isRead = true;
+                  });
+
+                  NotificationApiService.updateNotificationStatus(
+                    notificationId: item.notificationId,
+                  ).catchError((e) => debugPrint('서버 읽음 처리 실패: $e'));
+                }
+
+                if (linkUrl != null && linkUrl.isNotEmpty) {
+                  try {
+                    final uri = Uri.parse(linkUrl);
+                    // 쌤이 만드신 경로 해석
+                    final parsedPath = AppRouter.parseDeepLinkUri(uri);
+
+                    if (parsedPath != null) {
+                      debugPrint('알림 클릭 이동 경로: $parsedPath');
+                      // 해석된 경로로 이동
+                      context.push(parsedPath);
+                    } else {
+                      debugPrint('해당 딥링크를 해석할 수 없습니다: $linkUrl');
+                    }
+                  } catch (e) {
+                    debugPrint('URI 파싱 에러: $e');
+                  }
+                }
+              },
+              child: NotificationCard(notification: item),
+            ),
           );
         },
       ),

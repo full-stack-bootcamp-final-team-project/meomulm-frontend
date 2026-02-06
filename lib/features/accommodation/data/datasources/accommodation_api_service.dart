@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_detail_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_review.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_review_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/review_summary.dart';
 
 class AccommodationApiService {
@@ -11,8 +11,8 @@ class AccommodationApiService {
   static final Dio _dio = Dio(
     BaseOptions(
       baseUrl: ApiPaths.accommodationUrl,
-      connectTimeout : const Duration(seconds: 10),
-      receiveTimeout : const Duration(seconds: 10),
+      connectTimeout : const Duration(seconds: 30),
+      receiveTimeout : const Duration(seconds: 30),
       headers:{
         'Content-Type' : 'application/json',
       },
@@ -90,11 +90,11 @@ class AccommodationApiService {
     }
   }
 
-  static Future<AccommodationDetail?> getAccommodationById(int accommodationId) async {
+  static Future<AccommodationDetailModel?> getAccommodationById(int accommodationId) async {
     try{
       final res = await _dio.get('/detail/${accommodationId}');
       if (res.statusCode == 200) {
-        return AccommodationDetail.fromJson(res.data);
+        return AccommodationDetailModel.fromJson(res.data);
       } else if (res.statusCode == 404) {
         return null;
       } else {
@@ -110,12 +110,12 @@ class AccommodationApiService {
     }
   }
 
-  static Future<ReviewSummary?> getReviewSummary(int accommodationId) async {
+  static Future<ReviewSummaryModel?> getReviewSummary(int accommodationId) async {
     try {
       final res = await _dio.get('/reviews/summary/${accommodationId}');
 
       if (res.statusCode == 200) {
-        return ReviewSummary.fromJson(res.data);
+        return ReviewSummaryModel.fromJson(res.data);
       }
       return null;
     } on DioException catch (e) {
@@ -127,13 +127,13 @@ class AccommodationApiService {
     }
   }
 
-  static Future<List<AccommodationReview>> getReviewsByAccommodationId(int id) async {
+  static Future<List<AccommodationReviewModel>> getReviewsByAccommodationId(int id) async {
     try {
       // 백엔드 엔드포인트: @GetMapping("/accommodationId/{accommodationId}")
-      final res = await _dio.get('/reviews/accommodationId/$id');
+      final res = await _dio.get('/review/accommodationId/$id');
       if (res.statusCode == 200) {
         return (res.data as List)
-            .map((json) => AccommodationReview.fromJson(json))
+            .map((json) => AccommodationReviewModel.fromJson(json))
             .toList();
       }
       return [];
@@ -141,5 +141,18 @@ class AccommodationApiService {
       debugPrint('리뷰 목록 로드 실패: $e');
       return [];
     }
+  }
+
+  /// 최근 본 숙소 조회
+  Future<List<SearchAccommodationResponseModel>> getRecentAccommodations(
+      List<int> ids) async {
+    final response = await _dio.post(
+      '/recent',
+      data: ids,
+    );
+
+    return (response.data as List)
+        .map((e) => SearchAccommodationResponseModel.fromJson(e))
+        .toList();
   }
 }

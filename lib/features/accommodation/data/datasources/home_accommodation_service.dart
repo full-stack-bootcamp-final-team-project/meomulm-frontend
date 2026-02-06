@@ -8,8 +8,8 @@ class HomeAccommodationService {
   final Dio _dio = Dio(
     BaseOptions(
       baseUrl: ApiPaths.accommodationUrl, // /api/accommodation
-      connectTimeout: const Duration(seconds: 5), // 5초 타임아웃
-      receiveTimeout: const Duration(seconds: 3), // 3초 타임아웃
+      connectTimeout: const Duration(seconds: 20), // 20초 타임아웃
+      receiveTimeout: const Duration(seconds: 30), // 30초 타임아웃
       headers: {
         'Content-Type': 'application/json',
       },

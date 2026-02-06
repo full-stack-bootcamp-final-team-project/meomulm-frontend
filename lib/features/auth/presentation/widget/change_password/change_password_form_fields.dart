@@ -11,6 +11,7 @@ class ChangePasswordFormFields extends StatelessWidget {
   final FocusNode checkPasswordFocusNode;
   final bool isPasswordChecked;
   final bool isCheckPasswordChecked;
+  final VoidCallback onSubmit;
 
   const ChangePasswordFormFields({
     super.key,
@@ -20,6 +21,7 @@ class ChangePasswordFormFields extends StatelessWidget {
     required this.checkPasswordFocusNode,
     required this.isPasswordChecked,
     required this.isCheckPasswordChecked,
+    required this.onSubmit,
   });
 
   @override
@@ -37,6 +39,10 @@ class ChangePasswordFormFields extends StatelessWidget {
           validator: (password) => RegexpUtils.validatePassword(password),
           helperText: isPasswordChecked ? InputMessages.validPassword : null,
           helperStyle: TextStyle(color: AppColors.success),
+          onFieldSubmitted: (_) {
+            FocusScope.of(context).requestFocus(checkPasswordFocusNode);
+          },
+          textInputAction: TextInputAction.next,
         ),
         const SizedBox(height: AppSpacing.xl),
 
@@ -48,9 +54,15 @@ class ChangePasswordFormFields extends StatelessWidget {
           controller: checkPasswordController,
           focusNode: checkPasswordFocusNode,
           obscureText: true,
-          validator: (password) => RegexpUtils.validateCheckPassword(password, passwordController.text),
-          helperText: isCheckPasswordChecked ? InputMessages.matchPassword : null,
+          validator: (password) => RegexpUtils.validateCheckPassword(
+            password,
+            passwordController.text,
+          ),
+          helperText: isCheckPasswordChecked
+              ? InputMessages.matchPassword
+              : null,
           helperStyle: TextStyle(color: AppColors.success),
+          onFieldSubmitted: (_) => onSubmit(),
         ),
         const SizedBox(height: AppSpacing.xl),
       ],

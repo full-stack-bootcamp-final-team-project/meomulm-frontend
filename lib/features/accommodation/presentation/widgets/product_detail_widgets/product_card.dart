@@ -14,7 +14,7 @@ import 'package:meomulm_frontend/features/reservation/presentation/providers/res
 class ProductCard extends StatefulWidget {
   final int productId;
   final String title;
-  final int price; // int로 받고 ProductCard 안에서 포맷
+  final int price;
   final String checkInfo;
   final String imageUrl;
   final String peopleInfo;
@@ -48,11 +48,9 @@ class _ProductCardState extends State<ProductCard> {
 
   @override
   Widget build(BuildContext context) {
-    // 가격 포맷 (콤마)
     final priceFormat = NumberFormat('#,###');
     final formattedPrice = priceFormat.format(widget.price);
 
-    // 숙박일 계산
     final nights = widget.checkOut.difference(widget.checkIn).inDays;
     final totalPrice = widget.price * nights;
     final totalFormattedPrice = priceFormat.format(totalPrice);
@@ -76,73 +74,98 @@ class _ProductCardState extends State<ProductCard> {
 
           const SizedBox(height: AppSpacing.md),
 
-          // 방 종류 + 가격 + 기준 인원
+          // 객실 이름 + 기준 인원
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(widget.title, style: AppTextStyles.cardTitle),
-                    const SizedBox(height: AppSpacing.xxs),
-                    Text(widget.peopleInfo,
-                        style: const TextStyle(fontSize: 13, color: Colors.grey)),
-
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.title,
+                        style: AppTextStyles.cardTitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: true,
+                      ),
+                      const SizedBox(height: AppSpacing.xxs),
+                      Text(
+                        widget.peopleInfo,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const Spacer(),
-                Text('$formattedPrice원 / 1박', style: AppTextStyles.cardTitle),
               ],
             ),
           ),
 
-          // 예약 버튼 (우측 정렬)
+          // 가격 + 예약 버튼 (우측 고정)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+            padding: const EdgeInsets.only(
+              left: AppSpacing.md,
+              right: AppSpacing.md,
+              top: AppSpacing.sm,
+              bottom: AppSpacing.xs,
+            ),
             child: Row(
               children: [
                 const Spacer(),
-                SizedBox(
-                  width: 110,
-                  height: AppSpacing.xxl,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      final provider = context.read<ReservationProvider>();
-                      provider.setReservation(
-                        ReservationInfo(
-                          roomId: widget.productId,
-                          productName: widget.title,
-                          price: widget.price,
-                          commaPrice: '$formattedPrice원', // provider에도 콤마 찍힌 문자열
-                          totalPrice: totalPrice,
-                          totalCommaPrice: '$totalFormattedPrice원',
-                          checkInfo: widget.checkInfo,
-                          peopleInfo: widget.peopleInfo,
-                          days: nights,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '$formattedPrice원 / 1박',
+                      style: AppTextStyles.cardTitle,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    SizedBox(
+                      width: 110,
+                      height: AppSpacing.xxl,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final provider =
+                          context.read<ReservationProvider>();
+                          provider.setReservation(
+                            ReservationInfo(
+                              roomId: widget.productId,
+                              productName: widget.title,
+                              price: widget.price,
+                              commaPrice: '$formattedPrice원',
+                              totalPrice: totalPrice,
+                              totalCommaPrice: '$totalFormattedPrice원',
+                              checkInfo: widget.checkInfo,
+                              peopleInfo: widget.peopleInfo,
+                              days: nights,
+                            ),
+                          );
+                          widget.onTapReserve();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.onPressed,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.circular(AppBorderRadius.sm),
+                          ),
                         ),
-                      );
-                      widget.onTapReserve();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.onPressed,
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(AppBorderRadius.sm),
+                        child: const Text(
+                          '예약하기',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                     ),
-                    child: const Text(
-                      '예약하기',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -171,25 +194,34 @@ class _ProductCardState extends State<ProductCard> {
             visible: isExpanded,
             child: Padding(
               padding: const EdgeInsets.only(
-                  left: AppBorderRadius.xl,
-                  right: AppBorderRadius.xl,
-                  bottom: AppBorderRadius.lg,
-                  top: AppBorderRadius.sm),
+                left: AppBorderRadius.xl,
+                right: AppBorderRadius.xl,
+                bottom: AppBorderRadius.lg,
+                top: AppBorderRadius.sm,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('숙박', style: AppTextStyles.bodyMd),
+                  const Text('숙박', style: AppTextStyles.bodyLg),
                   const SizedBox(height: AppSpacing.xs),
-                  Text(widget.checkInfo, style: TextStyle(fontSize: 13, color: AppColors.gray2)),
+                  Text(
+                    widget.checkInfo,
+                    style:
+                    TextStyle(fontSize: 16, color: AppColors.gray2),
+                  ),
                   const SizedBox(height: AppSpacing.md),
-                  const Text('시설/서비스', style: AppTextStyles.bodyMd),
+                  const Text('시설/서비스', style: AppTextStyles.bodyLg),
                   const SizedBox(height: AppSpacing.sm),
                   Wrap(
-                    alignment: WrapAlignment.start,
                     spacing: AppSpacing.md,
                     runSpacing: AppSpacing.sm,
                     children: widget.facilities
-                        .map((e) => FacilityItem(icon: Icons.check, label: e))
+                        .map(
+                          (e) => FacilityItem(
+                        icon: Icons.check,
+                        label: e,
+                      ),
+                    )
                         .toList(),
                   ),
                 ],
@@ -207,7 +239,11 @@ class FacilityItem extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const FacilityItem({super.key, required this.icon, required this.label});
+  const FacilityItem({
+    super.key,
+    required this.icon,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -216,7 +252,10 @@ class FacilityItem extends StatelessWidget {
       children: [
         Icon(icon, size: AppIcons.sizeXs, color: AppColors.black),
         const SizedBox(width: AppSpacing.xs),
-        Text(label, style: TextStyle(fontSize: 13, color: AppColors.gray2)),
+        Text(
+          label,
+          style: TextStyle(fontSize: 16, color: AppColors.gray2),
+        ),
       ],
     );
   }

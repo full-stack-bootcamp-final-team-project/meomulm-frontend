@@ -4,16 +4,16 @@ import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_detail_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/notification_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_review.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_review_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/review_summary.dart';
 
-class NotificationService {
+class NotificationApiService {
 
   static final Dio _dio = Dio(
     BaseOptions(
       baseUrl: ApiPaths.notificationUrl,
       connectTimeout : const Duration(seconds: 10),
-      receiveTimeout : const Duration(seconds: 10),
+      receiveTimeout : const Duration(seconds: 30),
       headers:{
         'Content-Type' : 'application/json',
       },
@@ -41,9 +41,9 @@ class NotificationService {
     try {
       final res = await _dio.get(
         '/list',
-        // options: Options(headers: {
-        //   'Authorization': 'Bearer $token',
-        // }),
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
       );
 
       if (res.statusCode == 200) {
@@ -86,7 +86,6 @@ class NotificationService {
 
   static Future<void> deleteNotification({
     required int notificationId,
-    // required String token,
   }) async {
     try {
       final res = await _dio.delete(

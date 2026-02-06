@@ -5,8 +5,11 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
 import 'package:meomulm_frontend/core/widgets/search/search_box.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_search_widgets/location_select_row.dart';
+import 'package:provider/provider.dart';
 
+/// 지도 검색 조건을 설정하는 스크린
 class MapSearchScreen extends StatefulWidget {
   const MapSearchScreen({super.key});
 
@@ -15,12 +18,19 @@ class MapSearchScreen extends StatefulWidget {
 }
 
 class _MapSearchScreenState extends State<MapSearchScreen> {
-  String region = '';
-  DateTimeRange? dateRange = DateTimeRange(
-    start: DateTime.now(),
-    end: DateTime.now().add(const Duration(days: 1)),
-  );
-  int guestCount = 2;
+  String? tempRegion;
+  DateTimeRange? tempDateRange;
+  int? tempGuestCount;
+
+  @override
+  void initState() {
+    super.initState();
+    final provider = context.read<AccommodationProvider>();
+
+    tempRegion = null;
+    tempDateRange = provider.dateRange;
+    tempGuestCount = provider.guestNumber;
+  }
 
   Future<void> _openRegionSelector() async {
     final result = await context.push<Map<String, String>>(
@@ -29,7 +39,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
 
     if (result != null && result['detailRegion'] != null) {
       setState(() {
-        region = result['detailRegion']!;
+        tempRegion = result['detailRegion']!;
       });
     }
   }
@@ -37,6 +47,7 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final provider = context.watch<AccommodationProvider>();
 
     return Scaffold(
       appBar: AppBarWidget(title: "지도 검색"),
@@ -47,13 +58,13 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
           SearchBox(
             width: size.width * 0.9,
             firstRow: LocationSelectRow(
-              region: region,
+              region: tempRegion ?? '',
               onTap: _openRegionSelector,
             ),
-            dateRange: dateRange,
-            guestCount: guestCount,
-            onDateChanged: (v) => setState(() => dateRange = v),
-            onGuestChanged: (v) => setState(() => guestCount = v),
+            dateRange: tempDateRange ?? provider.dateRange,
+            guestCount: tempGuestCount ?? provider.guestNumber,
+            onDateChanged: (v) => setState(() => tempDateRange = v),
+            onGuestChanged: (v) => setState(() => tempGuestCount = v),
           ),
 
           const Spacer(),
@@ -65,20 +76,23 @@ class _MapSearchScreenState extends State<MapSearchScreen> {
   }
 
   void _onSearch() {
-    if (region.isEmpty || dateRange == null) {
+    if (tempRegion?.isEmpty ?? true) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('지역을 선택해주세요')),
       );
       return;
     }
 
+    final provider = context.read<AccommodationProvider>();
+
+    provider.setSearchDate(
+      dateRangeValue: tempDateRange ?? provider.dateRange,
+      guestNumberValue: tempGuestCount ?? provider.guestNumber,
+    );
+
     context.push(
       RoutePaths.mapSearchResult,
-      extra: {
-        'region': region,
-        'dateRange': dateRange,
-        'guestCount': guestCount,
-      },
+      extra: tempRegion,
     );
   }
 }

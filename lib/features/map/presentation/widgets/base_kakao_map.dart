@@ -4,20 +4,15 @@ import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/features/map/presentation/utils/map_marker_manager.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 
+/// 카카오 지도를 감싸는 기본 Map 위젯
 class BaseKakaoMap extends StatefulWidget {
   final LatLng initialPosition;
-  final LatLng? myPosition;
-  final List<SearchAccommodationResponseModel> accommodations;
   final ValueChanged<KakaoMapController>? onMapReady;
-  final ValueChanged<SearchAccommodationResponseModel>? onMarkerTap; // 👈 추가
 
   const BaseKakaoMap({
     super.key,
     required this.initialPosition,
-    required this.accommodations,
-    this.myPosition,
     this.onMapReady,
-    this.onMarkerTap, // 👈 추가
   });
 
   @override
@@ -25,35 +20,6 @@ class BaseKakaoMap extends StatefulWidget {
 }
 
 class _BaseKakaoMapState extends State<BaseKakaoMap> {
-  MapMarkerManager? _markerManager;
-
-  @override
-  void dispose() {
-    _markerManager = null;
-    super.dispose();
-  }
-
-  @override
-  void didUpdateWidget(covariant BaseKakaoMap oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (_markerManager == null) return;
-
-    final accommodationsChanged =
-        oldWidget.accommodations != widget.accommodations;
-
-    final myPositionChanged =
-        oldWidget.myPosition != widget.myPosition;
-
-    if (accommodationsChanged || myPositionChanged) {
-      _markerManager!.updateMarkers(
-        myPosition: widget.myPosition,
-        accommodations: widget.accommodations,
-        onMarkerTap: widget.onMarkerTap, // 👈 추가
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return KakaoMap(
@@ -63,15 +29,6 @@ class _BaseKakaoMapState extends State<BaseKakaoMap> {
         mapType: MapType.normal,
       ),
       onMapReady: (controller) {
-        _markerManager = MapMarkerManager(controller);
-
-        // 최초 마커 세팅
-        _markerManager!.updateMarkers(
-          myPosition: widget.myPosition,
-          accommodations: widget.accommodations,
-          onMarkerTap: widget.onMarkerTap, // 👈 추가
-        );
-
         widget.onMapReady?.call(controller);
       },
     );

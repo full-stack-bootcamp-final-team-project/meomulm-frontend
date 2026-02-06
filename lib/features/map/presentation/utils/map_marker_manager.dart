@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 
+/// 카카오 지도 위의 내 위치 및 숙소 마커를 생성, 제거, 갱신하는 마커 관리 클래스
 class MapMarkerManager {
   final KakaoMapController controller;
 
@@ -62,7 +63,7 @@ class MapMarkerManager {
    * ======================= */
   Future<void> addAccommodationMarkers(
       List<SearchAccommodationResponseModel> accommodations,
-      ValueChanged<SearchAccommodationResponseModel>? onMarkerTap, // 👈 추가
+      ValueChanged<SearchAccommodationResponseModel>? onMarkerTap,
       ) async {
     int successCount = 0;
     int failCount = 0;
@@ -77,7 +78,6 @@ class MapMarkerManager {
           style: _styleByCategory(acc.categoryCode),
         );
 
-        // 👇 추가: 마커 탭 이벤트 연결
         if (onMarkerTap != null) {
           poi.onClick = () {
             onMarkerTap(acc);
@@ -89,7 +89,6 @@ class MapMarkerManager {
       } catch (e) {
         failCount++;
         debugPrint('마커 추가 실패 [${acc.accommodationName}]: $e');
-        // 일부 마커 추가 실패해도 계속 진행
       }
     }
 
@@ -102,7 +101,7 @@ class MapMarkerManager {
   Future<void> updateMarkers({
     LatLng? myPosition,
     required List<SearchAccommodationResponseModel> accommodations,
-    ValueChanged<SearchAccommodationResponseModel>? onMarkerTap, // 👈 추가
+    ValueChanged<SearchAccommodationResponseModel>? onMarkerTap,
   }) async {
     try {
       await clearAll();
@@ -111,7 +110,7 @@ class MapMarkerManager {
         await addMyLocationMarker(myPosition);
       }
 
-      await addAccommodationMarkers(accommodations, onMarkerTap); // 👈 전달
+      await addAccommodationMarkers(accommodations, onMarkerTap);
     } catch (e) {
       debugPrint('마커 업데이트 중 오류: $e');
       rethrow;

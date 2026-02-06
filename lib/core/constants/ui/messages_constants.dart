@@ -41,6 +41,8 @@ class InputMessages {
   static const emptyPhone = '연락처는 필수 입력 사항입니다.';
   static const duplicatePhone = '이미 존재하는 연락처입니다.';
   static const validPhone = "사용 가능한 전화번호입니다.";
+  static const minLengthPhone = '전화번호는 최소 10자리 이상이어야 합니다.';
+  static const maxLengthPhone = '전화번호는 14자리 미만이여야 합니다.';
 
   // 생년월일
   static const emptyBirth = '생년월일은 필수 입력 사항입니다.';
@@ -92,10 +94,25 @@ class StatusMessages {
   static const String processingPayment = '결제를 처리 중입니다...';
 }
 /// =====================
-/// 권한 메세지 상수
+/// 위치 권한/서비스 메세지 상수
 /// =====================
-class PermissionMessages {
-  PermissionMessages._();
-  static const String needLocationPermission = '위치 권한이 필요합니다';
-  static const String settingLocationPermission = '설정에서 위치 권한을 허용해주세요';
+class LocationMessages {
+  LocationMessages._();
+
+  // 타이틀
+  static const String serviceDisabledTitle = '위치 서비스가 비활성화되어 있습니다';
+  static const String permissionDeniedTitle = '위치 권한이 필요합니다';
+  static const String permissionDeniedForeverTitle = '위치 권한이 거부되었습니다';
+  static const String timeoutTitle = '위치를 가져올 수 없습니다';
+  static const String unknownTitle = '위치 정보 오류';
+
+  // 메시지
+  static const String serviceDisabledMessage = '기기의 위치 서비스를 켜주세요.';
+  static const String permissionDeniedMessage = '주변 숙소를 찾기 위해 위치 권한이 필요합니다.';
+  static const String permissionDeniedForeverMessage = '설정에서 위치 권한을 허용해주세요.';
+  static const String timeoutMessage = '위치 정보를 가져오는데 시간이 초과되었습니다.';
+  static const String unknownMessage = '위치 정보를 가져오는데 문제가 발생했습니다.';
+
+  // 버튼
+  static const String retryButton = '다시 시도';
 }

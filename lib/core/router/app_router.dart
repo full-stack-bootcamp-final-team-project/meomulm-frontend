@@ -6,6 +6,7 @@ import 'package:meomulm_frontend/features/accommodation/presentation/screens/acc
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/notification_list_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/product_list_screen.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/chat/presentation/screens/chat_screen.dart';
 import 'package:meomulm_frontend/features/map/presentation/screens/search/map_search_result_screen.dart';
 import 'package:meomulm_frontend/features/map/presentation/screens/search/map_search_screen.dart';
 import 'package:meomulm_frontend/features/my_page/data/models/reservation_share_model.dart';
@@ -68,14 +69,27 @@ class AppRouter {
     return null; // 매칭되지 않는 경로
   }
 
+
+
+
+
+
+
+
+
+
+
   static final GoRouter router = GoRouter(
 
     navigatorKey: navigatorKey, // ✅ Key 등록
+
 
     // ----------------------------------------------------------------
     // initialLocation: pendingDeepLink가 있으면 그것을 사용, 아니면 /intro
     // ----------------------------------------------------------------
     initialLocation: pendingDeepLink ?? '/intro',
+
+
 
     redirect: (context, state) {
       final auth = context.read<AuthProvider>();
@@ -94,6 +108,7 @@ class AppRouter {
 
       return null;
     },
+    // initialLocation: '/intro',
     routes: [
       /// =====================
       /// intro 라우팅
@@ -125,7 +140,10 @@ class AppRouter {
       GoRoute(
         path: RoutePaths.signup,
         name: "signup",
-        builder: (context, state) => const SignupScreen(),
+        builder: (context, state) {
+          final kakaoUser = state.extra as Map<String, dynamic>?;
+          return SignupScreen(kakaoUser: kakaoUser);
+        },
       ),
       GoRoute(
         path: RoutePaths.confirmPassword,
@@ -133,13 +151,13 @@ class AppRouter {
         builder: (context, state) => const ConfirmPasswordScreen(),
       ),
       GoRoute(
-          path: '${RoutePaths.loginChangePassword}/:userId',
-          name: "loginChangePassword",
-          builder: (context, state) {
-            final idString = state.pathParameters['userId'];
-            final userId = int.tryParse(idString ?? '');
-            return LoginChangePasswordScreen(userId: userId!);
-          }
+        path: '${RoutePaths.loginChangePassword}/:userId',
+        name: "loginChangePassword",
+        builder: (context, state) {
+          final idString = state.pathParameters['userId'];
+          final userId = int.tryParse(idString ?? '');
+          return LoginChangePasswordScreen(userId: userId!);
+        }
       ),
 
       /// =====================
@@ -224,15 +242,13 @@ class AppRouter {
         builder: (context, state) => const MapSearchRegionScreen(),
       ),
 
+
       GoRoute(
         path: RoutePaths.mapSearchResult,
-        name: 'mapSearchResult',
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>;
+          final region = state.extra as String;
           return MapSearchResultScreen(
-            region: extra['region'] as String,
-            dateRange: extra['dateRange'] as DateTimeRange,
-            guestCount: extra['guestCount'] as int,
+            region: region,
           );
         },
       ),
@@ -253,10 +269,19 @@ class AppRouter {
               return EditProfileScreen(user: user);
             },
           ),
+          // GoRoute(
+          //   path: RoutePaths.myReservation,
+          //   name: "myReservation",
+          //   builder: (context, state) => const MyReservationsScreen(),
+          // ),
           GoRoute(
             path: RoutePaths.myReservation,
             name: "myReservation",
-            builder: (context, state) => const MyReservationsScreen(),
+            builder: (context, state) {
+              // URL에서 tab 파라미터 추출
+              final tabIndex = int.tryParse(state.uri.queryParameters['tab'] ?? '0') ?? 0;
+              return MyReservationsScreen(initialTab: tabIndex); // initialTab 추가
+            },
           ),
           GoRoute(
             path: RoutePaths.myReview,
@@ -267,8 +292,8 @@ class AppRouter {
             path: RoutePaths.myReviewWrite,
             name: "myReviewWrite",
             builder: (context, state) {
-              final data = state.extra as ReservationShareModel;
-              return MyReviewWriteScreen(reservationShare: data,);
+              final reservation = state.extra as ReservationShareModel;
+              return MyReviewWriteScreen(reservationShare: reservation,);
             },
           ),
           GoRoute(
@@ -304,6 +329,15 @@ class AppRouter {
         path: RoutePaths.paymentSuccess,
         name: "paymentSuccess",
         builder: (context, state) => PaymentSuccessScreen(),
+      ),
+
+      /// =====================
+      /// chatbot 라우팅
+      /// =====================
+      GoRoute(
+        path: RoutePaths.chat,
+        name: "chat",
+        builder: (context, state) => ChatScreen(),
       ),
     ],
   );

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/constants/config/app_config.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:meomulm_frontend/core/constants/ui/labels_constants.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_input_decorations.dart';
 import 'package:meomulm_frontend/core/theme/app_input_styles.dart';
@@ -11,7 +13,9 @@ import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
+import 'package:meomulm_frontend/core/widgets/input/phone_number_formatter.dart';
 import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/my_page/data/datasources/edit_profile_service.dart';
@@ -36,6 +40,10 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final editProfileService = EditProfileService();
   bool isLoading = false;
+  // 중복 확인 + 입력값 검증
+  bool _isPhoneChecked = false;
+  bool _isPhoneUnique = false;
+  bool isSubmittable = false;
 
   late final TextEditingController _nameCtrl;
   late final TextEditingController _phoneCtrl;
@@ -44,7 +52,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
 
-  bool isSubmittable = false;
 
   @override
   void initState() {
@@ -54,7 +61,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _phoneCtrl = TextEditingController(text: widget.user.userPhone);
 
     _nameCtrl.addListener(_recalc);
-    _phoneCtrl.addListener(_recalc);
+    _phoneCtrl.addListener(() {
+      if(_isPhoneChecked) {
+        setState(() => _isPhoneChecked = false);
+      }
+    });
     _recalc();
   }
 
@@ -87,25 +98,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   // 연락처 중복 확인 함수
   Future<void> _isDuplicatePhone() async {
+    if(_phoneCtrl.text.trim() == widget.user.userPhone) {
+      SnackMessenger.showMessage(
+        context,
+        '현재 연락처와 동일한 연락처는 사용할 수 없습니다.',
+        type: ToastType.error
+      );
+      setState(() => isSubmittable = false);
+      return;
+    }
     setState(() => isLoading = true);
     try {
       final request = _phoneCtrl.text.trim();
       final response = await editProfileService.checkPhoneDuplicate(request);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response ? '사용 가능한 전화번호입니다.' : '이미 존재하는 전화번호입니다'),
-          behavior: SnackBarBehavior.floating,
-          duration: AppDurations.snackbar,
-        ),
-      );
+      setState(() {
+        _isPhoneUnique = response;
+        _isPhoneChecked = response;
+      });  // 연락처 검사
+      if(!_isPhoneUnique) {
+        SnackMessenger.showMessage(
+          context,
+          "이미 사용 중인 연락처입니다.",
+          type: ToastType.error,
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('중복 확인 실패'),
-          behavior: SnackBarBehavior.floating,
-          duration: AppDurations.snackbar,
-        ),
+      SnackMessenger.showMessage(
+        context,
+        "이미 사용 중인 연락처입니다",
+        type: ToastType.error,
       );
     } finally {
       setState(() => isLoading = false);
@@ -117,7 +139,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!isSubmittable) return;
 
     final name = _nameCtrl.text.trim();
-    final phone = _phoneCtrl.text.trim();
+    final phone = _phoneCtrl.text.trim();  // 대시(-) 붙여서 보내기
     final token = context.read<AuthProvider>().token;
     if (token == null) return;
 
@@ -125,24 +147,24 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     try {
       await MypageService().uploadEditProfile(token, request);
+
       context.read<UserProfileProvider>().loadUserProfile(
         token,
       ); // 성공 시 다시 조회해서 갱신
+
+      SnackMessenger.showMessage(
+          context,
+          '회원정보가 수정되었습니다',
+          type: ToastType.success
+      );
       context.pop(true);
     } catch (e) {
-      ScaffoldMessenger.of(
+      SnackMessenger.showMessage(
         context,
-      ).showSnackBar(SnackBar(content: Text("회원정보 수정에 실패했습니다.")));
+        "회원정보 수정에 실패했습니다.",
+        type: ToastType.error,
+      );
     }
-
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('회원정보가 수정되었습니다'),
-        behavior: SnackBarBehavior.floating,
-        duration: AppDurations.snackbar,
-      ),
-    );
   }
 
   @override
@@ -199,7 +221,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           hintText: "연락처를 입력하세요. (- 제외)",
                           controller: _phoneCtrl,
                           focusNode: _phoneFocusNode,
+                          keyboardType: TextInputType.phone,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            PhoneNumberFormatter(),
+                          ],
                           validator: (phone) => RegexpUtils.validatePhone(phone),
+                          helperText: _isPhoneUnique
+                              ? '사용 가능한 전화번호입니다.'
+                              : null,
+                          helperStyle: TextStyle(color: AppColors.success),
                         ),
                         onPressed: _isDuplicatePhone,
                         label: "중복확인",

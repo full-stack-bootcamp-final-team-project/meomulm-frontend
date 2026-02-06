@@ -5,11 +5,15 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/kakao_login_service.dart';
+import 'package:meomulm_frontend/features/auth/data/datasources/naver_login_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/login/login_button_fields.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/login/login_input_fields.dart';
+import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
+import 'package:naver_login_sdk/naver_login_sdk.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,14 +29,20 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // FocusNode
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+
   bool _isLoading = false;
   bool _saveCheckBox = false;
 
   @override
   void initState() {
     super.initState();
+
+    _passwordController.clear();
     _loadSaveEmail();
-    
+
     // 중복여부에 따른 이메일 표기
     _emailController.addListener(() {
       if (_saveCheckBox) {
@@ -41,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  // 이메일
+  // 아이디 저장 기반 이메일 조회
   void _loadSaveEmail() async {
     final prefs = await SharedPreferences.getInstance();
     final saveEmail = prefs.getString("saveEmail");
@@ -51,8 +61,19 @@ class _LoginScreenState extends State<LoginScreen> {
         _saveCheckBox = true;
       });
     }
-  }
 
+    if(_emailController.text.isEmpty){
+      WidgetsBinding.instance.addPostFrameCallback((_){
+        _emailFocusNode.requestFocus();
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_){
+        _passwordFocusNode.requestFocus();
+      });
+    }
+  }
+  
+  // 아이디 저장
   void _saveOrRemoveEmail(String email) async {
     final prefs = await SharedPreferences.getInstance();
     if (_saveCheckBox) {
@@ -62,6 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // 로그인
   void _handleLogin() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -70,23 +92,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
     if(emailRegexp != null){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(emailRegexp),
-          duration: const Duration(seconds: 2),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          emailRegexp,
+        type: ToastType.error
       );
       return;
     }
 
     if(passwordRegexp != null){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(passwordRegexp),
-          duration: const Duration(seconds: 2),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          passwordRegexp,
+          type: ToastType.error
       );
       return;
     }
@@ -103,24 +121,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
       await context.read<AuthProvider>().login(loginResponse.token);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(SnackBarMessages.loginCompleted),
-          backgroundColor: AppColors.success,
-          duration: Duration(seconds: 2),
-        ),
-      );
+      // 최근 본 숙소를 위한 뷰
+      await context.read<HomeProvider>().loadHome(isLoggedIn: true);
 
-      context.push('${RoutePaths.home}');
+      FocusManager.instance.primaryFocus?.unfocus();
+      SnackMessenger.showMessage(
+          context,
+          SnackBarMessages.loginCompleted,
+          type: ToastType.success
+      );
+      context.go('${RoutePaths.home}');
 
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('아아디 또는 비밀번호가 일치하지 않습니다.'),
-          backgroundColor: AppColors.error,
-          duration: Duration(seconds: 2),
-        ),
+      SnackMessenger.showMessage(
+          context,
+          '아아디 또는 비밀번호가 일치하지 않습니다.',
+          type: ToastType.error
       );
     } finally {
       if (mounted) {
@@ -131,6 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  // 카카오 로그인
   Future<void> _kakaoLogin() async {
     print('========== 카카오 로그인 시작 ==========');
     // 해시 키 확인
@@ -185,14 +203,15 @@ class _LoginScreenState extends State<LoginScreen> {
         print('5️⃣ JWT 토큰 저장 및 로그인 처리');
         await context.read<AuthProvider>().login(response['token']);
 
+        // 최근 본 숙소를 위한 뷰
+        await context.read<HomeProvider>().loadHome(isLoggedIn: true);
+
         if (!mounted) return;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('카카오 로그인 성공!'),
-            backgroundColor: AppColors.success,
-            duration: Duration(seconds: 2),
-          ),
+        SnackMessenger.showMessage(
+            context,
+          '카카오 로그인 성공!',
+          type: ToastType.success
         );
 
         context.go(RoutePaths.home);
@@ -203,18 +222,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (!mounted) return;
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('추가 정보를 입력해주세요'),
-            backgroundColor: AppColors.error,
-            duration: Duration(seconds: 2),
-          ),
+        SnackMessenger.showMessage(
+            context,
+          '미가입 회원입니다. 회원가입을 진행해주세요.',
+          type: ToastType.error
         );
 
         // 회원가입 페이지로 카카오 정보 전달
         context.push(
           RoutePaths.signup,
-          extra: response['kakaoUser'],
+          extra: Map<String, dynamic>.from(response['kakaoUser']),
         );
       }
 
@@ -232,12 +249,10 @@ class _LoginScreenState extends State<LoginScreen> {
         errorMessage = '로그인이 취소되었습니다.';
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorMessage),
-          backgroundColor: AppColors.error,
-          duration: Duration(seconds: 2),
-        ),
+      SnackMessenger.showMessage(
+          context,
+          errorMessage,
+        type: ToastType.error
       );
 
     } catch (e, stackTrace) {
@@ -247,13 +262,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('로그인 중 오류가 발생했습니다.'),
-          backgroundColor: AppColors.error,
-          duration: Duration(seconds: 2),
-        ),
+      SnackMessenger.showMessage(
+          context,
+          '로그인 중 오류가 발생했습니다.',
+          type: ToastType.error
       );
+
+
     } finally {
       if (mounted) {
         setState(() {
@@ -263,8 +278,107 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _naverLogin() {
+  // 네이버 로그인
+  Future<void> _naverLogin() async {
+    if (_isLoading) return;
 
+    setState(() => _isLoading = true);
+
+    NaverLoginSDK.authenticate(
+      callback: OAuthLoginCallback(
+        onSuccess: () async {
+          try {
+            // 1) 네이버 SDK에서 accessToken 가져오기
+            final accessToken = await NaverLoginSDK.getAccessToken();
+            if (accessToken.isEmpty) {
+              throw Exception('네이버 accessToken 없음');
+            }
+
+            if (!mounted) return;
+
+            // 2) 백엔드로 토큰 전송 (카카오와 동일 패턴)
+            final naverService = NaverLoginService();
+            final Map<String, dynamic> response =
+            await naverService.sendTokenToBackend(accessToken);
+
+            if (!mounted) return;
+
+            // 3) 백엔드 응답 분기 처리
+            // 성공: { "token": "..." }
+            if (response.containsKey('token')) {
+              final token = response['token'] as String;
+
+              await context.read<AuthProvider>().login(token);
+
+              // 최근 본 숙소를 위한 뷰
+              await context.read<HomeProvider>().loadHome(isLoggedIn: true);
+
+              if (!mounted) return;
+              SnackMessenger.showMessage(
+                  context,
+                  '네이버 로그인 성공',
+                  type: ToastType.success
+              );
+              context.go(RoutePaths.home);
+              return;
+            }
+
+            // 미가입: { "message": "need_signup", "naverUser": {...} }
+            if (response['message'] == 'need_signup') {
+              final naverUser =
+              Map<String, dynamic>.from(response['naverUser'] as Map);
+
+              SnackMessenger.showMessage(
+                  context,
+                  '미가입 회원입니다. 회원가입을 진행해주세요.',
+                  type: ToastType.error
+              );
+              context.push(
+                RoutePaths.signup,
+                extra: naverUser,
+              );
+              return;
+            }
+            // 그 외 예외 응답
+            throw Exception('네이버 로그인 응답 형식 오류: $response');
+          } catch (e) {
+            if (!mounted) return;
+
+            SnackMessenger.showMessage(
+                context,
+                '네이버 로그인 처리 실패: $e',
+                type: ToastType.error
+            );
+
+          } finally {
+            if (mounted) {
+              setState(() => _isLoading = false);
+            }
+          }
+        },
+
+        onFailure: (httpStatus, message) {
+          if (!mounted) return;
+          setState(() => _isLoading = false);
+
+          SnackMessenger.showMessage(
+              context,
+              '네이버 로그인 실패($httpStatus): $message',
+              type: ToastType.error
+          );
+        },
+
+        onError: (errorCode, message) {
+          if (!mounted) return;
+          setState(() => _isLoading = false);
+          SnackMessenger.showMessage(
+              context,
+              '네이버 로그인 에러($errorCode): $message',
+              type: ToastType.error
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -275,7 +389,7 @@ class _LoginScreenState extends State<LoginScreen> {
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () => context.push('${RoutePaths.home}'),
+          onPressed: () => context.go('${RoutePaths.home}'),
         ),
       ),
       body: SafeArea(
@@ -291,6 +405,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     LoginInputFields(
                       emailController: _emailController,
                       passwordController: _passwordController,
+                      onSubmit: _handleLogin,
+                      emailFocusNode: _emailFocusNode,
+                      passwordFocusNode: _passwordFocusNode,
                     ),
 
                     // 체크박스
@@ -333,6 +450,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 }

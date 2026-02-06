@@ -31,6 +31,7 @@ dependencies:
 
   # [Auth - Social Login]
   kakao_flutter_sdk_user: ^1.9.6 # 카카오 로그인
+  naver_login_sdk: ^1.0.9        # 네이버 로그인
   google_sign_in: ^6.2.1         # 구글 로그인
 
   # [Map & Location]
@@ -74,13 +75,9 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/images/
     - assets/images/accommodation/
-    - assets/images/naver_logo.png
-    - assets/images/kakao_logo.png
-    - assets/images/login_logo.png
-    - assets/images/main_logo.png
-    - assets/images/ad/ad_01.png
-    - assets/images/ad/ad_02.png
+    - assets/images/ad/
     - assets/markers/
     - .env.development
     - .env.product

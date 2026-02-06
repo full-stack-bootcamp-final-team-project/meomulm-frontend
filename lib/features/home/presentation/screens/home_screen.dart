@@ -1,15 +1,17 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/home/presentation/widgets/bottom_nav_bar_widget.dart';
 import 'package:meomulm_frontend/features/home/presentation/widgets/home_ad_section_widget.dart';
+import 'package:meomulm_frontend/features/home/presentation/widgets/home_header_widget.dart';
 import 'package:meomulm_frontend/features/home/presentation/widgets/home_section_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../widgets/home_header_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,15 +30,28 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _verticalScroll = ScrollController();
 
   // 스크롤 컨트롤러
-  static final ScrollController _adScroll = ScrollController();
-  static final ScrollController _recentScroll = ScrollController();
-  static final ScrollController _seoulScroll = ScrollController();
-  static final ScrollController _jejuScroll = ScrollController();
-  static final ScrollController _busanScroll = ScrollController();
+  final ScrollController _adScroll = ScrollController();
+  final ScrollController _recentScroll = ScrollController();
+  final ScrollController _seoulScroll = ScrollController();
+  final ScrollController _jejuScroll = ScrollController();
+  final ScrollController _busanScroll = ScrollController();
+
+  @override
+  void dispose() {
+    _verticalScroll.dispose();
+    _adScroll.dispose();
+    _recentScroll.dispose();
+    _seoulScroll.dispose();
+    _jejuScroll.dispose();
+    _busanScroll.dispose();
+    _timer.cancel();
+    super.dispose();
+  }
 
   @override
   void initState() {
     super.initState();
+
     _currentGradient = AppGradients.byTime();
     _timer = Timer.periodic(
       const Duration(minutes: 1),
@@ -48,9 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final auth = context.read<AuthProvider>();
 
-        context.read<HomeProvider>().loadHome(
-          token: auth.isLoggedIn ? auth.token : null,
-        );
+        context.read<HomeProvider>().loadHome(isLoggedIn: auth.isLoggedIn,);
       });
     });
   }
@@ -105,12 +118,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // 광고영역 데이터 - 팀원 정보 TODO 이미지 변경 필요
   static final List<Map<String, String>> ADItems = [
-    {"title": "박세원", "url": "https://github.com/svv0003", "imageUrl": "assets/images/ad/ad_01.png"},
-    {"title": "박형빈", "url": "https://github.com/PHB-1994", "imageUrl": "assets/images/ad/ad_02.png"},
-    {"title": "유기태", "url": "https://github.com/tiradovi", "imageUrl": "assets/images/ad/ad_01.png"},
-    {"title": "오유성", "url": "https://github.com/Emma10003", "imageUrl": "assets/images/ad/ad_02.png"},
-    {"title": "조연희", "url": "https://github.com/yeonhee-cho", "imageUrl": "assets/images/ad/ad_01.png"},
-    {"title": "현윤선", "url": "https://github.com/yunseonhyun", "imageUrl": "assets/images/ad/ad_02.png"},
+    {"title": "박세원", "url": "https://github.com/svv0003", "imageUrl": "assets/images/ad/ad_svv0003.gif"},
+    {"title": "박형빈", "url": "https://github.com/PHB-1994", "imageUrl": "assets/images/ad/ad_PHB-1994.png"},
+    {"title": "유기태", "url": "https://github.com/tiradovi", "imageUrl": "assets/images/ad/ad_tiradovi.png"},
+    {"title": "오유성", "url": "https://github.com/Emma10003", "imageUrl": "assets/images/ad/ad_Emma10003.png"},
+    {"title": "조연희", "url": "https://github.com/yeonhee-cho", "imageUrl": "assets/images/ad/ad_yeonhee-cho.png"},
+    {"title": "현윤선", "url": "https://github.com/yunseonhyun", "imageUrl": "assets/images/ad/ad_yunseonhyun.png"},
   ];
 
   // 뷰
@@ -130,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, constraints) {
           final width = constraints.maxWidth;
           final adHeight = width * 0.28;
-          final sectionHeight = width * 0.5;
+          final sectionHeight = width * 0.6;
 
           return AnimatedContainer(
             width: double.infinity,
@@ -202,6 +215,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   scrollByItem: _scrollByItem,
                                 ),
                                 const SizedBox(height: AppSpacing.sm),
+
+                                const SizedBox(height: AppSpacing.xl),
+                                const SizedBox(height: AppSpacing.xxl),
                               ],
                             ),
                           ),
@@ -214,6 +230,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.main,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: const Icon(Icons.smart_toy, color: AppColors.white),
+        onPressed: () => context.push('${RoutePaths.chat}')
       ),
       // 탭
       bottomNavigationBar: SafeArea(

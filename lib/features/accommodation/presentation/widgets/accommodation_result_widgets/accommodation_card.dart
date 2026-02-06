@@ -279,10 +279,10 @@ class _EmptyImagePlaceholder extends StatelessWidget {
 */
 
 
-class HotelCard extends StatelessWidget {
+class AccommodationCard extends StatelessWidget {
   final SearchAccommodationResponseModel accommodation;
 
-  const HotelCard({
+  const AccommodationCard({
     super.key,
     required this.accommodation,
   });

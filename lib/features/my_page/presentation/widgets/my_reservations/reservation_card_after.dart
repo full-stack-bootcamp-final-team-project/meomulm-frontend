@@ -10,6 +10,7 @@ import 'package:meomulm_frontend/features/my_page/presentation/widgets/my_reserv
 /// ===============================
 
 class ReservationCardAfter extends StatelessWidget {
+  final String? accommodationImageUrl;
   final String hotelName;
   final String roomInfo;
   final String checkInValue;
@@ -20,6 +21,7 @@ class ReservationCardAfter extends StatelessWidget {
 
   const ReservationCardAfter({
     super.key,
+    this.accommodationImageUrl,
     required this.hotelName,
     required this.roomInfo,
     required this.checkInValue,
@@ -32,6 +34,7 @@ class ReservationCardAfter extends StatelessWidget {
   Widget build(BuildContext context) {
     return ReservationCardBase(
       headerLeft: StatusBlock(title: "이용완료"),
+      accommodationImageUrl: accommodationImageUrl,
       hotelName: hotelName,
       roomInfo: roomInfo,
       checkInValue: checkInValue,

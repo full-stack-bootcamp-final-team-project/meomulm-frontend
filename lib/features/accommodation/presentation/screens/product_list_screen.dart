@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/widgets/product_detail_widgets/product_action_buttons.dart';
+import 'package:meomulm_frontend/core/constants/paths/route_paths.dart' as AppRouter;
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/product_detail_widgets/product_search_box.dart';
 import 'package:provider/provider.dart';
 
@@ -20,6 +20,7 @@ class ProductListScreen extends StatefulWidget {
 class _ProductListScreenState extends State<ProductListScreen> {
   List<Product> rooms = [];
   bool isLoading = true;
+  bool isFavorite = false;
 
   DateTimeRange? dateRange = DateTimeRange(
     start: DateTime.now(),
@@ -32,6 +33,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
     super.initState();
     loadRooms();
   }
+
 
   Future<void> loadRooms() async {
     final provider = context.read<AccommodationProvider>();
@@ -65,6 +67,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
     }
   }
 
+
+
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AccommodationProvider>();
@@ -94,14 +99,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
               Expanded(
                 child: Text(
                   accommodationName,
-                  style: AppTextStyles.cardTitle,
+                  style: AppTextStyles.appBarTitle,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               // 좋아요 + 공유 버튼을 ActionButtons로 대체
-              ProductActionButtons(
+              /* ProductActionButtons(
                 accommodationId: provider.selectedAccommodationId ?? 0,
-              ),
+              ),*/
             ],
           ),
         ),
@@ -180,7 +185,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         const SizedBox(width: AppSpacing.sm),
                         Text(
                           selectedDate,
-                          style: AppTextStyles.bodyMd,
+                          style: AppTextStyles.bodyLg,
                         ),
                       ],
                     ),
@@ -193,7 +198,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         const SizedBox(width: AppSpacing.sm),
                         Text(
                           selectedPeople,
-                          style: AppTextStyles.bodyMd,
+                          style: AppTextStyles.bodyLg,
                         ),
                       ],
                     ),
@@ -233,7 +238,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   images: room.images ?? [],
                   checkIn: provider.checkIn,
                   checkOut: provider.checkOut,
-                  onTapReserve: () => context.push('/reservation'),
+                  onTapReserve: () => context.push(AppRouter.RoutePaths.reservation),
                 ),
               );
             }).toList(),

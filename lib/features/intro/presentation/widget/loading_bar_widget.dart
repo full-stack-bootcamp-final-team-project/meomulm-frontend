@@ -47,39 +47,46 @@ class _LoadingBarWidgetState extends State<LoadingBarWidget>
       children: [
         /// 프로그래스바 + 자동차
         AnimatedBuilder(
-          animation: _animation,
-          builder: (context, child) {
-            return SizedBox(
-              height: 50,
-              child: Stack(
-                children: [
-                  /// 로딩 바
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 10,
-                    child: LoadingBar(progress: _animation.value),
-                  ),
+            animation: _animation,
+            builder: (context, child) {
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  return SizedBox(
+                    height: 50,
+                    child: Stack(
+                      children: [
 
-                  /// 자동차 아이콘
-                  Positioned(
-                    left: _animation.value *
-                        (MediaQuery.of(context).size.width - 100) -
-                        15,
-                    bottom: 5,
-                    child: const Text('🚗', style: TextStyle(fontSize: 30)),
-                  ),
+                        /// 로딩 바
+                        Positioned(
+                          left: 0,
+                          right: 5,
+                          bottom: 10,
+                          child: LoadingBar(progress: _animation.value),
+                        ),
 
-                  /// 집 아이콘 (끝점)
-                  Positioned(
-                    right: -5,
-                    bottom: 5,
-                    child: const Text('🏠', style: TextStyle(fontSize: 30)),
-                  ),
-                ],
-              ),
-            );
-          },
+                        /// 자동차 아이콘
+                        Positioned(
+                          left: _animation.value * constraints!.maxWidth - 40,
+                          bottom: 5,
+                          child: Transform.flip(
+                            flipX: true,
+                            child: const Text(
+                                '🚗', style: TextStyle(fontSize: 30)),
+                          ),
+                        ),
+
+                        /// 집 아이콘 (끝점)
+                        Positioned(
+                          right: -4,
+                          bottom: 5,
+                          child: const Text('🏠', style: TextStyle(fontSize: 30)),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            }
         ),
 
         const SizedBox(height: 12),

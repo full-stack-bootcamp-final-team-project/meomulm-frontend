@@ -1,27 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
-import 'package:meomulm_frontend/core/constants/app_constants.dart';
+import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
+import 'package:meomulm_frontend/core/providers/filter_provider.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_filter_screen.dart';
+import 'package:meomulm_frontend/features/map/presentation/coordinators/map_coordinator.dart';
 import 'package:meomulm_frontend/features/map/presentation/providers/map_provider.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/base_kakao_map.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/accommodation_counter.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/error_message.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/loading_overlay.dart';
-import 'package:meomulm_frontend/features/map/presentation/widgets/map_accommodation_card.dart';
+import 'package:meomulm_frontend/features/map/presentation/widgets/map_view_layout.dart';
 import 'package:provider/provider.dart';
 
+/// 지역 기반 숙소 검색 결과를 지도에 표시하고 검색 흐름을 관리하는 스크린
 class MapSearchResultScreen extends StatefulWidget {
   final String region;
-  final DateTimeRange dateRange;
-  final int guestCount;
 
   const MapSearchResultScreen({
     super.key,
     required this.region,
-    required this.dateRange,
-    required this.guestCount,
   });
 
   @override
@@ -30,88 +27,72 @@ class MapSearchResultScreen extends StatefulWidget {
 
 class _MapSearchResultScreenState extends State<MapSearchResultScreen> {
   KakaoMapController? _controller;
-  LatLng? _regionCenter;
+  late LatLng _regionCenter;
+  late MapCoordinator _coordinator;
 
   @override
   void initState() {
     super.initState();
-    _initialize();
+    _coordinator = MapCoordinator(context.read<MapProvider>());
+    _regionCenter = _coordinator.getRegionCenter(widget.region);
+    _searchByRegion();
   }
 
   @override
   void dispose() {
     _controller = null;
+    _coordinator.dispose();
     super.dispose();
   }
 
-  Future<void> _initialize() async {
-    _regionCenter = RegionCoordinates.getCoordinates(widget.region);
-
-    _regionCenter ??= MapConstants.defaultPosition;
-
-    if (!mounted) return;
-
+  /// region 좌표로 검색 (필터 포함)
+  Future<void> _searchByRegion() async {
     try {
-      await context.read<MapProvider>().searchByLocation(
-        latitude: _regionCenter!.latitude,
-        longitude: _regionCenter!.longitude,
+      final filterProvider = context.read<FilterProvider>();
+
+      await _coordinator.searchByRegion(
+        widget.region,
+        filterParams: filterProvider.hasActiveFilters
+            ? filterProvider.filterParams
+            : null,
       );
     } catch (e) {
-      debugPrint('숙소 검색 실패: $e');
+      debugPrint('검색 실패: $e');
     }
   }
-
-  Future<void> _moveCameraToAccommodation(double lat, double lng) async {
-    if (_controller == null) return;
-
-    await _controller!.moveCamera(
-      CameraUpdate.newCenterPosition(LatLng(lat, lng)),
-    );
+  /// 필터 재적용
+  Future<void> _reloadWithFilter() async {
+    await _searchByRegion();
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<AccommodationProvider>();
+
     return Scaffold(
       appBar: SearchBarWidget(
         keyword: widget.region,
-        dateText: DatePeopleTextUtil.todayToTomorrow(),
-        peopleCount: widget.guestCount,
-        onClear: () => context.push(RoutePaths.map),
-      ),
-      body: Consumer<MapProvider>(
-        builder: (context, provider, _) {
-          return Stack(
-            children: [
-              BaseKakaoMap(
-                initialPosition: _regionCenter ?? MapConstants.defaultPosition,
-                accommodations: provider.accommodations,
-                onMapReady: (controller) => _controller = controller,
-                onMarkerTap: (accommodation) {
-                  provider.selectAccommodation(accommodation);
-                },
-              ),
-              if (provider.isLoading) const LoadingOverlay(),
-              if (provider.error != null && !provider.isLoading)
-                ErrorMessage(message: provider.error!),
-              if (!provider.isLoading && provider.accommodations.isNotEmpty)
-                AccommodationCounter(count: provider.accommodations.length),
-
-              if (provider.selectedAccommodation != null)
-                SafeArea(
-                  child: MapAccommodationCard(
-                    accommodation: provider.selectedAccommodation!,
-                    onTap: () {
-                      _moveCameraToAccommodation(
-                        provider.selectedAccommodation!.accommodationLatitude,
-                        provider.selectedAccommodation!.accommodationLongitude,
-                      );
-                    },
-                    onClose: () => provider.selectAccommodation(null),
-                  ),
-                ),
-            ],
+        dateText: DatePeopleTextUtil.range(provider.checkIn, provider.checkOut),
+        peopleCount: provider.guestNumber,
+        onClear: () => context.pop(),
+        onBack: ()=> context.go(RoutePaths.home),
+        onFilter: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AccommodationFilterScreen(),
+            ),
           );
+
+          if (result == true) {
+            _reloadWithFilter();
+          }
         },
+      ),
+      body: MapViewLayout(
+        initialPosition: _regionCenter,
+        onMapReady: (controller) => _controller = controller,
+        additionalOverlays: const [],
       ),
     );
   }

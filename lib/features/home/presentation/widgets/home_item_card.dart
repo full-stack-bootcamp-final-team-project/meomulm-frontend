@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
+import 'package:meomulm_frontend/core/constants/app_constants.dart';
+import 'package:meomulm_frontend/core/utils/accommodation_image_utils.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_detail_screen.dart';
-import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'image_none.dart';
@@ -13,42 +16,29 @@ class HomeItemCard extends StatelessWidget {
   final double width;
   final bool isLast;
 
-  const HomeItemCard({
+  HomeItemCard({
     super.key,
     required this.item,
     required this.width,
     this.isLast = false,
   });
 
+  // 가격 포맷 (콤마)
+  final priceFormat = NumberFormat('#,###');
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () async {
-        final id = item.accommodationId; // 숙소 ID 가져오기
-        // ========== 데이터 로드 완료 후 최근 본 숙소 저장 ==========
-        final recentItem = item;
-        print('item.accommodationLatitude $item.accommodationLatitude');
-        print("item.accommodationLongitude $item.accommodationLongitude");
-        print(item.categoryCode);
-        print(item.accommodationAddress);
-        print(item.accommodationId);
-        print(item.accommodationName);
-        print(item.accommodationImages);
-        print(item.minPrice);
-        final homeProvider = context.read<HomeProvider>();
+    final imageUrl = AccommodationImageUtils.getImageUrl(item);
 
-        if (recentItem.accommodationId != null) {
-          await homeProvider.addRecentAccommodation(recentItem).then((_) {
-            debugPrint("숙소 저장 완료");
-          });
-        }
-        // =========================================================
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => AccommodationDetailScreen(accommodationId: id),
-          ),
-        );
+    return GestureDetector(
+      onTap: () {
+        final id = item.accommodationId; // 숙소 ID 가져오기
+        final name = item.accommodationName;
+
+        // Provider 업데이트
+        final provider = context.read<AccommodationProvider>();
+        provider.setAccommodationInfo(id, name);
+        context.push('${RoutePaths.accommodationDetail}/$id');
       },
       child: Container(
         width: width,
@@ -59,14 +49,16 @@ class HomeItemCard extends StatelessWidget {
             AspectRatio(
               aspectRatio: 3 / 4,
               child:
-                  (item.accommodationImages != null &&
-                      item.accommodationImages!.isNotEmpty)
-                  ? Image.network(
-                      item.accommodationImages!.first.accommodationImageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => ImageNone(),
-                    )
-                  : ImageNone(),
+                AccommodationImageUtils.isNetworkImage(imageUrl)
+                    ? Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => ImageNone(),
+                )
+                    : Image.asset(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                ),
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
@@ -77,7 +69,7 @@ class HomeItemCard extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(
-              '${item.minPrice}원 ~',
+              '${priceFormat.format(item.minPrice)}원 ~',
               style: AppTextStyles.subTitle.copyWith(
                 fontWeight: FontWeight.w600,
               ),

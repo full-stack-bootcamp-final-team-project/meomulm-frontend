@@ -53,6 +53,7 @@ class AppIcons {
   static const location = Icons.my_location;
   static const locationOn = Icons.location_on;
   static const locationOff = Icons.location_off;
+  static const locationOnOutline = Icons.location_on_outlined;
   static const accommodation = Icons.home;
   static const tune = Icons.tune;
 
@@ -67,6 +68,7 @@ class AppIcons {
   // Status
   static const checkCircle = Icons.check_circle;
   static const error = Icons.error;
+  static const errorOutline = Icons.error_outline;
 
   // Size Constants
   static const double sizeXs = 14.0;

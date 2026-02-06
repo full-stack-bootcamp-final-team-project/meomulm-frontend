@@ -175,7 +175,10 @@ class _MypageScreenState extends State<MypageScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBarWidget(title: TitleLabels.myInfo),
+      appBar: AppBarWidget(
+        title: TitleLabels.myInfo,
+        onBack: () => context.go('/home'),
+      ),
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),
@@ -244,7 +247,7 @@ class _MypageScreenState extends State<MypageScreen> {
                       icon: AppIcons.commentOutline,
                       label: TitleLabels.myReviews,
                       onTap: () {
-                        context.push('${RoutePaths.myPage}${RoutePaths.myReview}', extra: user);  // /mypage/review
+                        context.push('${RoutePaths.myPage}${RoutePaths.myReview}');  // /mypage/review
                       },
                     ),
                   ),
@@ -253,7 +256,7 @@ class _MypageScreenState extends State<MypageScreen> {
                       icon: AppIcons.calendarMonth,
                       label: TitleLabels.myBookings,
                       onTap: () {
-                        context.push('${RoutePaths.myPage}${RoutePaths.myReservation}', extra: user);
+                        context.push('${RoutePaths.myPage}${RoutePaths.myReservation}?tab=0');
                       },
                     ),
                   ),

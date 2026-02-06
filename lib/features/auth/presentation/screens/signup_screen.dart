@@ -5,12 +5,15 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/keyboard_converter.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/signup/birth_date_selector.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/signup/signup_form_fields.dart';
 
 class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
+  final Map<String, dynamic>? kakaoUser;
+  const SignupScreen({super.key, this.kakaoUser});
+
 
   @override
   State<SignupScreen> createState() => _SignupScreenState();
@@ -42,13 +45,35 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _isNameChecked = false;
   bool _isPhoneChecked = false;
 
+  // 카카오로 회원가입인지 검증
+  late final bool _isKakaoSignup;
+
   // 앱 시작하고 입력값 검증
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _emailFocusNode.requestFocus();
-    });
+
+    _isKakaoSignup = widget.kakaoUser != null;
+
+    final kakaoUser = widget.kakaoUser;
+    if (kakaoUser != null) {
+
+      _emailController.text = (kakaoUser['userEmail'] ?? '').toString();
+      _nameController.text  = (kakaoUser['userName'] ?? '').toString();
+
+      _isEmailChecked = true;
+      _isNameChecked = true;
+    }
+
+    if(_emailController.text.isEmpty){
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _emailFocusNode.requestFocus();
+      });
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _passwordFocusNode.requestFocus();
+      });
+    }
 
 
     _passwordController.addListener(() {
@@ -78,86 +103,83 @@ class _SignupScreenState extends State<SignupScreen> {
   void _handleSignup() async {
     // 빈 필드 체크
     if (_emailController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("이메일을 입력하세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "이메일을 입력하세요.",
+          type: ToastType.error
       );
       return;
     }
 
     if (_passwordController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("비밀번호를 입력하세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "비밀번호를 입력하세요.",
+          type: ToastType.error
       );
       return;
     }
 
     if (_checkPasswordController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("비밀번호 확인을 입력하세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "비밀번호 확인을 입력하세요.",
+          type: ToastType.error
       );
       return;
     }
 
     if (_nameController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("이름을 입력하세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "이름을 입력하세요.",
+          type: ToastType.error
       );
       return;
     }
 
     if (_phoneController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("연락처를 입력하세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "연락처를 입력하세요.",
+          type: ToastType.error
       );
       return;
     }
 
     // Form validation 체크 (정규식 검증)
     if (!_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("입력 정보를 다시 확인해주세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "입력 정보를 다시 확인해주세요.",
+          type: ToastType.error
       );
       return;
     }
 
     if (_birthController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("생년월일을 선택해주세요."),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          "생년월일을 선택해주세요.",
+          type: ToastType.error
       );
       return;
     }
 
-    if (!_isEmailChecked) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('이메일 중복 확인을 해주세요.')),
+    if (!_isKakaoSignup && !_isEmailChecked) {
+      SnackMessenger.showMessage(
+          context,
+          '이메일 중복 확인을 해주세요.',
+          type: ToastType.error
       );
       return;
     }
 
     if (!_isPhoneChecked) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('전화번호 중복 확인을 해주세요.')),
+      SnackMessenger.showMessage(
+          context,
+          '전화번호 중복 확인을 해주세요.',
+          type: ToastType.error
       );
       return;
     }
@@ -174,11 +196,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
       if (KeyboardConverter.containsKorean(password)) {
         password = KeyboardConverter.convertToEnglish(password);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("비밀번호가 한글 키보드로 입력되어 자동 변환되었습니다."),
-            duration: Duration(seconds: 2),
-          ),
+        SnackMessenger.showMessage(
+            context,
+            "비밀번호가 한글 키보드로 입력되어 자동 변환되었습니다.",
         );
       }
 
@@ -199,9 +219,10 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("회원가입이 완료되었습니다.")),
+      SnackMessenger.showMessage(
+          context,
+          "회원가입이 완료되었습니다.",
+          type: ToastType.success
       );
 
       // 회원가입 후 로그인 페이지로 이동
@@ -209,15 +230,12 @@ class _SignupScreenState extends State<SignupScreen> {
 
     } catch (e) {
       if (!mounted) return;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '회원가입에 실패했습니다: ${e.toString().replaceAll('Exception: ', '')}',
-          ),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          '회원가입에 실패했습니다: ${e.toString().replaceAll('Exception: ', '')}',
+          type: ToastType.error
       );
+
     } finally {
       if (mounted) {
         setState(() {
@@ -234,11 +252,10 @@ class _SignupScreenState extends State<SignupScreen> {
     final checkEmail = RegexpUtils.validateEmail(email);
 
     if(checkEmail != null){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(checkEmail),
-          backgroundColor: AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          checkEmail,
+          type: ToastType.error
       );
       return;
     }
@@ -249,17 +266,20 @@ class _SignupScreenState extends State<SignupScreen> {
       setState(() {
         _isEmailChecked = isAvailable;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(isAvailable ? '사용 가능한 이메일입니다.' : '이미 사용 중인 이메일입니다.'),
-          backgroundColor: isAvailable ? Colors.green : AppColors.error,
-        ),
+
+      SnackMessenger.showMessage(
+          context,
+          isAvailable ? '사용 가능한 이메일입니다.' : '이미 사용 중인 이메일입니다.',
+          type: isAvailable ? ToastType.success : ToastType.error
       );
 
+
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('이메일 중복 확인에 실패했습니다.')));
+      SnackMessenger.showMessage(
+          context,
+          '이메일 중복 확인에 실패했습니다.',
+          type: ToastType.error
+      );
     }
   }
 
@@ -267,14 +287,13 @@ class _SignupScreenState extends State<SignupScreen> {
   void _checkPhone() async {
     final phone = _phoneController.text.trim();
 
-    final checkEmail = RegexpUtils.validatePhone(phone);
+    final checkPhone = RegexpUtils.validatePhone(phone);
 
-    if(checkEmail != null){
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(checkEmail),
-          backgroundColor: AppColors.error,
-        ),
+    if(checkPhone != null){
+      SnackMessenger.showMessage(
+          context,
+          checkPhone,
+          type: ToastType.error
       );
       return;
     }
@@ -286,17 +305,18 @@ class _SignupScreenState extends State<SignupScreen> {
         _isPhoneChecked = isAvailable;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(isAvailable ? '사용 가능한 전화번호입니다.' : '이미 사용 중인 전화번호입니다.'),
-          backgroundColor: isAvailable ? Colors.green : AppColors.error,
-        ),
+      SnackMessenger.showMessage(
+          context,
+          isAvailable ? '사용 가능한 전화번호입니다.' : '이미 사용 중인 전화번호입니다.',
+          type: isAvailable ? ToastType.success : ToastType.error
       );
 
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('전화번호 중복 확인에 실패했습니다.')));
+      SnackMessenger.showMessage(
+          context,
+          '전화번호 중복 확인에 실패했습니다.',
+          type: ToastType.error
+      );
     }
   }
 
@@ -317,15 +337,10 @@ class _SignupScreenState extends State<SignupScreen> {
     return phone; // 형식이 다르면 원본 반환
   }
 
-  // 로그인 스크린 이동 (AppBar)
-  void _moveLogin() {
-    context.push("/login");
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(title: "회원가입", onBack: _moveLogin),
+      appBar: AppBarWidget(title: "회원가입"),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -338,6 +353,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: [
                     // 분리된 폼 필드 위젯 ~!
                     SignupFormFields(
+                      isKakaoSignup: _isKakaoSignup,
                       emailController: _emailController,
                       passwordController: _passwordController,
                       checkPasswordController: _checkPasswordController,
@@ -348,13 +364,13 @@ class _SignupScreenState extends State<SignupScreen> {
                       checkPasswordFocusNode: _checkPasswordFocusNode,
                       nameFocusNode: _nameFocusNode,
                       phoneFocusNode: _phoneFocusNode,
-                      onCheckEmail: _checkEmail,
+                      onCheckEmail: _isKakaoSignup ? null : _checkEmail,
                       onCheckPhone: _checkPhone,
-                      isEmailChecked: _isEmailChecked,
+                      isEmailChecked: _isKakaoSignup ? true : _isEmailChecked,
                       isPasswordChecked: _isPasswordChecked,
                       isCheckPasswordChecked: _isCheckPasswordChecked,
                       isPhoneChecked: _isPhoneChecked,
-                      isNameChecked: _isNameChecked
+                      isNameChecked: _isKakaoSignup ? true : _isNameChecked,
                     ),
                     const SizedBox(height: AppSpacing.xl),
 
