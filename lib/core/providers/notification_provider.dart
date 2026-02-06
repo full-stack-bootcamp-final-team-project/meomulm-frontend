@@ -12,9 +12,9 @@ class NotificationProvider extends ChangeNotifier {
   List<Map<String, dynamic>> get notifications => _notifications;
 
   void connect(String token) {
-    // 1. HTTP 서비스 인터셉터에 토큰 설정
     NotificationApiService.setupInterceptors(token);
 
+    // 이미 연결된 상태라면 재연결 방지한다.
     if (stompClient != null && stompClient!.isActive) return;
 
     stompClient = StompClient(
@@ -28,6 +28,14 @@ class NotificationProvider extends ChangeNotifier {
       ),
     );
     stompClient?.activate();
+  }
+
+  void disconnect() {
+    if (stompClient != null && stompClient!.isActive) {
+      stompClient?.deactivate();
+      stompClient = null;
+      debugPrint("실시간 알림 연결 해제됨");
+    }
   }
 
   void _onConnect(StompFrame frame, String token) {
@@ -53,7 +61,8 @@ class NotificationProvider extends ChangeNotifier {
         'notificationContent': data['notificationContent'] ?? '알림 내용이 없습니다.',
         'notificationLinkUrl': data['notificationLinkUrl'] ?? '',
         'userId': data['userId'],
-        'timestamp': data['timestamp'] ?? DateTime.now().millisecondsSinceEpoch,
+        'isRead': false,
+        'createdAt': DateTime.now().toIso8601String(),
       };
 
       _notifications.add(notificationData);
@@ -76,7 +85,7 @@ class NotificationProvider extends ChangeNotifier {
     overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
         // 상태바(노치) 아래에 위치하도록 패딩 추가
-        top: MediaQuery.of(context).padding.top + 10,
+        top: MediaQuery.of(context).padding.top + 4,
         left: 0,
         right: 0,
         child: NotificationToast(

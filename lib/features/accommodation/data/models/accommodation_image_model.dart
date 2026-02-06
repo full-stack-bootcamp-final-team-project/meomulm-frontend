@@ -1,19 +1,19 @@
 
-class AccommodationImage {
+class AccommodationImageModel {
   final int accommodationImageId;
   final int? accommodationId;
   final String accommodationImageUrl;
 
-  AccommodationImage({
+  AccommodationImageModel({
     required this.accommodationImageId,
     this.accommodationId,
     required this.accommodationImageUrl
 
   });
 
-  factory AccommodationImage.fromJson(Map<String, dynamic> json) {
+  factory AccommodationImageModel.fromJson(Map<String, dynamic> json) {
     try {
-      return AccommodationImage(
+      return AccommodationImageModel(
         accommodationImageId: json['accommodationImageId'] ?? 0,
         accommodationId: json['accommodationId'],
         accommodationImageUrl: json['accommodationImageUrl'] ?? '',

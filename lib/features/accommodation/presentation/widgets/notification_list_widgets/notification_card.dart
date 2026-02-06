@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/notification_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/notification_api_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
@@ -17,24 +18,24 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("${notification.notificationId} isRead : ${notification.isRead}");
     final bool isRead = notification.isRead;
-    final Color unreadColor = const Color(0xFF007AFF);
+    final unreadColor = const Color(0xFF007AFF);
+    final backgroundColor = isRead ? AppColors.gray5 : Colors.white;
 
     return GestureDetector(
       onTap: () async {
-        // 1. 읽지 않은 알림이라면 읽음 처리 API 호출
-        if (!isRead) {
-          final auth = context.read<AuthProvider>();
+        if (!notification.isRead) {
           try {
-            // 별도의 updateRead API가 있다면 호출 (없다면 delete 방식처럼 구성)
-            // 여기서는 탭 시 콜백을 실행하여 리스트를 새로고침하거나 상태를 변경하도록 유도
+            await NotificationApiService.updateNotificationStatus(
+              notificationId: notification.notificationId,
+            );
             if (onTap != null) onTap!();
           } catch (e) {
             debugPrint('읽음 처리 실패: $e');
           }
         }
 
-        // 2. 링크가 있다면 이동
         if (notification.notificationLinkUrl.isNotEmpty) {
           context.push(notification.notificationLinkUrl);
         }
@@ -44,7 +45,7 @@ class NotificationCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12), // Dismissible과 결합을 위해 Padding 대신 Margin 사용
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -64,7 +65,7 @@ class NotificationCard extends StatelessWidget {
               height: 8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isRead ? Colors.transparent : unreadColor,
+                color: isRead ? Colors.transparent : unreadColor,   // 읽었을 때 점을 아예 없애려면 Colors.transparent
               ),
             ),
 
@@ -75,9 +76,9 @@ class NotificationCard extends StatelessWidget {
                   Text(
                     notification.notificationContent,
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 16,
                       fontWeight: isRead ? FontWeight.w400 : FontWeight.w600,
-                      color: isRead ? const Color(0xFF8E8E93) : const Color(0xFF1C1C1E),
+                      color: isRead ? AppColors.gray2 : AppColors.black,
                       height: 1.4,
                       letterSpacing: -0.3,
                     ),
@@ -87,7 +88,7 @@ class NotificationCard extends StatelessWidget {
                     _formatDate(notification.createdAt),
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Color(0xFFC7C7CC),
+                      color: AppColors.gray2,
                       letterSpacing: -0.2,
                     ),
                   ),
@@ -99,7 +100,7 @@ class NotificationCard extends StatelessWidget {
               const Icon(
                 Icons.arrow_forward_ios_rounded,
                 size: 14,
-                color: Color(0xFFD1D1D6),
+                color: AppColors.gray2,
               ),
           ],
         ),

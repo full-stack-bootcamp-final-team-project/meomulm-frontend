@@ -65,12 +65,6 @@ class AppRouter {
     // 예:
     // final reviewRegex = RegExp(r'^/accommodation-review/(\d+)$');
     // ...
-    // ── 예약 내역 탭 이동 (새로 추가) ──
-    if (path == '/mypage/my-reservation') {
-      final tabIndex = uri.queryParameters['tab'] ?? '0'; // 없으면 0번 탭
-      // GoRouter 경로에 쿼리 파라미터를 그대로 붙여서 전달
-      return '${RoutePaths.myPage}${RoutePaths.myReservation}?tab=$tabIndex';
-    }
 
     return null; // 매칭되지 않는 경로
   }

@@ -1,6 +1,6 @@
 // lib/features/accommodation/data/models/accommodation_review_model.dart
 
-class AccommodationReview {
+class AccommodationReviewModel {
   final int reviewId;
   final int userId;
   final int accommodationId;
@@ -10,7 +10,7 @@ class AccommodationReview {
   final String? userName;           // JOIN으로 가져오는 값 (null 방어)
   final String? userProfileImage;   // JOIN으로 가져오는 값 (null 방어)
 
-  AccommodationReview({
+  AccommodationReviewModel({
     required this.reviewId,
     required this.userId,
     required this.accommodationId,
@@ -22,8 +22,8 @@ class AccommodationReview {
   });
 
   // JSON -> Object 변환 (백엔드 필드명과 1:1 매칭)
-  factory AccommodationReview.fromJson(Map<String, dynamic> json) {
-    return AccommodationReview(
+  factory AccommodationReviewModel.fromJson(Map<String, dynamic> json) {
+    return AccommodationReviewModel(
       reviewId: json['reviewId'] ?? 0,
       userId: json['userId'] ?? 0,
       accommodationId: json['accommodationId'] ?? 0,

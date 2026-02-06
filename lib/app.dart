@@ -24,11 +24,7 @@ import 'features/home/presentation/providers/home_provider.dart';
 
 class MeomulmApp extends StatefulWidget {
   final AuthProvider authProvider;
-
-  const MeomulmApp({
-    super.key,
-    required this.authProvider,
-  });
+  const MeomulmApp({super.key, required this.authProvider});
 
   @override
   State<MeomulmApp> createState() => _MeomulmAppState();
@@ -41,22 +37,14 @@ class _MeomulmAppState extends State<MeomulmApp> {
   void initState() {
     super.initState();
     _listenForLinks();
+    widget.authProvider.loadSavedToken();
   }
 
   void _listenForLinks() {
     final appLinks = AppLinks();
-
-    // 앱이 백그라운드 → 포그라운드로 돌아올 때 deeplink 수신
     _linkSubscription = appLinks.uriLinkStream.listen((Uri uri) {
-      debugPrint('실행 중 deeplink URI 수신: $uri');
-
       final parsedPath = AppRouter.parseDeepLinkUri(uri);
-      if (parsedPath != null) {
-        debugPrint('파싱된 경로 → GoRouter.push: $parsedPath');
-        AppRouter.router.push(parsedPath);
-      }
-    }, onError: (e) {
-      debugPrint('deeplink stream 에러: $e');
+      if (parsedPath != null) AppRouter.router.push(parsedPath);
     });
   }
 
@@ -65,7 +53,6 @@ class _MeomulmAppState extends State<MeomulmApp> {
     _linkSubscription?.cancel();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -85,6 +72,16 @@ class _MeomulmAppState extends State<MeomulmApp> {
       ],
       child: Consumer2<ThemeProvider, AuthProvider>(
         builder: (context, themeProvider, auth, child) {
+          // build가 끝난 직후 실행되도록 토큰 유무에 따른 처리
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final notification = context.read<NotificationProvider>();
+            if (auth.isLoggedIn) {
+              notification.connect(auth.token!);
+            } else {
+              notification.disconnect();
+            }
+          });
+
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
             title: EnvConfig.appName,

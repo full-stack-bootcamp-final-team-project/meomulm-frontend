@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_review.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_review_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/review_summary.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_review_widgets/review_card.dart';
 
@@ -15,8 +15,8 @@ class AccommodationReviewScreen extends StatefulWidget {
 
 class _AccommodationReviewScreenState extends State<AccommodationReviewScreen> {
   bool isLoading = true;
-  ReviewSummary? summary;
-  List<AccommodationReview> reviews = [];
+  ReviewSummaryModel? summary;
+  List<AccommodationReviewModel> reviews = [];
 
   @override
   void initState() {
@@ -33,8 +33,8 @@ class _AccommodationReviewScreenState extends State<AccommodationReviewScreen> {
       ]);
 
       setState(() {
-        summary = results[0] as ReviewSummary?;
-        reviews = results[1] as List<AccommodationReview>;
+        summary = results[0] as ReviewSummaryModel?;
+        reviews = results[1] as List<AccommodationReviewModel>;
         isLoading = false;
       });
     } catch (e) {
