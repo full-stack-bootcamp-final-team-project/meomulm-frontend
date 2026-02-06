@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class ChatConversation {
   final int chatConversationId;
   final int userId;
@@ -15,7 +13,7 @@ class ChatConversation {
 
   factory ChatConversation.fromJson(Map<String, dynamic> json) {
     return ChatConversation(
-      chatConversationId: json['chatConversationId'] as int,
+      chatConversationId: (json['chatConversationId'] ?? 0) as int,
       userId: json['userId'] as int,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
