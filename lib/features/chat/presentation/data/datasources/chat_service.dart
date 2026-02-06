@@ -8,7 +8,7 @@ import 'package:meomulm_frontend/core/constants/app_constants.dart';
 class ChatService {
   static final Dio _dio = Dio(BaseOptions(
     baseUrl: ApiPaths.chatUrl,
-    connectTimeout: const Duration(seconds: 5),
+    connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 30),
     contentType: 'application/json',
     responseType: ResponseType.json,

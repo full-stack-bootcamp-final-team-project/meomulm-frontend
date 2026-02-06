@@ -12,6 +12,7 @@ import 'package:meomulm_frontend/features/map/presentation/providers/map_provide
 import 'package:meomulm_frontend/features/map/presentation/widgets/map_view_layout.dart';
 import 'package:provider/provider.dart';
 
+/// 지역 기반 숙소 검색 결과를 지도에 표시하고 검색 흐름을 관리하는 스크린
 class MapSearchResultScreen extends StatefulWidget {
   final String region;
 

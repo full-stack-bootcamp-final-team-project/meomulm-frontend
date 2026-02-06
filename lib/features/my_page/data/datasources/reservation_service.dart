@@ -8,8 +8,8 @@ class ReservationService {
   final Dio _dio = Dio(
     BaseOptions(
       baseUrl: ApiPaths.baseUrl,
-      connectTimeout: const Duration(seconds: 5),  // 5초 타임아웃
-      receiveTimeout: const Duration(seconds: 30),  // 3초 타임아웃
+      connectTimeout: const Duration(seconds: 10),  // 10초 타임아웃
+      receiveTimeout: const Duration(seconds: 30),  // 30초 타임아웃
       headers: {
         'Content-Type': 'application/json',
       },

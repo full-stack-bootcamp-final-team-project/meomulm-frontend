@@ -4,8 +4,7 @@ import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/features/map/presentation/utils/map_marker_manager.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 
-/// 카카오 지도 기본 컴포넌트
-/// 책임: 지도 렌더링 및 마커 매니저 초기화만 담당
+/// 카카오 지도를 감싸는 기본 Map 위젯
 class BaseKakaoMap extends StatefulWidget {
   final LatLng initialPosition;
   final ValueChanged<KakaoMapController>? onMapReady;

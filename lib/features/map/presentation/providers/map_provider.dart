@@ -3,6 +3,7 @@ import 'package:meomulm_frontend/core/error/app_exception.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/map/data/datasources/map_service.dart';
 
+/// 지도 기반 숙소 검색 상태와 선택 상태를 관리하는 프로바이더
 class MapProvider extends ChangeNotifier {
   final MapService _service = MapService();
 
@@ -19,9 +20,13 @@ class MapProvider extends ChangeNotifier {
   // Getters
   // =====================
   List<SearchAccommodationResponseModel> get accommodations => _accommodations;
+
   bool get isLoading => _isLoading;
+
   bool get isSearching => _isSearching;
+
   AppException? get error => _error;
+
   SearchAccommodationResponseModel? get selectedAccommodation =>
       _selectedAccommodation;
 
@@ -48,18 +53,17 @@ class MapProvider extends ChangeNotifier {
     required double longitude,
     Map<String, dynamic>? filterParams,
   }) async {
-    // 중복 호출 차단
-    if (_isSearching) {
-      debugPrint('검색 중복 호출 차단');
-      return;
-    }
-
     // 동일 위치 검색 스킵 (필터가 있으면 무조건 검색)
     if (filterParams == null && _isSameLocation(latitude, longitude)) {
       debugPrint('동일한 위치 검색 스킵');
       return;
     }
 
+    // 중복 호출 차단
+    if (_isSearching) {
+      debugPrint('검색 중복 호출 차단');
+      return;
+    }
     _isSearching = true;
     _isLoading = true;
     _error = null;
@@ -80,7 +84,8 @@ class MapProvider extends ChangeNotifier {
       // 선택된 숙소가 결과에 없으면 해제
       if (_selectedAccommodation != null) {
         final stillExists = result.any(
-              (acc) => acc.accommodationId == _selectedAccommodation!.accommodationId,
+          (acc) =>
+              acc.accommodationId == _selectedAccommodation!.accommodationId,
         );
         if (!stillExists) {
           _selectedAccommodation = null;
@@ -122,6 +127,7 @@ class MapProvider extends ChangeNotifier {
     }
   }
 
+  /// 같은 위치인지 확인
   bool _isSameLocation(double latitude, double longitude) {
     if (_lastLatitude == null || _lastLongitude == null) {
       return false;

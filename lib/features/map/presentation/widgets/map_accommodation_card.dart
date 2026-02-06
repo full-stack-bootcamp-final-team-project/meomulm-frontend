@@ -5,7 +5,7 @@ import 'package:meomulm_frontend/features/accommodation/data/models/search_accom
 import 'package:meomulm_frontend/features/map/presentation/widgets/accommodation_card_image.dart';
 import 'package:meomulm_frontend/features/map/presentation/widgets/accommodation_card_info.dart';
 
-/// 지도에서 선택된 숙소를 표시하는 카드
+/// 지도에서 선택된 숙소를 표시하는 카드 위젯
 class MapAccommodationCard extends StatelessWidget {
   final SearchAccommodationResponseModel accommodation;
   final VoidCallback? onClose;

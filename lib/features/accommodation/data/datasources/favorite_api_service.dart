@@ -7,7 +7,7 @@ class FavoriteApiService {
   static final Dio _dio = Dio(
     BaseOptions(
       baseUrl: ApiPaths.favoriteUrl,
-      connectTimeout : const Duration(seconds: 5),
+      connectTimeout : const Duration(seconds: 10),
       receiveTimeout : const Duration(seconds: 30),
       headers:{
         'Content-Type' : 'application/json',
