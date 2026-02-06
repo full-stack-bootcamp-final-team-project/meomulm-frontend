@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
 class ChatConversation {
-  final Long chatConversationId;
+  final int chatConversationId;
   final int userId;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -15,7 +15,7 @@ class ChatConversation {
 
   factory ChatConversation.fromJson(Map<String, dynamic> json) {
     return ChatConversation(
-      chatConversationId: json['chatConversationId'] as Long,
+      chatConversationId: json['chatConversationId'] as int,
       userId: json['userId'] as int,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])

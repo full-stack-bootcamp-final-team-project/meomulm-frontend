@@ -18,7 +18,7 @@ class ChatService {
   static Future<ChatMessage> sendMessage(String token, String message) async {
     try {
       final response = await _dio.post(
-        '/message',
+        '/$message',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
         data: message,
       );
