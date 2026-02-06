@@ -11,92 +11,112 @@ import 'package:meomulm_frontend/features/accommodation/presentation/screens/acc
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_result_widgets/accommodation_card.dart';
 import 'package:provider/provider.dart';
 
-
 class AccommodationResultScreen extends StatefulWidget {
   const AccommodationResultScreen({super.key});
 
   @override
-  State<AccommodationResultScreen> createState() => _AccommodationResultScreen();
+  State<AccommodationResultScreen> createState() => _AccommodationResultScreenState();
 }
 
-class _AccommodationResultScreen extends State<AccommodationResultScreen> {
+class _AccommodationResultScreenState extends State<AccommodationResultScreen> {
   List<AccommodationResponseModel> accommodations = [];
-  bool isLoading = true;
+  int currentPage = 1;
+  final int pageSize = 12; // 한 페이지당 10~15개 추천 (체감속도 좋음)
+  bool hasMore = true;
+  bool isInitialLoading = true;
+  bool isLoadingMore = false;
+
+  late ScrollController _scrollController;
 
   @override
   void initState() {
     super.initState();
-    loadAccommodations();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
+    _loadAccommodations(initial: true);
   }
 
-  Future<void> loadAccommodations() async {
-    final searchProvider = context.read<AccommodationProvider>();
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
-    // 검색어와 좌표 정보가 모두 없으면 리스트 비움
-    if ((searchProvider.keyword?.trim().isEmpty ?? true) && searchProvider.latitude == null) {
+  void _onScroll() {
+    if (_scrollController.position.extentAfter < 400 &&
+        !isLoadingMore &&
+        hasMore &&
+        !_scrollController.position.outOfRange) {
+      _loadAccommodations();
+    }
+  }
+
+  Future<void> _loadAccommodations({bool initial = false}) async {
+    if (initial) {
       setState(() {
-        isLoading = false;
-        accommodations = [];
+        isInitialLoading = true;
+        accommodations.clear();
+        currentPage = 1;
+        hasMore = true;
       });
-      return;
+    } else {
+      if (isLoadingMore || !hasMore) return;
+      setState(() => isLoadingMore = true);
     }
 
-    setState(() => isLoading = true);
-
     try {
-      // 검색 조건 + 필터 조건 합치기
+      final searchProvider = context.read<AccommodationProvider>();
       final filterProvider = context.read<FilterProvider>();
 
+      // 검색 조건 + 필터 + 페이지네이션 파라미터
       final params = {
-        ...searchProvider.searchParams,  // 검색 조건
-        ...filterProvider.filterParams,   // 필터 조건
+        ...searchProvider.searchParams,
+        ...filterProvider.filterParams,
+        'page': currentPage.toString(),
+        'size': pageSize.toString(),
       };
 
-      final response = await AccommodationApiService.searchAccommodations(
-        params: params,
-      );
+      final newItems = await AccommodationApiService.searchAccommodations(params: params);
 
       setState(() {
-        accommodations = response;
-        isLoading = false;
+        accommodations.addAll(newItems);
+        currentPage++;
+        hasMore = newItems.length >= pageSize; // 덜 받았으면 마지막 페이지
+        isInitialLoading = false;
+        isLoadingMore = false;
       });
     } catch (e) {
-      debugPrint('데이터 로드 실패: $e');
+      debugPrint('숙소 로드 실패: $e');
       setState(() {
-        accommodations = [];
-        isLoading = false;
+        isInitialLoading = false;
+        isLoadingMore = false;
+        hasMore = false;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<AccommodationProvider>();  // Provider 변화 감지
+    final provider = context.watch<AccommodationProvider>();
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: SearchBarWidget(
-          keyword: provider.keyword ?? "",
-          peopleCount: provider.guestNumber,
-          dateText: DatePeopleTextUtil.range(provider.checkIn, provider.checkOut),
+        keyword: provider.keyword ?? "",
+        peopleCount: provider.guestNumber,
+        dateText: DatePeopleTextUtil.range(provider.checkIn, provider.checkOut),
         onFilter: () async {
-          final result = await context.push(
-            '${RoutePaths.accommodationFilter}'
-          );
-
-          // 필터 적용했을 때 목록 재조회
+          final result = await context.push('${RoutePaths.accommodationFilter}');
           if (result == true) {
-            loadAccommodations();
+            _loadAccommodations(initial: true); // 필터 적용 → 초기화 후 재조회
           }
         },
         onBack: () {
-          // 각 Provider가 자신의 상태 초기화
           context.read<AccommodationProvider>().resetSearchData();
           context.read<FilterProvider>().resetFilters();
           Navigator.pop(context);
         },
         onClear: () {
-          // 각 Provider가 자신의 상태 초기화
           context.read<AccommodationProvider>().resetSearchData();
           context.read<FilterProvider>().resetFilters();
           Navigator.pop(context);
@@ -114,7 +134,7 @@ class _AccommodationResultScreen extends State<AccommodationResultScreen> {
   }
 
   Widget _buildBodyContent() {
-    if (isLoading) {
+    if (isInitialLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -123,30 +143,34 @@ class _AccommodationResultScreen extends State<AccommodationResultScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-                Icons.hotel_outlined,
-                size: 64,
-                color: Colors.grey[400]
-            ),
+            Icon(Icons.hotel_outlined, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
-            const Text(
-                '조건에 맞는 결과가 없습니다',
-                style: TextStyle(fontSize: 16)
-            ),
+            const Text('조건에 맞는 결과가 없습니다', style: TextStyle(fontSize: 16)),
           ],
         ),
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      itemCount: accommodations.length,
-      itemBuilder: (context, index) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: AccommodationCard(accommodation: accommodations[index]),
-        );
-      },
+    return RefreshIndicator(
+      onRefresh: () => _loadAccommodations(initial: true),
+      child: ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        itemCount: accommodations.length + (hasMore || isLoadingMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index == accommodations.length) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Center(child: CircularProgressIndicator(strokeWidth: 2.5)),
+            );
+          }
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: AccommodationCard(accommodation: accommodations[index]),
+          );
+        },
+      ),
     );
   }
 }

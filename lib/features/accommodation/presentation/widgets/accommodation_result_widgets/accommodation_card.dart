@@ -282,10 +282,7 @@ class _EmptyImagePlaceholder extends StatelessWidget {
 class AccommodationCard extends StatelessWidget {
   final AccommodationResponseModel accommodation;
 
-  const AccommodationCard({
-    super.key,
-    required this.accommodation,
-  });
+  const AccommodationCard({super.key, required this.accommodation});
 
   @override
   Widget build(BuildContext context) {
@@ -296,99 +293,83 @@ class AccommodationCard extends StatelessWidget {
     final address = accommodation.accommodationAddress ?? '주소 정보 없음';
     final minPrice = accommodation.minPrice;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: GestureDetector(
-        onTap: () {
-          final accommodationId = accommodation.accommodationId;
-          provider.setAccommodationInfo(
-            accommodationId ?? 0,
-            accommodation.accommodationName ?? '',
-          );
-          context.push('/accommodation-detail/$accommodationId');
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.07),
-                blurRadius: 12,
-                offset: const Offset(0, 3),
+    return GestureDetector(
+      onTap: () {
+        final id = accommodation.accommodationId;
+        provider.setAccommodationInfo(id ?? 0, name);
+        context.push('/accommodation-detail/$id');
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.07),
+              blurRadius: 12,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _HotelImages(accommodation: accommodation),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 12, 14, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    address,
+                    style: const TextStyle(fontSize: 13, color: Color(0xFF757575)),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 12),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        if (minPrice != null) ...[
+                          Text(
+                            priceFormat.format(minPrice),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFFE53935),
+                            ),
+                          ),
+                          const Text(
+                            '원 (1박)',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFFE53935),
+                            ),
+                          ),
+                        ] else
+                          const Text(
+                            '가격 정보 없음',
+                            style: TextStyle(fontSize: 15, color: Colors.grey, fontWeight: FontWeight.w500),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _HotelImages(accommodation: accommodation),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      address,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Color(0xFF757575),
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 12),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          if (minPrice != null) ...[
-                            Text(
-                              priceFormat.format(minPrice),
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                                color: Color(0xFFE53935),
-                              ),
-                            ),
-                            const Text(
-                              '원 (1박)',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFFE53935),
-                              ),
-                            ),
-                          ] else
-                            const Text(
-                              '가격 정보 없음',
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.grey,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
