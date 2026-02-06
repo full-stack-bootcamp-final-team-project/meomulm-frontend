@@ -18,7 +18,7 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("${notification.notificationId} : ${notification.isRead}");
+    debugPrint("${notification.notificationId} isRead : ${notification.isRead}");
     final bool isRead = notification.isRead;
     final unreadColor = const Color(0xFF007AFF);
     final backgroundColor = isRead ? AppColors.gray5 : Colors.white;
@@ -85,7 +85,7 @@ class NotificationCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    _formatDate(notification.createdAt),
+                    _formatRelativeTime(notification.createdAt),
                     style: const TextStyle(
                       fontSize: 12,
                       color: AppColors.gray2,
@@ -108,17 +108,32 @@ class NotificationCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(String dateStr) {
-    try {
-      final DateTime dt = DateTime.parse(dateStr);
-      final now = DateTime.now();
-      final difference = now.difference(dt);
+  String _formatRelativeTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final diff = now.difference(dateTime);
+    debugPrint("dateTime: $dateTime");
+    debugPrint("now: $now");
+    debugPrint("diff: $diff");
 
-      if (difference.inMinutes < 60) return '${difference.inMinutes}분 전';
-      if (difference.inHours < 24) return '${difference.inHours}시간 전';
-      return '${dt.month}월 ${dt.day}일';
-    } catch (e) {
-      return dateStr;
+    if (diff.isNegative) {
+      return '방금 전';
     }
+
+    if (diff.inSeconds < 60) {
+      return '방금 전';
+    }
+    if (diff.inMinutes < 60) {
+      return '${diff.inMinutes}분 전';
+    }
+    if (diff.inHours < 24) {
+      return '${diff.inHours}시간 전';
+    }
+    if (diff.inDays < 7) {
+      return '${diff.inDays}일 전';
+    }
+
+    final month = dateTime.month.toString().padLeft(2, '0');
+    final day = dateTime.day.toString().padLeft(2, '0');
+    return '$month월 $day일';
   }
 }
