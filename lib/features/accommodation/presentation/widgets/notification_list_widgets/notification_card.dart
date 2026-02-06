@@ -21,7 +21,7 @@ class NotificationCard extends StatelessWidget {
     debugPrint("${notification.notificationId} isRead : ${notification.isRead}");
     final bool isRead = notification.isRead;
     final unreadColor = const Color(0xFF007AFF);
-    final backgroundColor = isRead ? AppColors.gray5 : Colors.white;
+    final backgroundColor = isRead ? AppColors.gray5 : AppColors.white;
 
     return GestureDetector(
       onTap: () async {
@@ -42,7 +42,7 @@ class NotificationCard extends StatelessWidget {
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        margin: const EdgeInsets.only(bottom: 12), // Dismissible과 결합을 위해 Padding 대신 Margin 사용
+        margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: backgroundColor,
@@ -58,14 +58,13 @@ class NotificationCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 상태 아이콘 (Blue Dot)
             Container(
               margin: const EdgeInsets.only(top: 6, right: 12),
               width: 8,
               height: 8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isRead ? Colors.transparent : unreadColor,   // 읽었을 때 점을 아예 없애려면 Colors.transparent
+                color: isRead ? Colors.transparent : unreadColor,
               ),
             ),
 
