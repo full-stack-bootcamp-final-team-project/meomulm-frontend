@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_detail_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/notification_response_model.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_review_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/review_summary.dart';
 

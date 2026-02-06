@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_detail_model.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_review_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/review_summary.dart';
 
@@ -21,7 +21,7 @@ class AccommodationApiService {
 
 
 
-  static Future<List<SearchAccommodationResponseModel>> searchAccommodations({
+  static Future<List<AccommodationResponseModel>> searchAccommodations({
     required Map<String, dynamic> params,
   }) async {
     debugPrint("DB 조회 전 Provider 데이터 확인: $params");
@@ -36,7 +36,7 @@ class AccommodationApiService {
         return jsonList.map((json) {
           // 기존 디버깅 스타일 유지
           // debugPrint('숙소명: ${json['accommodationName']} / 최저가: ${json['minPrice']}');
-          return SearchAccommodationResponseModel.fromJson(json);
+          return AccommodationResponseModel.fromJson(json);
         }).toList();
       } else if (res.statusCode == 404) {
         return [];
@@ -55,7 +55,7 @@ class AccommodationApiService {
 
 
 
-  static Future<List<SearchAccommodationResponseModel>> getAccommodationByKeyword({
+  static Future<List<AccommodationResponseModel>> getAccommodationByKeyword({
     required String keyword,    // 사용자가 검색한 숙소명/지역
   }) async {
     try {
@@ -73,7 +73,7 @@ class AccommodationApiService {
           // [확인] 각 숙소 데이터가 들어올 때 이미지가 어떻게 생겼는지 출력
           // print('숙소명: ${json['accommodationName']} / 이미지데이터: ${json['accommodationImages']}');
 
-          return SearchAccommodationResponseModel.fromJson(json);
+          return AccommodationResponseModel.fromJson(json);
         }).toList();
       } else if (res.statusCode == 404) {
         return [];
@@ -144,7 +144,7 @@ class AccommodationApiService {
   }
 
   /// 최근 본 숙소 조회
-  Future<List<SearchAccommodationResponseModel>> getRecentAccommodations(
+  Future<List<AccommodationResponseModel>> getRecentAccommodations(
       List<int> ids) async {
     final response = await _dio.post(
       '/recent',
@@ -152,7 +152,7 @@ class AccommodationApiService {
     );
 
     return (response.data as List)
-        .map((e) => SearchAccommodationResponseModel.fromJson(e))
+        .map((e) => AccommodationResponseModel.fromJson(e))
         .toList();
   }
 }

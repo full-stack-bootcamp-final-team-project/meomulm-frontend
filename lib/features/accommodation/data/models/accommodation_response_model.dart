@@ -1,6 +1,6 @@
 import 'accommodation_image_model.dart';
 
-class SearchAccommodationResponseModel {
+class AccommodationResponseModel {
   final int accommodationId;
   final String accommodationName;
   final String accommodationAddress;
@@ -11,7 +11,7 @@ class SearchAccommodationResponseModel {
 
   final List<AccommodationImageModel>? accommodationImages;
 
-  SearchAccommodationResponseModel({
+  AccommodationResponseModel({
     required this.accommodationId,
     required this.accommodationName,
     required this.accommodationAddress,
@@ -22,9 +22,9 @@ class SearchAccommodationResponseModel {
     this.accommodationImages,
   });
 
-  factory SearchAccommodationResponseModel.fromJson(Map<String, dynamic> json) {
+  factory AccommodationResponseModel.fromJson(Map<String, dynamic> json) {
     try {
-      return SearchAccommodationResponseModel(
+      return AccommodationResponseModel(
         accommodationId: json['accommodationId'] as int,
         accommodationName: json['accommodationName'] as String,
         accommodationAddress: json['accommodationAddress'] as String,

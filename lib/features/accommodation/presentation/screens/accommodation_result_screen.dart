@@ -5,7 +5,7 @@ import 'package:meomulm_frontend/core/providers/filter_provider.dart';
 import 'package:meomulm_frontend/core/utils/date_people_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/search_bar_widget.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/accommodation_filter_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_result_widgets/accommodation_card.dart';
@@ -20,7 +20,7 @@ class AccommodationResultScreen extends StatefulWidget {
 }
 
 class _AccommodationResultScreen extends State<AccommodationResultScreen> {
-  List<SearchAccommodationResponseModel> accommodations = [];
+  List<AccommodationResponseModel> accommodations = [];
   bool isLoading = true;
 
   @override

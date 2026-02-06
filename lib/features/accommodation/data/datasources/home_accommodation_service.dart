@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:meomulm_frontend/core/constants/paths/api_paths.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 
 class HomeAccommodationService {
   // dio 인스턴스 셋팅
@@ -17,7 +17,7 @@ class HomeAccommodationService {
   );
 
   // 숙소 HOT
-  Future<List<SearchAccommodationResponseModel>> getAccommodationPopularByAddress(String accommodationAddress) async {
+  Future<List<AccommodationResponseModel>> getAccommodationPopularByAddress(String accommodationAddress) async {
     try {
       final response = await _dio.get(
         '/popular',
@@ -26,7 +26,7 @@ class HomeAccommodationService {
         },
       );
       final List<dynamic> data = response.data;
-      return data.map((json) => SearchAccommodationResponseModel.fromJson(json)).toList();
+      return data.map((json) => AccommodationResponseModel.fromJson(json)).toList();
     } catch(e) {
       debugPrint('HOT $accommodationAddress 숙소 목록 로드 실패: $e');
       return [];
