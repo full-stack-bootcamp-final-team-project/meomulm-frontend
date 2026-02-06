@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_message.dart';
+import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_message_model.dart';
 import 'package:meomulm_frontend/features/chat/presentation/widgets/chat_bubble.dart';
 import 'package:meomulm_frontend/features/chat/presentation/widgets/empty_message.dart';
 

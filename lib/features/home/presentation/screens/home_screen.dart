@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // 광고영역 데이터 - 팀원 정보 TODO 이미지 변경 필요
   static final List<Map<String, String>> ADItems = [
-    {"title": "박세원", "url": "https://github.com/svv0003", "imageUrl": "assets/images/ad/ad_svv0003.png"},
+    {"title": "박세원", "url": "https://github.com/svv0003", "imageUrl": "assets/images/ad/ad_svv0003.gif"},
     {"title": "박형빈", "url": "https://github.com/PHB-1994", "imageUrl": "assets/images/ad/ad_PHB-1994.png"},
     {"title": "유기태", "url": "https://github.com/tiradovi", "imageUrl": "assets/images/ad/ad_tiradovi.png"},
     {"title": "오유성", "url": "https://github.com/Emma10003", "imageUrl": "assets/images/ad/ad_Emma10003.png"},

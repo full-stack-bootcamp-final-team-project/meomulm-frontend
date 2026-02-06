@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
-import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_message.dart';
+import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_message_model.dart';
 import 'package:meomulm_frontend/features/chat/presentation/widgets/chat_message_bubble.dart';
 import 'package:meomulm_frontend/features/chat/presentation/widgets/chat_message_time.dart';
 
@@ -12,7 +12,7 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isUser = message.isUser;
+    final isUser = message.isUserMessage;
 
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.sm),
@@ -24,14 +24,14 @@ class ChatBubble extends StatelessWidget {
         // 메세지 주체에 따라 위젯 순서 분기
         children: isUser
             ? [ // 본인 메세지용
-                ChatMessageTime(time: message.time),
+                ChatMessageTime(time: message.createdAt),
                 const SizedBox(width: AppSpacing.xs),
                 ChatMessageBubble(message: message, isUser: true),
               ]
             : [ // 봇 메세지용
                 ChatMessageBubble(message: message, isUser: false),
                 const SizedBox(width: AppSpacing.xs),
-                ChatMessageTime(time: message.time),
+                ChatMessageTime(time: message.createdAt),
               ],
       )
     );

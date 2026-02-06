@@ -1,7 +1,7 @@
+import 'dart:ffi';
+
 import 'package:dio/dio.dart';
-import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_message.dart';
-import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_request.dart';
-import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_response.dart';
+import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_message_model.dart';
 
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 
@@ -15,15 +15,16 @@ class ChatService {
   ));
 
   /// 백엔드 서버로 메시지를 보내고 응답을 받는 함수
-  static Future<ChatResponse> sendMessage(ChatRequest request) async {
+  static Future<ChatMessage> sendMessage(String token, String message) async {
     try {
       final response = await _dio.post(
         '/message',
-        data: request.toJson(),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        data: message,
       );
 
       if (response.statusCode == 200) {
-        return ChatResponse.fromJson(response.data);
+        return ChatMessage.fromJson(response.data);
       } else {
         throw Exception('서버 응답 오류: ${response.statusCode}');
       }
@@ -34,7 +35,7 @@ class ChatService {
   }
 
   // 방 목록을 가져옴
-  static Future<List<ChatResponse>> getUserConversations(String token) async {
+  static Future<List<ChatMessage>> getUserConversations(String token) async {
     try {
       final response = await _dio.get(
         '/conversations',
@@ -42,14 +43,14 @@ class ChatService {
       );
 
       final List<dynamic> data = response.data;
-      return data.map((json) => ChatResponse.fromJson(json)).toList();
+      return data.map((json) => ChatMessage.fromJson(json)).toList();
     } catch (e) {
       throw Exception('방 목록 로드 실패: $e');
     }
   }
 
   /// 메시지 내역을 가져옴
-  static Future<List<ChatMessage>> getChatHistory(int conversationId, String token) async {
+  static Future<List<ChatMessage>> getChatHistory(Long conversationId, String token) async {
     try {
       final response = await _dio.get('/conversations/$conversationId',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
