@@ -9,7 +9,7 @@ class SearchAccommodationResponseModel {
   final String categoryCode;
   final int minPrice;
 
-  final List<AccommodationImage>? accommodationImages;
+  final List<AccommodationImageModel>? accommodationImages;
 
   SearchAccommodationResponseModel({
     required this.accommodationId,
@@ -37,7 +37,7 @@ class SearchAccommodationResponseModel {
         accommodationImages: json['accommodationImages'] != null
             ? (json['accommodationImages'] as List<dynamic>)
             .map((e) =>
-            AccommodationImage.fromJson(e as Map<String, dynamic>))
+            AccommodationImageModel.fromJson(e as Map<String, dynamic>))
             .toList()
             : null,
       );

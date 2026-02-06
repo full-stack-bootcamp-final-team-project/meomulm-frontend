@@ -34,8 +34,8 @@ class AccommodationDetailScreen extends StatefulWidget {
 
 class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
   bool isLoading = true;
-  AccommodationDetail? accommodation;
-  ReviewSummary? reviewSummary;
+  AccommodationDetailModel? accommodation;
+  ReviewSummaryModel? reviewSummary;
   bool isFavorite = false;
 
 
@@ -77,8 +77,8 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
       // =================================================================
 
       setState(() {
-        accommodation = results[0] as AccommodationDetail?;
-        reviewSummary = results[1] as ReviewSummary?;
+        accommodation = results[0] as AccommodationDetailModel?;
+        reviewSummary = results[1] as ReviewSummaryModel?;
         isLoading = false;
 
         // ← 여기에 추가. provider에 ID 저장

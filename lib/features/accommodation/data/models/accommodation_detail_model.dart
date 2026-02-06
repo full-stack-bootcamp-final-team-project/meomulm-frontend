@@ -1,4 +1,4 @@
-class AccommodationDetail {
+class AccommodationDetailModel {
   final int accommodationId;
   final String accommodationName;
   final String accommodationAddress;
@@ -21,7 +21,7 @@ class AccommodationDetail {
   // 이미지 리스트
   final List<AccommodationImage> accommodationImages;
 
-  AccommodationDetail({
+  AccommodationDetailModel({
     required this.accommodationId,
     required this.accommodationName,
     required this.accommodationAddress,
@@ -41,8 +41,8 @@ class AccommodationDetail {
     required this.accommodationImages,
   });
 
-  factory AccommodationDetail.fromJson(Map<String, dynamic> json) {
-    return AccommodationDetail(
+  factory AccommodationDetailModel.fromJson(Map<String, dynamic> json) {
+    return AccommodationDetailModel(
       accommodationId: json['accommodationId'] ?? 0,
       accommodationName: json['accommodationName'] ?? '',
       accommodationAddress: json['accommodationAddress'] ?? '',
