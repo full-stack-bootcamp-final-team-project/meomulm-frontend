@@ -284,8 +284,7 @@ class _MypageChangePasswordScreenState
           height: 100,
           child: BottomActionButton(
             label: ButtonLabels.edit,
-            onPressed: _onSubmit,
-            // TODO: enabled 표시 - enabled: isSubmittable,
+            onPressed: isSubmittable ? _onSubmit : null,
           ),
         )
       ),

@@ -58,7 +58,6 @@ class _ReservationChangeDialogState extends State<ReservationChangeDialog> {
     super.dispose();
   }
 
-  // TODO: 유효성 검사를 통해 submittable 검증하는 함수
   void submitCheck () {
     final nameResult = RegexpUtils.validateName(_nameCtrl.text.trim());
     final emailResult = RegexpUtils.validateEmail(_emailCtrl.text.trim());
