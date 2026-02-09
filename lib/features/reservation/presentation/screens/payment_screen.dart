@@ -253,8 +253,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
   // ─────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    final reservationProvider = context.watch<ReservationProvider>();
-    final accommodation = context.watch<AccommodationProvider>();
+    final reservationProvider = context.read<ReservationProvider>();
+    final accommodation = context.read<AccommodationProvider>();
     final reservationInfo = reservationProvider.reservation;
     final accommodationName = accommodation.selectedAccommodationName;
 
