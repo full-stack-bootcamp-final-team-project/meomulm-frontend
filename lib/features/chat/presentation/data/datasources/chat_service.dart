@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:dio/dio.dart';
 import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_message_model.dart';
 
@@ -34,7 +32,9 @@ class ChatService {
     }
   }
 
-  // 방 목록을 가져옴
+  /// 비로그인 시 방 만들어야 해
+
+  /// 방 목록을 가져옴
   static Future<List<ChatMessage>> getUserConversations(String token) async {
     try {
       final response = await _dio.get(
@@ -50,7 +50,7 @@ class ChatService {
   }
 
   /// 메시지 내역을 가져옴
-  static Future<List<ChatMessage>> getChatHistory(Long conversationId, String token) async {
+  static Future<List<ChatMessage>> getChatHistory(int conversationId, String token) async {
     try {
       final response = await _dio.get('/conversations/$conversationId',
         options: Options(headers: {'Authorization': 'Bearer $token'}),

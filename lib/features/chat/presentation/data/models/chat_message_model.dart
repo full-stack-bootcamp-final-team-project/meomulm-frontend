@@ -1,8 +1,8 @@
 import 'dart:ffi';
 
 class ChatMessage {
-  final Long chatMessagesId;
-  final Long conversationId;
+  final int chatMessagesId;
+  final int conversationId;
   // 메세지
   final String message;
   // 유저/봇 여부 확인
@@ -20,8 +20,8 @@ class ChatMessage {
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
-      chatMessagesId: json['chatMessagesId'] as Long,
-      conversationId: json['conversationId'] as Long,
+      chatMessagesId: json['chatMessagesId'] as int,
+      conversationId: json['conversationId'] as int,
       message: json['message'] ?? '',
       isUserMessage: json['isUserMessage'] ?? false,
       createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : DateTime.now(),

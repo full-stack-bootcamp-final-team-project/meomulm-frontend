@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
@@ -44,6 +42,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     if (!auth.isLoggedIn || auth.token == null) {
       print("로그인 상태가 아니어서 이력을 불러오지 않습니다.");
+      // TODO 방 만들기 (비로그인)
       return;
     }
 
@@ -56,7 +55,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
 
       if (rooms.isNotEmpty) {
-        final Long targetConversationId = rooms[0].conversationId;
+        final int targetConversationId = rooms[0].conversationId;
 
         // 메세지 가져오기
         final List<ChatMessage> history = await ChatService.getChatHistory(
