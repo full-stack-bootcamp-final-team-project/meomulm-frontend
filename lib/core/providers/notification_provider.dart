@@ -14,20 +14,23 @@ class NotificationProvider extends ChangeNotifier {
   void connect(String token) {
     NotificationApiService.setupInterceptors(token);
 
-    // 이미 연결된 상태라면 재연결 방지한다.
     if (stompClient != null && stompClient!.isActive) return;
 
     stompClient = StompClient(
       config: StompConfig(
-        url: 'ws://https://meomulm-backend.onrender.com/ws/websocket',   // iOS 시뮬레이터 -> localhost
+        url: 'wss://meomulm-backend.onrender.com/ws-native',
         onConnect: (frame) => _onConnect(frame, token),
-        reconnectDelay: const Duration(seconds: 3),
+        onWebSocketError: (error) => print("❌ 웹소켓 에러: $error"),
+        onStompError: (frame) => print("❌ STOMP 에러: ${frame.body}"),
+        onDebugMessage: (msg) => print("STOMP 디버그: $msg"),
+        reconnectDelay: const Duration(seconds: 30),
         stompConnectHeaders: {'Authorization': 'Bearer $token'},
-        onWebSocketError: (error) => print("웹소켓 에러: $error"),
-        onDebugMessage: (msg) => print("STOMP 디버그: $msg"), // 상세 로그 확인용
+        webSocketConnectHeaders: {'Authorization': 'Bearer $token'},
       ),
     );
+
     stompClient?.activate();
+    print("🔄 WebSocket 연결 시도 중...");
   }
 
   void disconnect() {
@@ -73,7 +76,8 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   void showOverlayNotification(Map<String, dynamic> data) {
-    final OverlayState? overlayState = AppRouter.navigatorKey.currentState?.overlay;
+    final OverlayState? overlayState =
+        AppRouter.navigatorKey.currentState?.overlay;
 
     if (overlayState == null) {
       print("⚠️ 오버레이를 찾을 수 없습니다.");
@@ -96,7 +100,9 @@ class NotificationProvider extends ChangeNotifier {
           onRead: (id) async {
             try {
               if (id != 0) {
-                await NotificationApiService.updateNotificationStatus(notificationId: id);
+                await NotificationApiService.updateNotificationStatus(
+                  notificationId: id,
+                );
                 print("🆗 ID: $id 알림 읽음 처리 완료");
               }
             } catch (e) {
