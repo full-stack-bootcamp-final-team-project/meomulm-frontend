@@ -269,11 +269,6 @@ class AppRouter {
               return EditProfileScreen(user: user);
             },
           ),
-          // GoRoute(
-          //   path: RoutePaths.myReservation,
-          //   name: "myReservation",
-          //   builder: (context, state) => const MyReservationsScreen(),
-          // ),
           GoRoute(
             path: RoutePaths.myReservation,
             name: "myReservation",

@@ -54,11 +54,6 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
       final token = context.read<AuthProvider>().token;
       if(token == null) return;
       await context.read<MyReservationProvider>().loadReservations(token);
-      // // TODO: 디버깅 후 삭제
-      // print('reservations count: ${reservations.length}');
-      // for (final r in reservations) {
-      //   print('status=${r.status}, id=${r.reservationId}');
-      // }
 
     });
   }

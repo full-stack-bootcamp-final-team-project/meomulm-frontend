@@ -4,9 +4,6 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/button_widgets.dart';
 
 class BottomActionButton extends StatelessWidget {
-  // TODO: VoidCallback onPressed로 교체
-  // TODO: bool enable 받아오기
-  // TODO: ElevatedButton -> LargeButton으로 교체
   final String label;
   final VoidCallback? onPressed;
 

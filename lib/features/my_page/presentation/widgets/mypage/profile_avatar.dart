@@ -63,7 +63,6 @@ class ProfileAvatar extends StatelessWidget {
                     onTap: onCameraTap,
                     child: Container(
                       padding: const EdgeInsets.all(6),
-                      // TODO: 공통상수로 변경하기
                       decoration: BoxDecoration(
                         color: AppColors.gray5,
                         shape: BoxShape.circle,

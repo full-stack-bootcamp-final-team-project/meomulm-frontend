@@ -19,7 +19,7 @@ class NotificationProvider extends ChangeNotifier {
 
     stompClient = StompClient(
       config: StompConfig(
-        url: 'ws://localhost:8080/ws/websocket',   // iOS 시뮬레이터 -> localhost
+        url: 'ws://https://meomulm-backend.onrender.com/ws/websocket',   // iOS 시뮬레이터 -> localhost
         onConnect: (frame) => _onConnect(frame, token),
         reconnectDelay: const Duration(seconds: 3),
         stompConnectHeaders: {'Authorization': 'Bearer $token'},

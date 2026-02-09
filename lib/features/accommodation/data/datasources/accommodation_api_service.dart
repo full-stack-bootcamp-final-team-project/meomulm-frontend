@@ -112,7 +112,7 @@ class AccommodationApiService {
 
   static Future<ReviewSummaryModel?> getReviewSummary(int accommodationId) async {
     try {
-      final res = await _dio.get('/reviews/summary/${accommodationId}');
+      final res = await _dio.get('/review/summary/${accommodationId}');
 
       if (res.statusCode == 200) {
         return ReviewSummaryModel.fromJson(res.data);
