@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class ChatMessage {
   final int chatMessagesId;
   final int conversationId;

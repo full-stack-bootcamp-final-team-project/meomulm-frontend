@@ -30,28 +30,48 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    // 화면 시작 시 대화 이력 불러오기
-    _loadChatHistory();
+    _initChat();
+
+    // // 화면 시작 시 대화 이력 불러오기
+    // _loadChatHistory();
+  }
+
+  /// 최초 진입 시 로그인 / 미로그인 분기
+  Future<void> _initChat() async {
+    final auth = context.read<AuthProvider>();
+    final token = auth.token;
+
+    if (!auth.isLoggedIn || token == null) {
+      _initGuestChat();
+    } else {
+      await _loadChatHistory(token!);
+    }
+  }
+
+  /// 미로그인 기본 상태
+  void _initGuestChat() {
+    setState(() {
+      messages = [
+        ChatMessage(
+          chatMessagesId: -1,
+          conversationId: -1,
+          message: '안녕하세요 😊\n로그인 없이도 간단한 질문은 가능해요!',
+          isUserMessage: false,
+          createdAt: DateTime.now(),
+        ),
+      ];
+    });
+    _scrollToBottom();
   }
 
   /// 대화 이력 로드 함수
-  Future<void> _loadChatHistory() async {
-    if (!mounted) return;
-
-    final auth = context.read<AuthProvider>();
-
-    if (!auth.isLoggedIn || auth.token == null) {
-      print("로그인 상태가 아니어서 이력을 불러오지 않습니다.");
-      // TODO 방 만들기 (비로그인)
-      return;
-    }
-
+  Future<void> _loadChatHistory(String token) async {
     setState(() => loading = true);
 
     try {
       // 방 가져오기
       final List<ChatMessage> rooms = await ChatService.getUserConversations(
-        auth.token!,
+        token!,
       );
 
       if (rooms.isNotEmpty) {
@@ -60,7 +80,7 @@ class _ChatScreenState extends State<ChatScreen> {
         // 메세지 가져오기
         final List<ChatMessage> history = await ChatService.getChatHistory(
           targetConversationId,
-          auth.token!,
+          token!,
         );
 
         setState(() {
@@ -110,7 +130,7 @@ class _ChatScreenState extends State<ChatScreen> {
       // 로그인 안 할 때
       final token = context.read<AuthProvider>().token;
 
-      if (token != null || token!.isNotEmpty) {
+      if (token != null && token!.isNotEmpty) {
         // Gemini API -> 백엔드 서버로 요청
         final response = await ChatService.sendMessage(token, text.trim());
 
