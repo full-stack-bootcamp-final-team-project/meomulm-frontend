@@ -18,69 +18,38 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController inputController = TextEditingController();
-
-  // 스크롤 컨트롤러
   final ScrollController _scrollController = ScrollController();
-
-  // 대화 리스트
   List<ChatMessage> messages = [];
-
   bool loading = false;
 
   @override
   void initState() {
     super.initState();
-    _initChat();
-
-    // // 화면 시작 시 대화 이력 불러오기
-    // _loadChatHistory();
+    _loadChatHistory();
   }
 
-  /// 최초 진입 시 로그인 / 미로그인 분기
-  Future<void> _initChat() async {
+  Future<void> _loadChatHistory() async {
+    if (!mounted) return;
+
     final auth = context.read<AuthProvider>();
-    final token = auth.token;
 
-    if (!auth.isLoggedIn || token == null) {
-      _initGuestChat();
-    } else {
-      await _loadChatHistory(token!);
+    if (!auth.isLoggedIn || auth.token == null) {
+      print("비로그인 상태 - 새로운 대화 시작");
+      return;
     }
-  }
 
-  /// 미로그인 기본 상태
-  void _initGuestChat() {
-    setState(() {
-      messages = [
-        ChatMessage(
-          chatMessagesId: -1,
-          conversationId: -1,
-          message: '안녕하세요 😊\n로그인 없이도 간단한 질문은 가능해요!',
-          isUserMessage: false,
-          createdAt: DateTime.now(),
-        ),
-      ];
-    });
-    _scrollToBottom();
-  }
-
-  /// 대화 이력 로드 함수
-  Future<void> _loadChatHistory(String token) async {
     setState(() => loading = true);
 
     try {
-      // 방 가져오기
       final List<ChatMessage> rooms = await ChatService.getUserConversations(
-        token!,
+        auth.token!,
       );
 
       if (rooms.isNotEmpty) {
         final int targetConversationId = rooms[0].conversationId;
-
-        // 메세지 가져오기
         final List<ChatMessage> history = await ChatService.getChatHistory(
           targetConversationId,
-          token!,
+          auth.token!,
         );
 
         setState(() {
@@ -101,7 +70,6 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  // 메시지 추가 후 자동 스크롤
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_scrollController.hasClients) return;
@@ -114,63 +82,136 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  // 메세지 보내기
   void sendMessage() async {
-    String text = inputController.text;
+    String text = inputController.text.trim();
     if (text.isEmpty) return;
 
+    final auth = context.read<AuthProvider>();
+    final token = auth.isLoggedIn ? auth.token : null;
+    final isLoggedIn = token != null && token.isNotEmpty;
+
+    print(isLoggedIn
+        ? "로그인 사용자 메시지 전송"
+        : "비로그인 사용자 메시지 전송 (DB 저장 안됨)");
+
+    // 1. 사용자 메시지를 먼저 화면에 추가
+    final userMessage = ChatMessage(
+      chatMessagesId: 0,
+      conversationId: messages.isNotEmpty ? messages[0].conversationId : 0,
+      message: text,
+      isUserMessage: true,
+      createdAt: DateTime.now(),
+    );
+
     setState(() {
+      messages.add(userMessage);
       loading = true;
     });
+
+    inputController.clear();
     _scrollToBottom();
 
-    inputController.clear(); // 메세지 보낸 후 input 창 비우기
-
     try {
-      // 로그인 안 할 때
-      final token = context.read<AuthProvider>().token;
+      print('메시지 전송: $text');
+      final response = await ChatService.sendMessage(token, text);
+      print('응답 받음: ${response.message}');
 
-      if (token != null && token!.isNotEmpty) {
-        // Gemini API -> 백엔드 서버로 요청
-        final response = await ChatService.sendMessage(token, text.trim());
+      setState(() {
+        messages.add(
+          ChatMessage(
+            chatMessagesId: response.chatMessagesId,
+            conversationId: response.conversationId,
+            message: response.message,
+            isUserMessage: response.isUserMessage,
+            createdAt: response.createdAt,
+          ),
+        );
+        loading = false;
+      });
+      _scrollToBottom();
+    } catch (e) {
+      print('메시지 전송 실패: $e');
 
+      // 비로그인 사용자를 위한 임시 폴백 응답
+      if (!isLoggedIn) {
         setState(() {
-          // 5. 응답 메세지
           messages.add(
             ChatMessage(
-              chatMessagesId: response.chatMessagesId,
-              conversationId: response.conversationId,
-              message: response.message,
-              isUserMessage: response.isUserMessage,
-              createdAt: response.createdAt,
+              chatMessagesId: 0,
+              conversationId: 0,
+              message: '안녕하세요! 머묾 챗봇입니다.\n\n'
+                  '현재 게스트 모드에서는 일부 기능이 제한됩니다.\n'
+                  '완전한 기능을 이용하시려면 로그인해주세요.\n\n'
+                  '숙소 예약이나 문의사항이 있으시면 언제든 말씀해주세요.',
+              isUserMessage: false,
+              createdAt: DateTime.now(),
             ),
           );
           loading = false;
         });
         _scrollToBottom();
-      } else {
-        loading = false;
-        _scrollToBottom();
+
+        // 에러 메시지는 표시하지 않음 (사용자 경험 개선)
+        return;
       }
-    } catch (e) {
+
+      // 로그인 사용자의 경우 에러 처리
       setState(() {
         loading = false;
+        messages.removeLast(); // 사용자 메시지 제거
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('오류 : $e')));
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('메시지 전송 실패: 서버 연결을 확인해주세요'),
+            backgroundColor: Colors.red.shade400,
+          ),
+        );
+      }
     }
   }
 
   @override
+  void dispose() {
+    inputController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+    final isLoggedIn = auth.isLoggedIn;
+
     return Scaffold(
       appBar: const AppBarWidget(title: TitleLabels.chat),
       body: Column(
         children: [
-          // 메세지 리스트
+          // 비로그인 사용자 안내 메시지
+          if (!isLoggedIn)
+            Container(
+              padding: const EdgeInsets.all(12),
+              color: Colors.amber.shade50,
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, size: 16, color: Colors.amber.shade800),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '게스트 모드입니다. 로그인하시면 대화 내역이 저장됩니다.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.amber.shade900,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // 메시지 리스트
           Expanded(
-            // 메세지 기록들을 전달
             child: MessageList(
               messages: messages,
               scrollController: _scrollController,
@@ -181,7 +222,7 @@ class _ChatScreenState extends State<ChatScreen> {
           if (loading) const LoadingIndicator(),
         ],
       ),
-      // TODO 입력창
+      // 입력창
       bottomNavigationBar: SafeArea(
         child: MessageInput(
           controller: inputController,
