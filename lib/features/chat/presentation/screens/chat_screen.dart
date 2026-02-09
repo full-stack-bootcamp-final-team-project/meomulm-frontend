@@ -34,7 +34,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final auth = context.read<AuthProvider>();
 
     if (!auth.isLoggedIn || auth.token == null) {
-      print("비로그인 상태 - 새로운 대화 시작");
+      print("비로그인 상태 -  새로운 대화 시작");
       return;
     }
 

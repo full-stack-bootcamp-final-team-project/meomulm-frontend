@@ -12,7 +12,7 @@ class ChatService {
     responseType: ResponseType.json,
   ));
 
-  /// 백엔드 서버로 메시지를 보내고 응답을 받는 함수 (로그인/비로그인 모두 지원)
+  /// 백엔드 서버로 메시지를 보내고 응답을 받는 함수  (로그인/비로그인 모두 지원)
   /// [token] 로그인 시 토큰 (선택적)
   /// [message] 전송할 메시지
   static Future<ChatMessage> sendMessage(String? token, String message) async {

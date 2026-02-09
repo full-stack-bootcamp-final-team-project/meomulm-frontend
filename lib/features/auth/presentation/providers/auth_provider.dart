@@ -109,7 +109,7 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// 토큰 만료까지 남은 시간 (디버깅용)
+  /// 토큰 만료까지 남은 시간 ( 디버깅용 )
   String? getTokenExpiryInfo() {
     if (_token == null) return null;
 
