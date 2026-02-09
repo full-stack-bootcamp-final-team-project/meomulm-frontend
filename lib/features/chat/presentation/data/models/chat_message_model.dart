@@ -1,7 +1,7 @@
 import 'dart:ffi';
 
 class ChatMessage {
-  final Long chatMessageId;
+  final Long chatMessagesId;
   final Long conversationId;
   // 메세지
   final String message;
@@ -11,7 +11,7 @@ class ChatMessage {
   final DateTime createdAt;
 
   ChatMessage({
-    required this.chatMessageId,
+    required this.chatMessagesId,
     required this.conversationId,
     required this.message,
     required this.isUserMessage,
@@ -20,7 +20,7 @@ class ChatMessage {
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) {
     return ChatMessage(
-      chatMessageId: json['chatMessageId'] as Long,
+      chatMessagesId: json['chatMessagesId'] as Long,
       conversationId: json['conversationId'] as Long,
       message: json['message'] ?? '',
       isUserMessage: json['isUserMessage'] ?? false,

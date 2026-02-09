@@ -119,7 +119,7 @@ class _ChatScreenState extends State<ChatScreen> {
           // 5. 응답 메세지
           messages.add(
             ChatMessage(
-              chatMessageId: response.chatMessageId,
+              chatMessagesId: response.chatMessagesId,
               conversationId: response.conversationId,
               message: response.message,
               isUserMessage: response.isUserMessage,
