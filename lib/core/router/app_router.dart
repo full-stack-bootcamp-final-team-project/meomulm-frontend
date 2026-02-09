@@ -37,9 +37,9 @@ import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:provider/provider.dart';
 
 class AppRouter {
-
   // ✅ 전역 navigatorKey 추가
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   // ---------------------------------------------------------------
   // deeplink에서 받은 초기 경로를 저장하는 정적 변수
@@ -69,27 +69,12 @@ class AppRouter {
     return null; // 매칭되지 않는 경로
   }
 
-
-
-
-
-
-
-
-
-
-
   static final GoRouter router = GoRouter(
-
     navigatorKey: navigatorKey, // ✅ Key 등록
-
-
     // ----------------------------------------------------------------
     // initialLocation: pendingDeepLink가 있으면 그것을 사용, 아니면 /intro
     // ----------------------------------------------------------------
     initialLocation: pendingDeepLink ?? '/intro',
-
-
 
     redirect: (context, state) {
       final auth = context.read<AuthProvider>();
@@ -157,7 +142,7 @@ class AppRouter {
           final idString = state.pathParameters['userId'];
           final userId = int.tryParse(idString ?? '');
           return LoginChangePasswordScreen(userId: userId!);
-        }
+        },
       ),
 
       /// =====================
@@ -194,9 +179,7 @@ class AppRouter {
               body: Center(child: Text('숙소 ID가 유효하지 않습니다')),
             );
           }
-          return AccommodationReviewScreen(
-            accommodationId: accommodationId,
-          );
+          return AccommodationReviewScreen(accommodationId: accommodationId);
         },
       ),
       GoRoute(
@@ -210,9 +193,7 @@ class AppRouter {
               body: Center(child: Text('숙소 ID가 유효하지 않습니다')),
             );
           }
-          return AccommodationDetailScreen(
-            accommodationId: accommodationId,
-          );
+          return AccommodationDetailScreen(accommodationId: accommodationId);
         },
       ),
       GoRoute(
@@ -242,14 +223,11 @@ class AppRouter {
         builder: (context, state) => const MapSearchRegionScreen(),
       ),
 
-
       GoRoute(
         path: RoutePaths.mapSearchResult,
         builder: (context, state) {
           final region = state.extra as String;
-          return MapSearchResultScreen(
-            region: region,
-          );
+          return MapSearchResultScreen(region: region);
         },
       ),
 
@@ -274,8 +252,11 @@ class AppRouter {
             name: "myReservation",
             builder: (context, state) {
               // URL에서 tab 파라미터 추출
-              final tabIndex = int.tryParse(state.uri.queryParameters['tab'] ?? '0') ?? 0;
-              return MyReservationsScreen(initialTab: tabIndex); // initialTab 추가
+              final tabIndex =
+                  int.tryParse(state.uri.queryParameters['tab'] ?? '0') ?? 0;
+              return MyReservationsScreen(
+                initialTab: tabIndex,
+              ); // initialTab 추가
             },
           ),
           GoRoute(
@@ -288,7 +269,7 @@ class AppRouter {
             name: "myReviewWrite",
             builder: (context, state) {
               final reservation = state.extra as ReservationShareModel;
-              return MyReviewWriteScreen(reservationShare: reservation,);
+              return MyReviewWriteScreen(reservationShare: reservation);
             },
           ),
           GoRoute(
