@@ -31,6 +31,7 @@ class ReviewService {
         ),
       );
       List<dynamic> data = response.data;
+      print('data: $data');
       return data.map((json) => ReviewResponseModel.fromJson(json)).toList();
     } catch (e) {
       print('리뷰 조회 실패: $e');

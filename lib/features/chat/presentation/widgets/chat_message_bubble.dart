@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
-import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_message.dart';
+import 'package:meomulm_frontend/features/chat/presentation/data/models/chat_message_model.dart';
 
 // 메세지 말풍선
 class ChatMessageBubble extends StatelessWidget {
