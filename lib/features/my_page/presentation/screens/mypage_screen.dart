@@ -48,7 +48,7 @@ class _MypageScreenState extends State<MypageScreen> {
       if (token != null) {
         context.read<UserProfileProvider>().loadUserProfile(token);
       } else {
-        context.go(ApiPaths.loginUrl);
+        context.go(RoutePaths.login);
       }
     });
   }
@@ -158,20 +158,40 @@ class _MypageScreenState extends State<MypageScreen> {
   @override
   Widget build(BuildContext context) {
     // provider  가져오기
+    final auth = context.watch<AuthProvider>();
     final provider = context.watch<UserProfileProvider>();
 
     final screenWidth = MediaQuery.of(context).size.width;
     final maxWidth = screenWidth > 600 ? screenWidth : double.infinity;
 
-
+    // 토큰이 없는 경우
+    if(auth.token == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        context.go(RoutePaths.login);
+      });
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    
+    // 토큰은 있는데 프로필 로딩 중인 경우
     if(provider.isLoading) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator())
+          body: Center(child: CircularProgressIndicator())
       );
     }
 
     // 유저 정보 가져오기
-    final user = provider.user!;
+    final user = provider.user;
+    // 로딩이 끝났는데  user가 null인 경우
+    if(user == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.go(RoutePaths.login);
+      });
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       backgroundColor: AppColors.white,
