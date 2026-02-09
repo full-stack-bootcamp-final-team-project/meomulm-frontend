@@ -1,4 +1,4 @@
-package com.meomulm.meomulm_frontend
+package com.meomulm.app
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 
