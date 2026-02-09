@@ -1,12 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.meomulm.meomulm_frontend">
+          package="com.meomulm.app">
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
-            android:label="meomulm_frontend"
+            android:label="app"
             android:name="${applicationName}"
             android:icon="@mipmap/meomulm"
             android:enableOnBackInvokedCallback="true"

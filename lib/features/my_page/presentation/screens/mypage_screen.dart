@@ -163,7 +163,7 @@ class _MypageScreenState extends State<MypageScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     final maxWidth = screenWidth > 600 ? screenWidth : double.infinity;
 
-    // TODO: 공통 로딩 UI가 있으면 변경하기
+
     if(provider.isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator())

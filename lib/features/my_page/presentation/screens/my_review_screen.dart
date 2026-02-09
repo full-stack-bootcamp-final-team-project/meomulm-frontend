@@ -57,7 +57,7 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
       if(e.response?.statusCode == 404) {
         return;
       }
-      // TODO: 공통 에러 페이지가 있으면 교체
+
       setState(() => isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("오류: $e")),
@@ -75,7 +75,6 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
       final reviewService = ReviewService();
       final token = context.read<AuthProvider>().token;
       if(token == null) {
-        // TODO: 로그인 만료 처리
         return;
       }
       final result = await reviewService.deleteReview(token, reviewId);
@@ -83,7 +82,6 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
         context.read<ReviewProvider>().removeReview(reviewId);
       }
     } catch (e) {
-      // TODO: 공통 에러 페이지가 있으면 교체
     } finally {
       setState(() => isLoading = false);
     }

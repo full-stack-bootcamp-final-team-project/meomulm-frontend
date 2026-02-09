@@ -15,7 +15,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.meomulm.meomulm_frontend"
+    namespace = "com.meomulm.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -45,7 +45,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.meomulm.meomulm_frontend"
+        applicationId = "com.meomulm.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

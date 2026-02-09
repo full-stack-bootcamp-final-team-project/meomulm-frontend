@@ -26,6 +26,7 @@ class MyLocationButton extends StatelessWidget {
             bottom: hasSelectedAccommodation ? 380.0 : 16.0,
           ),
           child: FloatingActionButton(
+            heroTag: "mapLocationFab",
             onPressed: onPressed,
             backgroundColor: AppColors.white,
             foregroundColor: AppColors.gray1,
