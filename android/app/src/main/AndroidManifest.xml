@@ -6,11 +6,11 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
-            android:label="app"
+            android:label="@string/app_name"
             android:name="${applicationName}"
             android:icon="@mipmap/meomulm"
             android:enableOnBackInvokedCallback="true"
-            android:theme="@style/NormalTheme"> <!-- ✅ 앱 전체 테마 적용 -->
+            android:theme="@style/NormalTheme">
 
         <activity
                 android:name=".MainActivity"
