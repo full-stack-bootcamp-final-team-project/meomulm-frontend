@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/error/app_exception.dart';
 import 'package:meomulm_frontend/core/error/error_parser.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 
 /// 위치 좌표 기반 숙소 검색 API 통신을 담당하는 서비스
 class MapService {
@@ -35,7 +35,7 @@ class MapService {
   }
 
   /// 위도/경도로 숙소 검색 (필터 적용 여부에 따라 엔드포인트 분기)
-  Future<List<SearchAccommodationResponseModel>> getAccommodationByLocation({
+  Future<List<AccommodationResponseModel>> getAccommodationByLocation({
     required double latitude,
     required double longitude,
     Map<String, dynamic>? filterParams,
@@ -64,7 +64,7 @@ class MapService {
         if (response.data is List) {
           final List data = response.data;
           return data
-              .map((json) => SearchAccommodationResponseModel.fromJson(json))
+              .map((json) => AccommodationResponseModel.fromJson(json))
               .toList();
         }
 

@@ -31,6 +31,9 @@ class SearchBarWidget extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: AppColors.white,
       elevation: 0,
 
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+
       toolbarHeight:
       AppBarDimensions.appBarHeight - AppBarDimensions.dividerHeight,
 

@@ -1,6 +1,10 @@
 // lib/features/accommodation/presentation/widgets/accommodation_detail/review_preview_section.dart
 
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_icons.dart';
+import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 
 class ReviewPreviewSection extends StatelessWidget {
   final String rating;
@@ -19,20 +23,24 @@ class ReviewPreviewSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.xl
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.star, color: Colors.amber, size: 16),
-              const SizedBox(width: 4),
+              const Icon(
+                  AppIcons.star,
+                  color: AppColors.ratingColor,
+                  size: AppIcons.sizeXs
+              ),
+              const SizedBox(width: AppSpacing.xs),
               Text(
                   rating,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14
-                  )
+                  style: AppTextStyles.bodyMd
               ),
               const SizedBox(width: 8),
 
@@ -41,19 +49,15 @@ class ReviewPreviewSection extends StatelessWidget {
                 behavior: HitTestBehavior.opaque,
                 child: Text(
                   '리뷰 $count개',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[700]!,
-                  ),
+                  style: AppTextStyles.bodyMdGray
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           Text(
             desc,
-            style: const TextStyle(color: Colors.grey, fontSize: 14),
+            style: const TextStyle(color: AppColors.gray3, fontSize: 14),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),

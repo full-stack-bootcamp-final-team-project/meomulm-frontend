@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 
 class AccommodationFilterButton extends StatelessWidget {
   final String label;
@@ -18,19 +20,22 @@ class AccommodationFilterButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm
+        ),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFFCCEBFF) : Colors.transparent,
+          color: selected ? AppColors.selectedLight : Colors.transparent,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: selected ? const Color(0xFF009DFF) : const Color(0xFFD2D2D2),
+            color: selected ? AppColors.menuSelected : AppColors.selectedLight
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
             fontSize: 12,
-            color: selected ? const Color(0xFF009DFF) : Colors.black,
+            color: selected ? AppColors.menuSelected : AppColors.black,
           ),
         ),
       ),

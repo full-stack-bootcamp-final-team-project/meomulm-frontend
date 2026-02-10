@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/map/presentation/utils/map_marker_manager.dart';
 
 /// 현재 위치와 숙소 목록의 변경 여부를 감지하여 지도 마커 업데이트를 제어하는 컨트롤러
@@ -8,7 +8,7 @@ class MapMarkerController {
   final MapMarkerManager _markerManager;
 
   LatLng? _lastMyPosition;
-  List<SearchAccommodationResponseModel> _lastAccommodations = [];
+  List<AccommodationResponseModel> _lastAccommodations = [];
 
   MapMarkerController(KakaoMapController mapController)
     : _markerManager = MapMarkerManager(mapController);
@@ -16,8 +16,8 @@ class MapMarkerController {
   /// 마커 업데이트
   Future<void> update({
     LatLng? myPosition,
-    required List<SearchAccommodationResponseModel> accommodations,
-    ValueChanged<SearchAccommodationResponseModel>? onMarkerTap,
+    required List<AccommodationResponseModel> accommodations,
+    ValueChanged<AccommodationResponseModel>? onMarkerTap,
   }) async {
     final myPositionChanged = _isPositionChanged(_lastMyPosition, myPosition);
     final accommodationsChanged = _isAccommodationsChanged(
@@ -50,8 +50,8 @@ class MapMarkerController {
 
   /// 숙소 리스트 변경 여부 확인 (개선 버전)
   bool _isAccommodationsChanged(
-    List<SearchAccommodationResponseModel> oldList,
-    List<SearchAccommodationResponseModel> newList,
+    List<AccommodationResponseModel> oldList,
+    List<AccommodationResponseModel> newList,
   ) {
     if (oldList.length != newList.length) return true;
 

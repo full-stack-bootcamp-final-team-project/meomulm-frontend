@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:clipboard/clipboard.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_icons.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/favorite_api_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -43,7 +46,6 @@ class _ActionButtonsState extends State<ActionButtons> {
   }
 
 
-  // 초기 찜 상태 로드
   Future<void> _loadFavoriteStatus() async {
     final token = context.read<AuthProvider>().token;
     if (token == null || widget.accommodationId <= 0) return;
@@ -65,11 +67,9 @@ class _ActionButtonsState extends State<ActionButtons> {
     }
   }
 
-  // 찜 토글 로직
   Future<void> _toggleFavorite() async {
     final token = context.read<AuthProvider>().token;
 
-    // 로그인 체크
     if (token == null) {
       context.go(AppRouter.RoutePaths.login);
       return;
@@ -81,11 +81,9 @@ class _ActionButtonsState extends State<ActionButtons> {
 
     try {
       if (!isFavorite) {
-        // 1. 찜 추가
         await FavoriteApiService.postFavorite(token, widget.accommodationId);
         debugPrint('찜 추가 완료');
       } else {
-        // 2. 찜 삭제 (저장된 favoriteId 사용)
         if (favoriteId > 0) {
           await FavoriteApiService.deleteFavorite(token, favoriteId);
           debugPrint('찜 삭제 완료');
@@ -94,7 +92,6 @@ class _ActionButtonsState extends State<ActionButtons> {
     } catch (e) {
       debugPrint('찜 변경 실패: $e');
     } finally {
-      // 3. 상태 재로드하여 favoriteId와 하트 상태 동기화
       await _loadFavoriteStatus();
       if (mounted) setState(() => isLoading = false);
     }
@@ -106,22 +103,21 @@ class _ActionButtonsState extends State<ActionButtons> {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildCircleButton(
-          icon: isFavorite ? Icons.favorite : Icons.favorite_border,
-          iconColor: isFavorite ? Colors.red : Colors.white,
+          icon: isFavorite ? AppIcons.favoriteFilled : AppIcons.favoriteRounded,
+          iconColor: isFavorite ? AppColors.cancelled : AppColors.white,
           onTap: _toggleFavorite,
           showLoader: isLoading,
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: AppSpacing.lg),
         _buildCircleButton(
           icon: Icons.share,
-          iconColor: Colors.white,
+          iconColor: AppColors.white,
           onTap: () => _copyLink(context),
         ),
       ],
     );
   }
 
-  // 슬라이더 디자인에 맞춘 원형 버튼 위젯
   Widget _buildCircleButton({
     required IconData icon,
     required Color iconColor,
@@ -134,7 +130,7 @@ class _ActionButtonsState extends State<ActionButtons> {
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.7), // 기존 디자인 유지
+          color: AppColors.black,
           shape: BoxShape.circle,
         ),
         child: showLoader
@@ -157,7 +153,7 @@ class _ActionButtonsState extends State<ActionButtons> {
             content: const Text('링크가 복사되었습니다'),
             duration: const Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.black87,
+            backgroundColor: AppColors.black,
             shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
