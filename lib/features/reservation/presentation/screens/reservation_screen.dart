@@ -123,7 +123,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
       if (!mounted) return;
 
       // 결제 화면으로 이동
-      GoRouter.of(context).push(AppRouter.RoutePaths.payment);
+      GoRouter.of(context).push(AppRouter.RoutePaths.paymentSuccess);
 
     } catch (e) {
       if (!mounted) return;
