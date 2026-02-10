@@ -62,7 +62,9 @@ class _IntroScreenState extends State<IntroScreen>
     _controller.forward();
 
     // 홈 화면 준비 (API 호출 등)
-    _prepareHome();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _prepareHome();
+    });
   }
 
   /// ========================== 홈 화면 준비 ==========================
