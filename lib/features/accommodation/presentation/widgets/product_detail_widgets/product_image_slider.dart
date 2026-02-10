@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ProductImageSlider extends StatefulWidget {
-  final List<String> imageUrl; // ✅ 매개변수 이름 통일
+  final List<String> imageUrl;
   final int initialIndex;
 
   const ProductImageSlider({
