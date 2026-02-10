@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/providers/filter_provider.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_filter_widgets/accommodation_filter_price.dart';
@@ -21,7 +23,7 @@ class AccommodationFilterScreen extends StatelessWidget {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppBorderRadius.xxxl),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -30,21 +32,24 @@ class AccommodationFilterScreen extends StatelessWidget {
                     children: [
                       const Text(
                         "필터 설정",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: AppTextStyles.cardTitle
                       ),
                       TextButton.icon(
                         onPressed: () => provider.resetFilters(),
-                        icon: const Icon(Icons.refresh, size: 18, color: Colors.grey),
+                        icon: const Icon(
+                            AppIcons.refresh,
+                            size: AppIcons.sizeSm,
+                            color: AppColors.gray2
+                        ),
                         label: const Text(
                           "초기화",
-                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                          style: AppTextStyles.subTitleGrey
                         ),
                       ),
                     ],
                   ),
-                  const Divider(height: 30),
+                  const Divider(height: AppSpacing.xxxl),
 
-                  // 1. 편의시설 섹션
                   AccommodationFilterSection(
                     title: '편의시설',
                     items: const [
@@ -54,9 +59,8 @@ class AccommodationFilterScreen extends StatelessWidget {
                     selected: provider.facilities,
                     onToggle: (value) => provider.toggleFacility(value),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: AppSpacing.xxxl),
 
-                  // 2. 숙소 종류 섹션
                   AccommodationFilterSection(
                     title: '숙소 종류',
                     items: const [
@@ -66,9 +70,8 @@ class AccommodationFilterScreen extends StatelessWidget {
                     selected: provider.types,
                     onToggle: (value) => provider.toggleType(value),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: AppSpacing.xxxl),
 
-                  // 3. 가격 필터
                   const AccommodationFilterPrice(),
                 ],
               ),
@@ -76,15 +79,11 @@ class AccommodationFilterScreen extends StatelessWidget {
           ),
 
           SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: BottomActionButton(
-                label: '적용하기',
-                onPressed: () {
-                  // FilterProvider 상태가 이미 업데이트되었으므로 바로 닫음
-                  Navigator.pop(context, true);
-                },
-              ),
+            child: BottomActionButton(
+              label: '적용하기',
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
             ),
           ),
         ],

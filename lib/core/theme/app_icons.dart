@@ -27,8 +27,12 @@ class AppIcons {
   static const cancel = Icons.cancel;
   static const calendar = Icons.calendar_today;
   static const calendarMonth = Icons.calendar_month;
+  static const refresh = Icons.refresh;
+  static const copy = Icons.copy;
+  static const phone = Icons.phone;
 
   // UI Elements
+  static const circle = Icons.circle;
   static const star = Icons.star;
   static const starHalf = Icons.star_half;
   static const starBorder = Icons.star_border;
@@ -39,6 +43,8 @@ class AppIcons {
   static const notifications = Icons.notifications_none;
   static const image = Icons.image;
   static const brokenImage = Icons.broken_image;
+  static const notSupportedImage = Icons.image_not_supported;
+  static const hotelBed = Icons.hotel_outlined;
 
   // Password & Visibility
   static const visibility = Icons.visibility;
@@ -48,6 +54,7 @@ class AppIcons {
   static const arrowLeft = Icons.chevron_left;
   static const arrowRight = Icons.chevron_right;
   static const arrowDown = Icons.keyboard_arrow_down;
+  static const arrowRightIOS = Icons.arrow_forward_ios_rounded;
 
   // Location & Map
   static const location = Icons.my_location;
@@ -71,10 +78,15 @@ class AppIcons {
   static const errorOutline = Icons.error_outline;
 
   // Size Constants
+  static const double sizeXxxs = 8.0;
+  static const double sizeXxs = 10.0;
   static const double sizeXs = 14.0;
   static const double sizeSm = 18.0;
   static const double sizeMd = 20.0;
   static const double sizeLg = 24.0;
   static const double sizeXl = 28.0;
   static const double sizeXxl = 32.0;
+  static const double sizeXxxl = 40.0;
+  static const double sizeXxxxl = 50.0;
+  static const double sizeXxxxxl = 60.0;
 }

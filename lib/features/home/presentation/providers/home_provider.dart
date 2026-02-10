@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:meomulm_frontend/features/accommodation/data/datasources/home_accommodation_service.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 
 class HomeProvider with ChangeNotifier {
   // 인기 숙소 조회
@@ -15,12 +15,12 @@ class HomeProvider with ChangeNotifier {
   bool isLoading = false;
 
   /// 최근 본 숙소 (서버 응답 그대로)
-  List<SearchAccommodationResponseModel> recentList = [];
+  List<AccommodationResponseModel> recentList = [];
 
   /// HOT 지역별 숙소
-  List<SearchAccommodationResponseModel> seoulList = [];
-  List<SearchAccommodationResponseModel> busanList = [];
-  List<SearchAccommodationResponseModel> jejuList = [];
+  List<AccommodationResponseModel> seoulList = [];
+  List<AccommodationResponseModel> busanList = [];
+  List<AccommodationResponseModel> jejuList = [];
 
   /// 홈 전체 로드
   Future<void> loadHome({required bool isLoggedIn}) async {

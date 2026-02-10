@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_icons.dart';
+import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 
 class ReviewCard extends StatelessWidget {
   final String reviewerName;
@@ -18,11 +22,11 @@ class ReviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: const Color(0xFFE0E0E0)),
-        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.gray4),
+        borderRadius: BorderRadius.circular(AppBorderRadius.xxl),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,43 +40,38 @@ class ReviewCard extends StatelessWidget {
                   children: [
                     Text(
                       reviewerName,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: AppTextStyles.bodyLg,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       reviewDate,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      style: AppTextStyles.bodySmGray,
                     ),
                   ],
                 ),
               ),
-              // 별점 (노란색)
               Row(
                 children: List.generate(5, (index) {
                   if (index < reviewRating.floor()) {
-                    return const Icon(Icons.star, color: Colors.amber, size: 20);
+                    return const Icon(AppIcons.star, color: AppColors.ratingColor, size: AppIcons.sizeMd);
                   } else if (index < reviewRating) {
-                    return const Icon(Icons.star_half, color: Colors.amber, size: 20);
+                    return const Icon(AppIcons.starHalf, color: AppColors.ratingColor, size: AppIcons.sizeMd);
                   } else {
-                    return const Icon(Icons.star_border, color: Colors.amber, size: 20);
+                    return const Icon(AppIcons.starBorder, color: AppColors.ratingColor, size: AppIcons.sizeMd);
                   }
                 }),
               ),
             ],
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
 
-          // 리뷰 텍스트 (연한 파랑 배경)
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F8FF),
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.gray4,
+              borderRadius: BorderRadius.circular(AppBorderRadius.lg),
             ),
             child: Text(
               reviewText,

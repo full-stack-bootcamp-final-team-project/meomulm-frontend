@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'facility_list.dart';
 
 class FacilitySection extends StatelessWidget {
@@ -9,12 +11,12 @@ class FacilitySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('시설/서비스', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
+          const Text('시설/서비스', style: AppTextStyles.cardTitle),
+          const SizedBox(height: AppSpacing.lg),
           FacilityList(initialShowCount: 6, facilities: labels),
         ],
       ),

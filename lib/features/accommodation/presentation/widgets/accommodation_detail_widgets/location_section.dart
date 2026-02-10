@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_icons.dart';
+import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 
 class LocationSection extends StatelessWidget {
@@ -24,7 +27,7 @@ class LocationSection extends StatelessWidget {
     SnackMessenger.showMessage(
         context,
         "주소가 복사되었습니다.",
-        bottomPadding: 85,
+        bottomPadding: AppSpacing.xxxxl,
         type: ToastType.success
     );
   }
@@ -32,37 +35,40 @@ class LocationSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 24),
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.xl
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             '숙소 위치',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: AppTextStyles.cardTitle,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.md),
           Row(
             children: [
               SvgPicture.asset(
                 'assets/images/accommodation/address.svg',
-                width: 16,
-                height: 14,
+                width: AppSpacing.lg,
+                height: AppSpacing.md,
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Text(
                   address,
                   style: const TextStyle(fontSize: 14),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.sm),
               GestureDetector(
                 onTap: () => _copyToClipboard(context),
-                child: const Icon(Icons.copy, size: 18, color: Colors.grey),
+                child: const Icon(AppIcons.copy, size: AppIcons.sizeSm, color: AppColors.gray3),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.lg),
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -71,7 +77,7 @@ class LocationSection extends StatelessWidget {
                 color: const Color(0xFFEEEEEE),
                 width: 1,
               ),
-              boxShadow: AppShadows.card, // 정상 적용
+              boxShadow: AppShadows.card,
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),

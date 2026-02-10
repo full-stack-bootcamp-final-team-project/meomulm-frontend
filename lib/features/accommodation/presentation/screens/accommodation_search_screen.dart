@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
 import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
@@ -44,7 +45,7 @@ class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
       appBar: AppBarWidget(title: "숙소 검색"),
       body: Column(
         children: [
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.xl),
 
           SearchBox(
             width: size.width * 0.9,
@@ -73,7 +74,7 @@ class _AccommodationSearchScreenState extends State<AccommodationSearchScreen> {
       SnackMessenger.showMessage(
         context,
         "숙소명 또는 지역을 입력해주세요.",
-        bottomPadding: 85,
+        bottomPadding: AppSpacing.xxxxl,
         type: ToastType.error,
       );
       return;
