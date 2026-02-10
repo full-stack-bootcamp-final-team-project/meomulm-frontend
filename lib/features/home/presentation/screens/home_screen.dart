@@ -71,11 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // 광고 영역 자동 스크롤
       _adAutoController.start(context);
-
-      final auth = context.read<AuthProvider>();
-      context.read<HomeProvider>().loadHome(
-          isLoggedIn: auth.isLoggedIn
-      );
     });
   }
 
@@ -245,7 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-          heroTag: "homeFab",
+          heroTag: null,
           backgroundColor: AppColors.main,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
