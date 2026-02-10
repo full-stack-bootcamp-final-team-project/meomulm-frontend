@@ -41,24 +41,15 @@ class RegionListPanel extends StatelessWidget {
               height: _listItemHeight,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColors.white
-                    : Colors.transparent,
+                color: isSelected ? AppColors.white : Colors.transparent,
                 border: Border(
                   left: BorderSide(
-                    color: isSelected
-                        ? AppColors.black
-                        : Colors.transparent,
+                    color: isSelected ? AppColors.black : Colors.transparent,
                     width: _selectedIndicatorWidth,
                   ),
                 ),
               ),
-              child: Text(
-                regions[index],
-                style: isSelected
-                    ? AppTextStyles.cardTitle
-                    : AppTextStyles.bodyLg,
-              ),
+              child: Text(regions[index], style: AppTextStyles.bodyLg),
             ),
           );
         },
