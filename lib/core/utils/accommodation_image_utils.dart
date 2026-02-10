@@ -1,4 +1,4 @@
-import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/my_page/data/models/select_favorite_model.dart';
 
 /// 숙소 이미지 관련 유틸리티
@@ -6,7 +6,7 @@ class AccommodationImageUtils {
   AccommodationImageUtils._();
 
   /// 이미지가 없는 경우 accommodationId 기반으로 일관된 기본 이미지 선택
-  static String getImageUrl(SearchAccommodationResponseModel accommodation) {
+  static String getImageUrl(AccommodationResponseModel accommodation) {
     // 네트워크 이미지가 있는 경우
     if (accommodation.accommodationImages != null &&
         accommodation.accommodationImages!.isNotEmpty) {

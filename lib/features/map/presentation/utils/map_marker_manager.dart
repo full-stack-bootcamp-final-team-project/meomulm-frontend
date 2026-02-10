@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:kakao_map_sdk/kakao_map_sdk.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 
 /// 카카오 지도 위의 내 위치 및 숙소 마커를 생성, 제거, 갱신하는 마커 관리 클래스
 class MapMarkerManager {
@@ -62,8 +62,8 @@ class MapMarkerManager {
    * 숙소 마커 추가
    * ======================= */
   Future<void> addAccommodationMarkers(
-      List<SearchAccommodationResponseModel> accommodations,
-      ValueChanged<SearchAccommodationResponseModel>? onMarkerTap,
+      List<AccommodationResponseModel> accommodations,
+      ValueChanged<AccommodationResponseModel>? onMarkerTap,
       ) async {
     int successCount = 0;
     int failCount = 0;
@@ -100,8 +100,8 @@ class MapMarkerManager {
    * ======================= */
   Future<void> updateMarkers({
     LatLng? myPosition,
-    required List<SearchAccommodationResponseModel> accommodations,
-    ValueChanged<SearchAccommodationResponseModel>? onMarkerTap,
+    required List<AccommodationResponseModel> accommodations,
+    ValueChanged<AccommodationResponseModel>? onMarkerTap,
   }) async {
     try {
       await clearAll();

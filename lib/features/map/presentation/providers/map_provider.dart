@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:meomulm_frontend/core/error/app_exception.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/map/data/datasources/map_service.dart';
 
 /// 지도 기반 숙소 검색 상태와 선택 상태를 관리하는 프로바이더
 class MapProvider extends ChangeNotifier {
   final MapService _service = MapService();
 
-  List<SearchAccommodationResponseModel> _accommodations = [];
+  List<AccommodationResponseModel> _accommodations = [];
   bool _isLoading = false;
   bool _isSearching = false;
   AppException? _error;
-  SearchAccommodationResponseModel? _selectedAccommodation;
+  AccommodationResponseModel? _selectedAccommodation;
 
   double? _lastLatitude;
   double? _lastLongitude;
@@ -19,7 +19,7 @@ class MapProvider extends ChangeNotifier {
   // =====================
   // Getters
   // =====================
-  List<SearchAccommodationResponseModel> get accommodations => _accommodations;
+  List<AccommodationResponseModel> get accommodations => _accommodations;
 
   bool get isLoading => _isLoading;
 
@@ -27,7 +27,7 @@ class MapProvider extends ChangeNotifier {
 
   AppException? get error => _error;
 
-  SearchAccommodationResponseModel? get selectedAccommodation =>
+  AccommodationResponseModel? get selectedAccommodation =>
       _selectedAccommodation;
 
   /// 검색 결과가 있는 상태
@@ -42,7 +42,7 @@ class MapProvider extends ChangeNotifier {
   // =====================
 
   /// 숙소 선택/해제
-  void selectAccommodation(SearchAccommodationResponseModel? accommodation) {
+  void selectAccommodation(AccommodationResponseModel? accommodation) {
     _selectedAccommodation = accommodation;
     notifyListeners();
   }

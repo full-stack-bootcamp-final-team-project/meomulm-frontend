@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
 import 'package:meomulm_frontend/core/utils/accommodation_image_utils.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -12,7 +12,7 @@ import 'image_none.dart';
 
 /// 숙소 아이템
 class HomeItemCard extends StatelessWidget {
-  final SearchAccommodationResponseModel item;
+  final AccommodationResponseModel item;
   final double width;
   final bool isLast;
 

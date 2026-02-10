@@ -3,13 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class CommonBackButton extends StatelessWidget {
-  /// 버튼 배경색
   final Color backgroundColor;
-
-  /// 아이콘 색
   final Color iconColor;
-
-  /// 클릭 시 동작 (나중에 context.pop / context.go 주입)
   final VoidCallback? onTap;
 
   const CommonBackButton({

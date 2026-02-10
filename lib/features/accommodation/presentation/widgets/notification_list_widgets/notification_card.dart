@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_icons.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/notification_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/notification_api_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
@@ -8,7 +10,7 @@ import 'package:provider/provider.dart';
 
 class NotificationCard extends StatelessWidget {
   final NotificationResponseModel notification;
-  final VoidCallback? onTap; // 클릭 후 상태 갱신을 위한 콜백
+  final VoidCallback? onTap;
 
   const NotificationCard({
     super.key,
@@ -20,7 +22,7 @@ class NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     debugPrint("${notification.notificationId} isRead : ${notification.isRead}");
     final bool isRead = notification.isRead;
-    final unreadColor = const Color(0xFF007AFF);
+    final unreadColor = AppColors.menuSelected;
     final backgroundColor = isRead ? AppColors.gray5 : Colors.white;
 
     return GestureDetector(
@@ -42,14 +44,14 @@ class NotificationCard extends StatelessWidget {
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        margin: const EdgeInsets.only(bottom: 12), // Dismissible과 결합을 위해 Padding 대신 Margin 사용
-        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.only(bottom: AppSpacing.md),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppBorderRadius.xxl),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: AppColors.black.withOpacity(0.03),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -58,14 +60,13 @@ class NotificationCard extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 상태 아이콘 (Blue Dot)
             Container(
-              margin: const EdgeInsets.only(top: 6, right: 12),
+              margin: const EdgeInsets.only(top: AppSpacing.s, right: AppSpacing.md),
               width: 8,
               height: 8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isRead ? Colors.transparent : unreadColor,   // 읽었을 때 점을 아예 없애려면 Colors.transparent
+                color: isRead ? Colors.transparent : unreadColor,
               ),
             ),
 
@@ -83,7 +84,7 @@ class NotificationCard extends StatelessWidget {
                       letterSpacing: -0.3,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.sm),
                   Text(
                     _formatDate(notification.createdAt),
                     style: const TextStyle(
@@ -98,8 +99,8 @@ class NotificationCard extends StatelessWidget {
 
             if (notification.notificationLinkUrl.isNotEmpty)
               const Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 14,
+                AppIcons.arrowRightIOS,
+                size: AppIcons.sizeXs,
                 color: AppColors.gray2,
               ),
           ],

@@ -3,8 +3,13 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart'; // 천 단위 콤마용 (pubspec.yaml에 intl 추가 필수)
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_icons.dart';
+import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
+import 'package:meomulm_frontend/core/utils/accommodation_image_utils.dart';
+import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 
-import 'package:meomulm_frontend/features/accommodation/data/models/search_accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -280,7 +285,7 @@ class _EmptyImagePlaceholder extends StatelessWidget {
 
 
 class AccommodationCard extends StatelessWidget {
-  final SearchAccommodationResponseModel accommodation;
+  final AccommodationResponseModel accommodation;
 
   const AccommodationCard({
     super.key,
@@ -297,7 +302,7 @@ class AccommodationCard extends StatelessWidget {
     final minPrice = accommodation.minPrice;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: AppSpacing.lg),
       child: GestureDetector(
         onTap: () {
           final accommodationId = accommodation.accommodationId;
@@ -309,11 +314,11 @@ class AccommodationCard extends StatelessWidget {
         },
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(AppBorderRadius.lg),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.07),
+                color: AppColors.black.withOpacity(0.07),
                 blurRadius: 12,
                 offset: const Offset(0, 3),
               ),
@@ -330,24 +335,18 @@ class AccommodationCard extends StatelessWidget {
                   children: [
                     Text(
                       name,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: AppTextStyles.bodyXl,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       address,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Color(0xFF757575),
-                      ),
+                      style: AppTextStyles.bodySmGray,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.md),
                     Align(
                       alignment: Alignment.centerRight,
                       child: Row(
@@ -398,83 +397,93 @@ class AccommodationCard extends StatelessWidget {
 
 
 class _HotelImages extends StatelessWidget {
-  final SearchAccommodationResponseModel accommodation;
+  final AccommodationResponseModel accommodation;
 
   const _HotelImages({required this.accommodation});
 
-  static const _defaultImages = [
-    'assets/images/accommodation/default_accommodation_image(1).jpg',
-    'assets/images/accommodation/default_accommodation_image(2).jpg',
-    'assets/images/accommodation/default_accommodation_image(3).jpg',
-  ];
-
   @override
   Widget build(BuildContext context) {
-    debugPrint(
-        (accommodation.accommodationImages ?? [])
-            .map((e) => e.accommodationImageUrl ?? 'null')
-            .toList()
-            .toString()
-    );
-
-
     final dbImages = (accommodation.accommodationImages ?? [])
         .where((e) => e.accommodationImageUrl != null && e.accommodationImageUrl!.isNotEmpty)
+        .map((e) => e.accommodationImageUrl!)
         .toList();
 
     if (dbImages.isEmpty) {
-      return _ThreeImageLayout(
-        images: _defaultImages.map((e) => _ImageSource.asset(e)).toList(),
+      return AspectRatio(
+        aspectRatio: 2.8,
+        child: Container(
+          decoration: BoxDecoration(
+            color: AppColors.gray4,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(AppBorderRadius.lg)),
+          ),
+          child: const Center(
+            child: Icon(AppIcons.notSupportedImage, color: AppColors.gray3, size: AppIcons.sizeXxxl),
+          ),
+        ),
       );
     }
 
     if (dbImages.length == 1) {
-      debugPrint("사진 1장 감지: ${dbImages[0].accommodationImageUrl}");
-      return _SingleImage(
-        image: _ImageSource.network(dbImages[0].accommodationImageUrl!),
-      );
+      return _SingleImage(imageUrl: dbImages[0]);
     }
 
     if (dbImages.length == 2) {
       return _TwoImageLayout(
-        left: _ImageSource.network(dbImages[0].accommodationImageUrl!),
-        right: _ImageSource.network(dbImages[1].accommodationImageUrl!),
+        left: dbImages[0],
+        right: dbImages[1],
       );
     }
 
-    // 3장 이상 → 앞 3장만
     return _ThreeImageLayout(
-      images: dbImages
-          .take(3)
-          .map((e) => _ImageSource.network(e.accommodationImageUrl!))
-          .toList(),
+      images: dbImages.take(3).toList(),
     );
   }
 }
 
-/// 1장
-class _SingleImage extends StatelessWidget {
-  final _ImageSource image;
+class _ImageView extends StatelessWidget {
+  final String imageUrl;
 
-  const _SingleImage({required this.image});
+  const _ImageView({required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return AccommodationImageUtils.isNetworkImage(imageUrl)
+        ? Image.network(
+      imageUrl,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) => const _BrokenImagePlaceholder(),
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+      },
+    )
+        : Image.asset(
+      imageUrl,
+      fit: BoxFit.cover,
+    );
+  }
+}
+
+
+class _SingleImage extends StatelessWidget {
+  final String imageUrl;
+  const _SingleImage({required this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 2.8, // ← 2장, 3장 레이아웃과 동일하게 맞춤
+      aspectRatio: 2.8,
       child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-        child: _ImageView(source: image),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppBorderRadius.lg)),
+        child: _ImageView(imageUrl: imageUrl),
       ),
     );
   }
 }
 
-/// 2장
 class _TwoImageLayout extends StatelessWidget {
-  final _ImageSource left;
-  final _ImageSource right;
-
+  final String left;
+  final String right;
   const _TwoImageLayout({required this.left, required this.right});
 
   @override
@@ -486,16 +495,16 @@ class _TwoImageLayout extends StatelessWidget {
           Expanded(
             flex: 2,
             child: ClipRRect(
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(12)),
-              child: _ImageView(source: left),
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(AppBorderRadius.lg)),
+              child: _ImageView(imageUrl: left),
             ),
           ),
-          const SizedBox(width: 3),
+          const SizedBox(width: AppSpacing.xxs),
           Expanded(
             flex: 1,
             child: ClipRRect(
-              borderRadius: const BorderRadius.only(topRight: Radius.circular(12)),
-              child: _ImageView(source: right),
+              borderRadius: const BorderRadius.only(topRight: Radius.circular(AppBorderRadius.lg)),
+              child: _ImageView(imageUrl: right),
             ),
           ),
         ],
@@ -504,10 +513,8 @@ class _TwoImageLayout extends StatelessWidget {
   }
 }
 
-/// 3장
 class _ThreeImageLayout extends StatelessWidget {
-  final List<_ImageSource> images;
-
+  final List<String> images;
   const _ThreeImageLayout({required this.images});
 
   @override
@@ -519,26 +526,26 @@ class _ThreeImageLayout extends StatelessWidget {
           Expanded(
             flex: 3,
             child: ClipRRect(
-              borderRadius: const BorderRadius.only(topLeft: Radius.circular(12)),
-              child: _ImageView(source: images[0]),
+              borderRadius: const BorderRadius.only(topLeft: Radius.circular(AppBorderRadius.lg)),
+              child: _ImageView(imageUrl: images[0]),
             ),
           ),
-          const SizedBox(width: 3),
+          const SizedBox(width: AppSpacing.xxs),
           Expanded(
             flex: 1,
             child: Column(
               children: [
                 Expanded(
                   child: ClipRRect(
-                    borderRadius: const BorderRadius.only(topRight: Radius.circular(12)),
-                    child: _ImageView(source: images[1]),
+                    borderRadius: const BorderRadius.only(topRight: Radius.circular(AppBorderRadius.lg)),
+                    child: _ImageView(imageUrl: images[1]),
                   ),
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: AppSpacing.xxs),
                 Expanded(
                   child: ClipRRect(
-                    borderRadius: const BorderRadius.only(bottomRight: Radius.circular(12)),
-                    child: _ImageView(source: images[2]),
+                    borderRadius: const BorderRadius.only(bottomRight: Radius.circular(AppBorderRadius.lg)),
+                    child: _ImageView(imageUrl: images[2]),
                   ),
                 ),
               ],
@@ -550,88 +557,13 @@ class _ThreeImageLayout extends StatelessWidget {
   }
 }
 
-// class _ImageView extends StatelessWidget {
-//   final _ImageSource source;
-//
-//   const _ImageView({required this.source});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return source.isNetwork
-//         ? Image.network(
-//       source.path,
-//       fit: BoxFit.cover,
-//       errorBuilder: (_, __, ___) =>
-//       const _BrokenImagePlaceholder(),
-//       loadingBuilder: (context, child, progress) {
-//         if (progress == null) return child;
-//         return const Center(
-//           child: CircularProgressIndicator(strokeWidth: 2),
-//         );
-//       },
-//     )
-//         : Image.asset(
-//       source.path,
-//       fit: BoxFit.cover,
-//     );
-//   }
-// }
-
-// class _ImageView extends StatelessWidget {
-//   final _ImageSource source;
-//
-//   const _ImageView({required this.source});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       decoration: BoxDecoration(
-//         color: Colors.grey.shade200,
-//         image: DecorationImage(
-//           image: source.isNetwork
-//               ? NetworkImage(source.path)
-//               : AssetImage(source.path) as ImageProvider,
-//           fit: BoxFit.cover,
-//           onError: (_, __) {},
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-class _ImageSource {
-  final String path;
-  final bool isNetwork;
-
-  _ImageSource.network(this.path) : isNetwork = true;
-  _ImageSource.asset(this.path) : isNetwork = false;
-}
-
-class _ImageView extends StatelessWidget {
-  final _ImageSource source;
-
-  const _ImageView({required this.source});
-
+class _BrokenImagePlaceholder extends StatelessWidget {
+  const _BrokenImagePlaceholder();
   @override
   Widget build(BuildContext context) {
-    if (source.isNetwork) {
-      return Image.network(
-        source.path,
-        fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Container(
-          color: Colors.grey.shade300,
-          child: const Icon(Icons.broken_image_outlined, size: 36, color: Colors.grey),
-        ),
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-        },
-      );
-    } else {
-      return Image.asset(
-        source.path,
-        fit: BoxFit.cover,
-      );
-    }
+    return Container(
+      color: AppColors.gray4,
+      child: const Center(child: Icon(AppIcons.brokenImage, size: AppIcons.sizeLg, color: AppColors.gray3)),
+    );
   }
 }

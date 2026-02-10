@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_filter_widgets/accommodation_filter_button.dart';
 
 class AccommodationFilterSection extends StatelessWidget {
@@ -20,8 +22,8 @@ class AccommodationFilterSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
-        const SizedBox(height: 12),
+        Text(title, style: AppTextStyles.bodyLg),
+        const SizedBox(height: AppSpacing.md),
         Wrap(
           spacing: 8,
           runSpacing: 8,

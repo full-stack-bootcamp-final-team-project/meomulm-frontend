@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_icons.dart';
 
 class FacilityList extends StatefulWidget {
   final int initialShowCount;
-  final List<String> facilities; // 리스트 받음
+  final List<String> facilities;
   const FacilityList({required this.initialShowCount, required this.facilities});
   @override
   State<FacilityList> createState() => _FacilityListState();
@@ -17,10 +19,15 @@ class _FacilityListState extends State<FacilityList> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Wrap(
-          spacing: 16, runSpacing: 12,
+          spacing: AppSpacing.lg, runSpacing: AppSpacing.md,
           children: items.map((item) => SizedBox(
             width: (MediaQuery.of(context).size.width - 60) / 2,
-            child: Row(children: [const Icon(Icons.check, size: 16), const SizedBox(width: 4), Text(item)]),
+            child: Row(
+                children: [
+                  const Icon(AppIcons.check, size: AppIcons.sizeXs),
+                  const SizedBox(width: AppSpacing.xs), Text(item)
+                ]
+            ),
           )).toList(),
         ),
         if (widget.facilities.length > widget.initialShowCount && !_showAll)

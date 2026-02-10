@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/providers/filter_provider.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:provider/provider.dart';
 
 
@@ -61,8 +63,8 @@ class _AccommodationFilterPriceState extends State<AccommodationFilterPrice> {
           children: [
             _buildPriceField(_minController, '0', _onTextChange),
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12),
-              child: Text('~', style: TextStyle(color: Colors.grey, fontSize: 18)),
+              padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              child: Text('~', style: TextStyle(color: AppColors.gray3, fontSize: 18)),
             ),
             _buildPriceField(_maxController, '200', _onTextChange),
           ],
@@ -70,7 +72,6 @@ class _AccommodationFilterPriceState extends State<AccommodationFilterPrice> {
 
         const SizedBox(height: 10),
 
-        // 2. 슬라이더 영역 스타일 커스텀
         SliderTheme(
           data: SliderThemeData(
             trackHeight: 5,
@@ -108,10 +109,10 @@ class _AccommodationFilterPriceState extends State<AccommodationFilterPrice> {
     return Expanded(
       child: Container(
         height: 48,
-        padding: const EdgeInsets.symmetric(horizontal: 14),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         decoration: BoxDecoration(
           color: AppColors.white,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(AppBorderRadius.md),
           border: Border.all(color: AppColors.gray5, width: 1.5),
         ),
         child: Row(
@@ -122,7 +123,7 @@ class _AccommodationFilterPriceState extends State<AccommodationFilterPrice> {
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 textAlign: TextAlign.end,
-                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                style: AppTextStyles.bodyLg,
                 decoration: InputDecoration(
                   hintText: hint,
                   border: InputBorder.none,
@@ -133,7 +134,7 @@ class _AccommodationFilterPriceState extends State<AccommodationFilterPrice> {
               ),
             ),
             const SizedBox(width: 4),
-            const Text('만원', style: TextStyle(color: Colors.black87, fontSize: 13)),
+            const Text('만원', style: AppTextStyles.bodyMd),
           ],
         ),
       ),

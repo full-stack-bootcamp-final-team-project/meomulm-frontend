@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_icons.dart';
+import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_map_widgets/common_back_button.dart';
+import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/common_back_button.dart';
 import 'package:provider/provider.dart';
 import 'action_buttons.dart';
 
@@ -32,11 +36,10 @@ class _AccommodationImageSliderState extends State<AccommodationImageSlider> {
     _currentIndex = widget.initialIndex;
     _pageController = PageController(initialPage: _currentIndex);
 
-    // 🔍 디버그: 전달받은 이미지 URL 확인
     print('=== AccommodationImageSlider 초기화 ===');
     print('이미지 URL 개수: ${widget.imageUrls.length}');
     if (widget.imageUrls.isEmpty) {
-      print('⚠️ 경고: 이미지 URL 리스트가 비어있습니다!');
+      print('️이미지 URL 리스트가 비어있습니다!');
     } else {
       widget.imageUrls.asMap().forEach((index, url) {
         print('이미지 [$index]: $url');
@@ -66,7 +69,6 @@ class _AccommodationImageSliderState extends State<AccommodationImageSlider> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. 이미지 슬라이더 (PageView)
           PageView.builder(
             controller: _pageController,
             itemCount: widget.imageUrls.isEmpty
@@ -80,16 +82,23 @@ class _AccommodationImageSliderState extends State<AccommodationImageSlider> {
             },
             itemBuilder: (context, index) {
               if (widget.imageUrls.isEmpty) {
-                print('⚠️ 이미지 없음 - placeholder 표시');
+                print('이미지 없음 - placeholder 표시');
                 return Container(
-                  color: Colors.grey[300],
-                  child: const Center(
+                  color: AppColors.gray4,
+                  child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
-                        SizedBox(height: 8),
-                        Text('등록된 이미지가 없습니다', style: TextStyle(color: Colors.grey)),
+                        const Icon(
+                            AppIcons.notSupportedImage,
+                            size: AppIcons.sizeXxxxl,
+                            color: AppColors.gray3
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                            '등록된 이미지가 없습니다',
+                            style: TextStyle(color: AppColors.gray3)
+                        ),
                       ],
                     ),
                   ),
@@ -106,7 +115,7 @@ class _AccommodationImageSliderState extends State<AccommodationImageSlider> {
                   fit: BoxFit.cover,
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) {
-                      print('✅ 이미지 로딩 완료 [$index]');
+                      print('이미지 로딩 완료 [$index]');
                       return child;
                     }
 
@@ -119,8 +128,8 @@ class _AccommodationImageSliderState extends State<AccommodationImageSlider> {
                     return Center(
                       child: CircularProgressIndicator(
                         value: progress,
-                        backgroundColor: Colors.grey[200],
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
+                        backgroundColor: AppColors.gray2,
+                        valueColor: const AlwaysStoppedAnimation<Color>(AppColors.menuSelected),
                       ),
                     );
                   },
@@ -131,22 +140,22 @@ class _AccommodationImageSliderState extends State<AccommodationImageSlider> {
                     print('스택트레이스: $stackTrace');
 
                     return Container(
-                      color: Colors.grey[200],
+                      color: AppColors.gray4,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.broken_image, color: Colors.grey, size: 40),
-                          const SizedBox(height: 8),
+                          const Icon(AppIcons.brokenImage, color: AppColors.gray3, size: AppIcons.sizeXxxl),
+                          const SizedBox(height: AppSpacing.sm),
                           const Text(
                             '이미지를 불러올 수 없습니다',
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                              style: AppTextStyles.subTitleGrey
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: AppSpacing.xs),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                             child: Text(
                               imageUrl,
-                              style: const TextStyle(fontSize: 10, color: Colors.grey),
+                              style: AppTextStyles.bodyXsGray,
                               textAlign: TextAlign.center,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -170,30 +179,27 @@ class _AccommodationImageSliderState extends State<AccommodationImageSlider> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CommonBackButton(backgroundColor: Colors.black87, iconColor: Colors.white),
-                // 숙소 ID를 직접 전달
                 ActionButtons(accommodationId: widget.accommodationId),
               ],
             ),
           ),
 
-          // 3. 사진 개수 표시 (인디케이터)
           if (widget.imageUrls.isNotEmpty)
             Positioned(
-              bottom: 35, // 상세 정보 컨테이너 곡선(translate -20) 고려
+              bottom: 35,
               right: 16,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.xs
+                ),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.6),
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.black,
+                  borderRadius: BorderRadius.circular(AppBorderRadius.lg),
                 ),
                 child: Text(
                   '${_currentIndex + 1}/${widget.imageUrls.length}',
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500
-                  ),
+                  style: AppTextStyles.bodySmWhite,
                 ),
               ),
             ),
@@ -228,7 +234,6 @@ class _AccommodationImageSliderState extends State<AccommodationImageSlider> {
     );
   }
 
-  // 화살표 버튼 헬퍼
   Widget _buildArrowButton({
     required IconData icon,
     required Alignment alignment,
@@ -237,14 +242,19 @@ class _AccommodationImageSliderState extends State<AccommodationImageSlider> {
     return Align(
       alignment: alignment,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
         child: Container(
           // decoration: BoxDecoration(
           //   color: Colors.black.withOpacity(0.2),
           //   shape: BoxShape.circle,
           // ),
           child: IconButton(
-            icon: Icon(icon, color: Colors.grey[800], size: 28, fontWeight: FontWeight.bold),
+            icon: Icon(
+                icon,
+                color: AppColors.gray2,
+                size: AppIcons.sizeXl,
+                fontWeight: FontWeight.bold
+            ),
             onPressed: onPressed,
           ),
         ),
