@@ -31,4 +31,20 @@ class ReviewResponseModel {
         accommodationName: json['accommodationName']
     );
   }
+
+  DateTime _parseDate(String date) {
+    final normalized = date.trim().replaceFirst(' ', 'T'); // " " -> "T"
+    final dt = DateTime.tryParse(normalized);
+    if (dt == null) {
+      // 파싱 실패 시 크래시 대신 기본값(또는 현재시간) 처리
+      return DateTime.fromMillisecondsSinceEpoch(0);
+    }
+    return dt;
+  }
+
+  DateTime get parsedReviewDate => _parseDate(createdAt);
+
+  String get reviewDate =>
+      '${parsedReviewDate.year}.${parsedReviewDate.month.toString().padLeft(2, '0')}.${parsedReviewDate.day.toString().padLeft(2, '0')}';
+
 }
