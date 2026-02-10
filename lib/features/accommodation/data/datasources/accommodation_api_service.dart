@@ -55,40 +55,40 @@ class AccommodationApiService {
 
 
 
-  static Future<List<AccommodationResponseModel>> getAccommodationByKeyword({
-    required String keyword,    // 사용자가 검색한 숙소명/지역
-  }) async {
-    try {
-      final res = await _dio.get(
-        '/keyword',
-        queryParameters: {
-          'keyword': keyword
-        },
-      );
-      if (res.statusCode == 200) {
-        final List<dynamic> jsonList = res.data;
-        // return jsonList.map((json) =>
-        //     Accommodation.fromJson(json)).toList();
-        return jsonList.map((json) {
-          // [확인] 각 숙소 데이터가 들어올 때 이미지가 어떻게 생겼는지 출력
-          // print('숙소명: ${json['accommodationName']} / 이미지데이터: ${json['accommodationImages']}');
-
-          return AccommodationResponseModel.fromJson(json);
-        }).toList();
-      } else if (res.statusCode == 404) {
-        return [];
-      } else {
-        throw Exception('서버 오류: ${res.statusCode}');
-      }
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 404) {
-        return [];
-      }
-      throw Exception('네트워크 오류: ${e.message}');
-    } catch (e) {
-      throw Exception('알 수 없는 오류: $e');
-    }
-  }
+  // static Future<List<SearchAccommodationResponseModel>> getAccommodationByKeyword({
+  //   required String keyword,    // 사용자가 검색한 숙소명/지역
+  // }) async {
+  //   try {
+  //     final res = await _dio.get(
+  //       '/keyword',
+  //       queryParameters: {
+  //         'keyword': keyword
+  //       },
+  //     );
+  //     if (res.statusCode == 200) {
+  //       final List<dynamic> jsonList = res.data;
+  //       // return jsonList.map((json) =>
+  //       //     Accommodation.fromJson(json)).toList();
+  //       return jsonList.map((json) {
+  //         // [확인] 각 숙소 데이터가 들어올 때 이미지가 어떻게 생겼는지 출력
+  //         // print('숙소명: ${json['accommodationName']} / 이미지데이터: ${json['accommodationImages']}');
+  //
+  //         return SearchAccommodationResponseModel.fromJson(json);
+  //       }).toList();
+  //     } else if (res.statusCode == 404) {
+  //       return [];
+  //     } else {
+  //       throw Exception('서버 오류: ${res.statusCode}');
+  //     }
+  //   } on DioException catch (e) {
+  //     if (e.response?.statusCode == 404) {
+  //       return [];
+  //     }
+  //     throw Exception('네트워크 오류: ${e.message}');
+  //   } catch (e) {
+  //     throw Exception('알 수 없는 오류: $e');
+  //   }
+  // }
 
   static Future<AccommodationDetailModel?> getAccommodationById(int accommodationId) async {
     try{
@@ -112,7 +112,7 @@ class AccommodationApiService {
 
   static Future<ReviewSummaryModel?> getReviewSummary(int accommodationId) async {
     try {
-      final res = await _dio.get('/review/summary/${accommodationId}');
+      final res = await _dio.get('/reviews/summary/${accommodationId}');
 
       if (res.statusCode == 200) {
         return ReviewSummaryModel.fromJson(res.data);

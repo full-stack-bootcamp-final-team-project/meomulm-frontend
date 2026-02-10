@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_icons.dart';
+import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_review_model.dart';
@@ -55,31 +59,29 @@ class _AccommodationReviewScreenState extends State<AccommodationReviewScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const SizedBox(height: 32),
-              // 상단 요약 (실제 데이터 반영)
+              const SizedBox(height: AppSpacing.xxl),
               _buildOverallReviewRating(
                 summary?.averageRating ?? 0.0,
                 summary?.totalCount ?? 0,
               ),
-              const SizedBox(height: 32),
-              const Divider(thickness: 8, color: Color(0xFFF5F5F5)),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.xxl),
+              const Divider(thickness: AppSpacing.xs, color: AppColors.gray5),
+              const SizedBox(height: AppSpacing.xl),
 
-              // 리뷰 리스트
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
                 child: reviews.isEmpty
                     ? const Center(child: Text("첫 리뷰를 작성해 주세요!"))
                     : ListView.separated(
-                  shrinkWrap: true, // ScrollView 안에서 사용하기 위함
+                  shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: reviews.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 16),
+                  separatorBuilder: (_, __) => const SizedBox(height: AppSpacing.lg),
                   itemBuilder: (context, index) {
                     final item = reviews[index];
                     return ReviewCard(
                       reviewerName: item.userName ?? '익명',
-                      reviewDate: item.createdAt.split('T')[0], // 날짜 형식 처리
+                      reviewDate: item.createdAt.split('T')[0],
                       reviewRating: item.rating.toDouble(),
                       reviewText: item.reviewContent,
                     );
@@ -102,23 +104,35 @@ class _AccommodationReviewScreenState extends State<AccommodationReviewScreen> {
           children: List.generate(5, (index) {
             double diff = rating - index;
             if (diff >= 1) {
-              return const Icon(Icons.star, color: Colors.amber, size: 40);
+              return const Icon(
+                AppIcons.star,
+                color: AppColors.ratingColor,
+                size: AppIcons.sizeXxl
+              );
             } else if (diff >= 0.5) {
-              return const Icon(Icons.star_half, color: Colors.amber, size: 40);
+              return const Icon(
+                AppIcons.starHalf,
+                color: AppColors.ratingColor,
+                size: AppIcons.sizeXxl
+              );
             } else {
-              return const Icon(Icons.star_border, color: Colors.amber, size: 40);
+              return const Icon(
+                AppIcons.starBorder,
+                color: AppColors.ratingColor,
+                size: AppIcons.sizeXxl
+              );
             }
           }),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.sm),
         Text(
           rating.toStringAsFixed(1),
-          style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+          style: AppTextStyles.reviewPoint
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: AppSpacing.sm),
         Text(
           '$count개 평가',
-          style: const TextStyle(fontSize: 16, color: Color(0xFF8B8B8B)),
+          style: AppTextStyles.bodyLg,
         ),
       ],
     );

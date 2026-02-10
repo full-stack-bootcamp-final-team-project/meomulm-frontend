@@ -8,6 +8,15 @@ class AppTextStyles {
   AppTextStyles._();
 
   /// =====================
+  /// 평점
+  /// =====================
+  static const reviewPoint = TextStyle(
+    fontSize: 42,
+    fontWeight: FontWeight.bold,
+    color: AppColors.black,
+  );
+
+  /// =====================
   /// 제목
   /// =====================
   static const appBarTitle = TextStyle(
@@ -26,6 +35,12 @@ class AppTextStyles {
     fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColors.black,
+  );
+
+  static const subTitleGrey = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: AppColors.gray2,
   );
 
   /// =====================
@@ -83,20 +98,20 @@ class AppTextStyles {
   /// 버튼
   /// =====================
   static const buttonSm = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
       color: AppColors.white
   );
 
   static const buttonMd = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
       color: AppColors.white
   );
 
   static const buttonLg = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w600,
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
       color: AppColors.white
   );
 
@@ -107,9 +122,9 @@ class AppTextStyles {
   );
 
   static const naverLg = TextStyle(
-      fontSize: 16,
-      fontWeight: FontWeight.w600,
-      color:Color(0xFFFFFFFF),
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    color:Color(0xFFFFFFFF),
   );
 
 
@@ -132,16 +147,40 @@ class AppTextStyles {
     color: AppColors.black,
   );
 
+  static const bodyXsGray = TextStyle(
+    fontSize: 10,
+    fontWeight: FontWeight.w400,
+    color: AppColors.gray2,
+  );
+
   static const bodySm = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
     color: AppColors.black,
   );
 
+  static const bodySmGray = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: AppColors.gray2,
+  );
+
+  static const bodySmWhite = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: AppColors.white,
+  );
+
   static const bodyMd = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: AppColors.black,
+  );
+
+  static const bodyMdGray = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: AppColors.gray2,
   );
 
   static const bodyLg = TextStyle(

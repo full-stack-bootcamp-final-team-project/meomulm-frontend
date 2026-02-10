@@ -4,16 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/accommodation_api_service.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_detail_model.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/review_summary.dart';
-import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/providers/accommodation_provider.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/customer_divider.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/facility_list.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/facility_section.dart';
-import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/icon_text_row.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/info_section.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/location_section.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/accommodation_detail_widgets/policy_section.dart';
@@ -81,7 +79,6 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
         reviewSummary = results[1] as ReviewSummaryModel?;
         isLoading = false;
 
-        // ← 여기에 추가. provider에 ID 저장
         if (accommodation != null) {
           context.read<AccommodationProvider>().setAccommodationInfo(
             id,
@@ -97,8 +94,6 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
     }
   }
 
-  // accommodation_detail_screen.dart
-
   @override
   Widget build(BuildContext context) {
     if (isLoading)
@@ -111,7 +106,7 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(     // 상단 상태바 영역 침범 방지를 위해 SafeArea 적용 (top: true)
+      body: SafeArea(
         top: true,
         bottom: false,
         child: Stack(
@@ -133,12 +128,12 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(AppBorderRadius.xl),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 24),
+                          const SizedBox(height: AppSpacing.xl),
                           TitleSection(name: data.accommodationName),
                           const CustomDivider(),
                           ReviewPreviewSection(
@@ -173,7 +168,6 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
                 ],
               ),
             ),
-            // 3. 하단 버튼 배치 (SafeArea 적용됨)
             Positioned(
               left: 0,
               right: 0,

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/router/app_router.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
+import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
+import 'package:meomulm_frontend/core/theme/app_icons.dart';
+import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/notification_api_service.dart';
 import 'package:meomulm_frontend/features/accommodation/data/models/notification_response_model.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/notification_list_widgets/notification_card.dart';
@@ -48,7 +53,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
     setState(() => isLoading = true);
 
     try {
-      // 1. 서비스 호출 시 토큰 전달
+      // 서비스 호출 시 토큰 전달
       final response = await NotificationApiService.getNotifications(
         token: authProvider.token ?? '',
       );
@@ -71,7 +76,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   Future<void> _deleteNotification(int id, int index) async {
     final authProvider = context.read<AuthProvider>();
 
-    // UI 먼저 제거
+    // UI 제거
     final removedItem = notifications[index];
     setState(() {
       notifications.removeAt(index);
@@ -82,13 +87,15 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
         notificationId: id,
       );
     } catch (e) {
-      // 서버 삭제 실패 시 리스트에 다시 복구
+      // 서버 삭제 실패 시 리스트 다시 복구
       setState(() {
         notifications.insert(index, removedItem);
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('알림 삭제에 실패했습니다.')),
+        SnackMessenger.showMessage(
+          context,
+          "알림 삭제에 실패했습니다.",
+          type: ToastType.error,
         );
       }
     }
@@ -97,7 +104,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppColors.white,
       appBar: const AppBarWidget(title: "알림 목록"),
       body: _buildBodyContent(),
     );
@@ -105,7 +112,7 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
 
   Widget _buildBodyContent() {
     if (isLoading) return const Center(
-        child: CircularProgressIndicator(color: Colors.black)
+        child: CircularProgressIndicator(color: AppColors.black)
     );
 
     if (notifications.isEmpty) {
@@ -114,17 +121,14 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.notifications_none_rounded,
-              size: 64,
-              color: Colors.grey[300]
+              AppIcons.notifications,
+              size: AppIcons.sizeXxxxxl,
+              color: AppColors.gray3
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
             const Text(
               '알림 내역이 없습니다',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey
-              )
+              style: AppTextStyles.subTitleGrey
             ),
           ],
         ),
@@ -133,9 +137,12 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
 
     return RefreshIndicator(
       onRefresh: loadNotifications,
-      color: Colors.black,
+      color: AppColors.black,
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.lg
+        ),
         itemCount: notifications.length,
         itemBuilder: (context, index) {
           NotificationResponseModel item = notifications[index];
@@ -149,22 +156,22 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
             },
             // 밀었을 때 뒷 배경
             background: Container(
-              margin: const EdgeInsets.only(bottom: 16),
+              margin: const EdgeInsets.only(bottom: AppSpacing.lg),
               decoration: BoxDecoration(
                 color: Colors.redAccent.withOpacity(0.9),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(AppBorderRadius.xxl),
               ),
               alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 20),
+              padding: const EdgeInsets.only(right: AppSpacing.lg),
               child: const Icon(
-                  Icons.delete_sweep_rounded,
-                  color: Colors.white,
-                  size: 28
+                  AppIcons.delete,
+                  color: AppColors.white,
+                  size: AppIcons.sizeXl
               ),
             ),
             child: GestureDetector(
               onTap: () async {
-                final linkUrl = item.notificationLinkUrl; // 서버에서 준 링크 (예: meomulm://...)
+                final linkUrl = item.notificationLinkUrl;
 
                 if (!item.isRead) {
                   setState(() {
@@ -179,15 +186,13 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                 if (linkUrl != null && linkUrl.isNotEmpty) {
                   try {
                     final uri = Uri.parse(linkUrl);
-                    // 쌤이 만드신 경로 해석
                     final parsedPath = AppRouter.parseDeepLinkUri(uri);
 
                     if (parsedPath != null) {
                       debugPrint('알림 클릭 이동 경로: $parsedPath');
-                      // 해석된 경로로 이동
                       context.push(parsedPath);
                     } else {
-                      debugPrint('해당 딥링크를 해석할 수 없습니다: $linkUrl');
+                      debugPrint('해당 링크를 해석할 수 없습니다: $linkUrl');
                     }
                   } catch (e) {
                     debugPrint('URI 파싱 에러: $e');
