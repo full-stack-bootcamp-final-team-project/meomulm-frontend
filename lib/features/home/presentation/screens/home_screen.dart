@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
+import 'package:meomulm_frontend/features/home/presentation/controllers/home_ad_auto_scroll_controller.dart';
 import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/home/presentation/widgets/bottom_nav_bar_widget.dart';
@@ -21,8 +22,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool isLoading = true;
-
   late LinearGradient _currentGradient;
   late final Timer _timer;
 
@@ -36,15 +35,23 @@ class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _jejuScroll = ScrollController();
   final ScrollController _busanScroll = ScrollController();
 
+  // 광고영역 자동 스크롤
+  late final HomeAdAutoScrollController _adAutoController;
+
   @override
   void dispose() {
+    // 자동 스크롤
+    _adAutoController.dispose();
+
+    _timer.cancel();
+
+    // 스크롤 컨트롤러
     _verticalScroll.dispose();
     _adScroll.dispose();
     _recentScroll.dispose();
     _seoulScroll.dispose();
     _jejuScroll.dispose();
     _busanScroll.dispose();
-    _timer.cancel();
     super.dispose();
   }
 
@@ -58,13 +65,17 @@ class _HomeScreenState extends State<HomeScreen> {
           (_) => _updateGradientIfNeeded(),
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final auth = context.read<AuthProvider>();
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final auth = context.read<AuthProvider>();
+    // 광고 영역 자동 스크롤
+    _adAutoController = HomeAdAutoScrollController(_adScroll);
 
-        context.read<HomeProvider>().loadHome(isLoggedIn: auth.isLoggedIn,);
-      });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 광고 영역 자동 스크롤
+      _adAutoController.start(context);
+
+      final auth = context.read<AuthProvider>();
+      context.read<HomeProvider>().loadHome(
+          isLoggedIn: auth.isLoggedIn
+      );
     });
   }
 
@@ -235,12 +246,12 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
           heroTag: "homeFab",
-        backgroundColor: AppColors.main,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: const Icon(Icons.smart_toy, color: AppColors.white),
-        onPressed: () => context.push('${RoutePaths.chat}')
+          backgroundColor: AppColors.main,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: const Icon(Icons.smart_toy, color: AppColors.white),
+          onPressed: () => context.push('${RoutePaths.chat}')
       ),
       // 탭
       bottomNavigationBar: SafeArea(
