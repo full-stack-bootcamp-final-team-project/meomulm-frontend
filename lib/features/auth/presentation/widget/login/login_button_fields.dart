@@ -47,7 +47,7 @@ class LoginButtonFields extends StatelessWidget {
         SizedBox(height: AppSpacing.lg),
 
         // 카카오로그인 버튼
-        SizedBox(
+       /* SizedBox(
           width: double.infinity,
           height: 50,
           child: ElevatedButton(
@@ -99,7 +99,7 @@ class LoginButtonFields extends StatelessWidget {
                     ],
                   ),
           ),
-        ),
+        ),*/
         SizedBox(height: AppSpacing.lg),
 
         // 아이디 찾기 / 비밀번호 찾기 버튼

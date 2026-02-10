@@ -154,12 +154,12 @@ class _AccommodationDetailScreenState extends State<AccommodationDetailScreen> {
                           const CustomDivider(),
                           PolicySection(),
                           const CustomDivider(),
-                          LocationSection(
+                          SafeArea(child: LocationSection(
                               address: data.accommodationAddress,
                               mapHeight: screenWidth * (2 / 5),
                               latitude: data.accommodationLatitude,
                               longitude: data.accommodationLongitude
-                          ),
+                          ),),
                           const SizedBox(height: 50),
                         ],
                       ),
