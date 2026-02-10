@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/app_constants.dart';
+import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/home/presentation/providers/home_provider.dart';
 import 'package:meomulm_frontend/features/intro/presentation/widget/loading_bar_widget.dart';
 import 'package:meomulm_frontend/features/intro/presentation/widget/logo_widget.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/widgets/dialogs/error_dialog.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -65,13 +68,19 @@ class _IntroScreenState extends State<IntroScreen>
   /// ========================== 홈 화면 준비 ==========================
   Future<void> _prepareHome() async {
     try {
-      await Future.delayed(const Duration(seconds: 2)); // ✅ 테스트용 정상
+      // await Future.delayed(const Duration(seconds: 2)); // ✅ 테스트용 정상
       // await Future.delayed(const Duration(seconds: 100)); // 🔥 테스트용 지연
+      final auth = context.read<AuthProvider>();
+      final homeProvider = context.read<HomeProvider>();
+
+      await homeProvider.loadHome(
+        isLoggedIn: auth.isLoggedIn,
+      );
+
       _isHomeReady = true;
-      // 준비 완료 시 이동
       _checkAndNavigate();
-    } catch (_) {
-      // 실패 시 대기
+    } catch (e) {
+      // 실패 → 에러 타이머가 처리
     }
   }
 
