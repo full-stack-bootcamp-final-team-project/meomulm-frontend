@@ -52,46 +52,7 @@ class _AccommodationResultScreen extends State<AccommodationResultScreen> {
     });
   }
 
-  // Future<void> loadAccommodations() async {
-  //   final searchProvider = context.read<AccommodationProvider>();
-  //
-  //   if ((searchProvider.keyword?.trim().isEmpty ?? true)
-  //       && searchProvider.latitude == null) {
-  //     setState(() {
-  //       isLoading = false;
-  //       accommodations = [];
-  //     });
-  //     return;
-  //   }
-  //
-  //   setState(() => isLoading = true);
-  //
-  //   try {
-  //     final filterProvider = context.read<FilterProvider>();
-  //
-  //     final params = {
-  //       'lastIndex': accommodations.length,
-  //       'limit': 20,
-  //       ...searchProvider.searchParams,   // 검색 조건
-  //       ...filterProvider.filterParams,   // 필터 조건
-  //     };
-  //
-  //     final response = await AccommodationApiService.searchAccommodations(
-  //       params: params,
-  //     );
-  //
-  //     setState(() {
-  //       accommodations = response;
-  //       isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     debugPrint('데이터 로드 실패: $e');
-  //     setState(() {
-  //       accommodations = [];
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
+
 
   Future<void> loadAccommodations({required bool isFirstLoad}) async {
     final searchProvider = context.read<AccommodationProvider>();
