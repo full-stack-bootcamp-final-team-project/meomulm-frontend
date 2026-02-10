@@ -31,24 +31,26 @@ class AdSectionWidget extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          SingleChildScrollView(
-            controller: controller,
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.only(left: horizontalPadding),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: List.generate(
-                items.length,
-                    (i) {
-                  final item = items[i];
+          Center(
+            child: SizedBox(
+              height: itemWidth * 0.43,
+              child:
+              ListView.builder(
+                controller: controller,
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.only(left: horizontalPadding),
+                itemBuilder: (context, index) {
+                  final item = items[index % items.length];
+
                   return GestureDetector(
                     onTap: () => onItemTap(item["url"]!),
                     child: Container(
                       width: itemWidth,
                       height: itemWidth * 0.43,
-                      margin: EdgeInsets.only(right: itemSpacing),
+                      margin: const EdgeInsets.only(right: itemSpacing),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(AppBorderRadius.xs),
+                        borderRadius:
+                        BorderRadius.circular(AppBorderRadius.xs),
                         image: DecorationImage(
                           image: AssetImage(item["imageUrl"]!),
                           fit: BoxFit.cover,
