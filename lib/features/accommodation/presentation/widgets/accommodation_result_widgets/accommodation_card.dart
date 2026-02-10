@@ -318,7 +318,7 @@ class AccommodationCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppBorderRadius.lg),
             boxShadow: [
               BoxShadow(
-                color: AppColors.black.withOpacity(0.07),
+                color: AppColors.black.withOpacity(0.2),
                 blurRadius: 12,
                 offset: const Offset(0, 3),
               ),

@@ -36,10 +36,38 @@ class _AccommodationFilterPriceState extends State<AccommodationFilterPrice> {
   }
 
   void _onTextChange() {
-    final min = double.tryParse(_minController.text) ?? 0;
-    final max = double.tryParse(_maxController.text) ?? 200;
+    double min = double.tryParse(_minController.text) ?? 0;
+    double max = double.tryParse(_maxController.text) ?? 200;
 
-    if (min <= max && max <= 200) {
+    if (min < 0) {
+      min = 0;
+      _minController.text = '0';
+      _minController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _minController.text.length),
+      );
+    } else if (min > 200) {
+      min = 200;
+      _minController.text = '200';
+      _minController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _minController.text.length),
+      );
+    }
+
+    if (max > 200) {
+      max = 200;
+      _maxController.text = '200';
+      _maxController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _maxController.text.length),
+      );
+    } else if (max < 0) {
+      max = 0;
+      _maxController.text = '0';
+      _maxController.selection = TextSelection.fromPosition(
+        TextPosition(offset: _maxController.text.length),
+      );
+    }
+
+    if (min <= max) {
       context.read<FilterProvider>().setPriceRange(RangeValues(min, max));
     }
   }
@@ -56,7 +84,7 @@ class _AccommodationFilterPriceState extends State<AccommodationFilterPrice> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('가격 범위', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+        const Text('가격 범위', style: AppTextStyles.bodyLg),
         const SizedBox(height: 20),
 
         Row(
