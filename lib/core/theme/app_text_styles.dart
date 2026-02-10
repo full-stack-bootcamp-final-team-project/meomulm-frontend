@@ -1,0 +1,205 @@
+import 'package:flutter/material.dart';
+import 'app_colors.dart';
+
+/// =====================
+/// 텍스트 스타일 정의
+/// =====================
+class AppTextStyles {
+  AppTextStyles._();
+
+  /// =====================
+  /// 평점
+  /// =====================
+  static const reviewPoint = TextStyle(
+    fontSize: 42,
+    fontWeight: FontWeight.bold,
+    color: AppColors.black,
+  );
+
+  /// =====================
+  /// 제목
+  /// =====================
+  static const appBarTitle = TextStyle(
+    fontSize: 25,
+    fontWeight: FontWeight.w600,
+    color: AppColors.black,
+  );
+
+  static const cardTitle = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.w500,
+    color: AppColors.black,
+  );
+
+  static const subTitle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: AppColors.black,
+  );
+
+  static const subTitleGrey = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: AppColors.gray2,
+  );
+
+  /// =====================
+  /// 입력창
+  /// =====================
+  static const inputLabel = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: AppColors.black,
+  );
+
+  static const inputTextSm = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: AppColors.black,
+  );
+
+  static const inputTextMd = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: AppColors.black,
+  );
+
+  static const inputTextLg = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    color: AppColors.black,
+  );
+
+  static const inputPlaceholder = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: AppColors.gray3,
+  );
+
+  static const inputError = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: AppColors.error,
+  );
+
+  static const inputSuccess = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: AppColors.error,
+  );
+
+  static const inputDisable = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: AppColors.gray3,
+  );
+
+  /// =====================
+  /// 버튼
+  /// =====================
+  static const buttonSm = TextStyle(
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+      color: AppColors.white
+  );
+
+  static const buttonMd = TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
+      color: AppColors.white
+  );
+
+  static const buttonLg = TextStyle(
+      fontSize: 16,
+      fontWeight: FontWeight.w600,
+      color: AppColors.white
+  );
+
+  static const kakaoLg = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    color: Color(0xD9000000),
+  );
+
+  static const naverLg = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    color:Color(0xFFFFFFFF),
+  );
+
+
+  /// =====================
+  /// 다이얼로그 텍스트
+  /// =====================
+  static const dialogLg = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    color: AppColors.main,
+  );
+
+
+  /// =====================
+  /// 기본 텍스트
+  /// =====================
+  static const bodyXs = TextStyle(
+    fontSize: 10,
+    fontWeight: FontWeight.w400,
+    color: AppColors.black,
+  );
+
+  static const bodyXsGray = TextStyle(
+    fontSize: 10,
+    fontWeight: FontWeight.w400,
+    color: AppColors.gray2,
+  );
+
+  static const bodySm = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: AppColors.black,
+  );
+
+  static const bodySmGray = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: AppColors.gray2,
+  );
+
+  static const bodySmWhite = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: AppColors.white,
+  );
+
+  static const bodyMd = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: AppColors.black,
+  );
+
+  static const bodyMdGray = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: AppColors.gray2,
+  );
+
+  static const bodyLg = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: AppColors.black,
+  );
+
+  static const bodyXl = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+    color: AppColors.black,
+  );
+
+
+  static const textError = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: AppColors.error,
+  );
+
+}
