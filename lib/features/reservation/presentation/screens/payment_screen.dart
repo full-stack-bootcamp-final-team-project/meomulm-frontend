@@ -374,7 +374,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     height: AppSpacing.xxxl,
                     decoration: BoxDecoration(
                       color: (_isCardFilled && !_isProcessing && _paymentIntent != null)
-                          ? AppColors.onPressed
+                          ? AppColors.main
                           : AppColors.disabled,
                       borderRadius: BorderRadius.circular(AppBorderRadius.md),
                     ),
@@ -411,7 +411,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   /// 내부적으로 카드 번호/만료일/CVC 입력 폼을 렌더링하고,
   /// controller.details.complete 로 입력 완료 여부를 알 수 있다.
   Widget _buildCardFormField() {
-    // ✅ 모바일(Android/iOS)에서만 Stripe 카드 폼 렌더링
+    // 모바일(Android/iOS)에서만 Stripe 카드 폼 렌더링
     if (!kIsWeb && (Platform.isAndroid || Platform.isIOS)) {
       return CardFormField(
         controller: _cardFormController,
@@ -423,7 +423,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       );
     }
 
-    // ✅ 그 외 플랫폼에서는 안내 UI
+    // 그 외 플랫폼에서는 안내 UI
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(

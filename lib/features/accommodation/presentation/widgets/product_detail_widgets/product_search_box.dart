@@ -65,7 +65,7 @@ class _ProductSearchBoxState extends State<ProductSearchBox> {
                 );
                 if (result != null) {
                   setState(() => _dateRange = result);
-                  // ✅ 여기서는 로컬 상태만 변경, Provider는 아직 변경하지 않음
+                  // 여기서는 로컬 상태만 변경, Provider는 아직 변경하지 않음
                 }
               },
             ),
@@ -84,7 +84,7 @@ class _ProductSearchBoxState extends State<ProductSearchBox> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // ✅ Apply 버튼 누를 때만 Provider에 적용
+                  // Apply 버튼 누를 때만 Provider에 적용
                   widget.onDateChanged(_dateRange);
                   widget.onGuestChanged(_guestCount);
 

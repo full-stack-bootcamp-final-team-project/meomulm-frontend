@@ -58,7 +58,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
       List<Product> allRooms = response.allProducts ?? [];
       List<int> availableIds = response.availableProductIds ?? [];
 
-      // ✅ availableProductIds 먼저 나오도록 정렬
+      // availableProductIds 먼저 나오도록 정렬
       allRooms.sort((a, b) {
         final aAvailable = availableIds.contains(a.productId);
         final bAvailable = availableIds.contains(b.productId);

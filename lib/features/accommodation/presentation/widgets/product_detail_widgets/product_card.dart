@@ -148,7 +148,7 @@ class _ProductCardState extends State<ProductCard> {
                           widget.onTapReserve();
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.onPressed,
+                          backgroundColor: AppColors.main,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius:

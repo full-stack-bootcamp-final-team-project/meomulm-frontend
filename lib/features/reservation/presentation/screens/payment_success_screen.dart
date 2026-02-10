@@ -37,7 +37,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false, // 🔥 뒤로가기 완전 차단
+      canPop: false, // 뒤로가기 완전 차단
       child: Scaffold(
         backgroundColor: AppColors.white,
         body: SafeArea(
@@ -57,14 +57,14 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                         shape: BoxShape.circle,
                         border: Border.all(
                           width: AppSpacing.md,
-                          color: AppColors.onPressed,
+                          color: AppColors.main,
                         ),
                       ),
                     ),
                     const Icon(
                       AppIcons.check,
                       size: 80,
-                      color: AppColors.onPressed,
+                      color: AppColors.main,
                     ),
                   ],
                 ),
@@ -93,7 +93,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(
                       width: 2,
-                      color: AppColors.onPressed,
+                      color: AppColors.main,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6),
@@ -102,7 +102,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                   child: const Text(
                     '예약 확인',
                     style: TextStyle(
-                      color: AppColors.onPressed,
+                      color: AppColors.main,
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
@@ -124,7 +124,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                   child: Container(
                     height: 50,
                     decoration: BoxDecoration(
-                      color: AppColors.onPressed,
+                      color: AppColors.main,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     alignment: Alignment.center,
