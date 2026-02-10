@@ -118,6 +118,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // 광고영역 데이터 - 팀원 정보
   static final List<Map<String, String>> ADItems = [
+    {"title": "프로젝트 깃허브", "url": "https://github.com/full-stack-bootcamp-final-team-project", "imageUrl": "assets/images/ad/ad_project_git.png"},
+    {"title": "프로젝트 소개 포트폴리오 (PDF, 발표자료)", "url": "https://detailed-astronomy-c9c.notion.site/303dea202283801aa2d4e655447b8839?source=copy_link", "imageUrl": "assets/images/ad/ad_project_info.png"},
     {"title": "박세원", "url": "https://github.com/svv0003", "imageUrl": "assets/images/ad/ad_svv0003.gif"},
     {"title": "박형빈", "url": "https://github.com/PHB-1994", "imageUrl": "assets/images/ad/ad_PHB-1994.gif"},
     {"title": "유기태", "url": "https://github.com/tiradovi", "imageUrl": "assets/images/ad/ad_tiradovi.png"},
