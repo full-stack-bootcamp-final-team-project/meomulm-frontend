@@ -68,7 +68,7 @@ class ReviewCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                      item.createdAt,
+                      item.ReviewDate,
                       style: AppTextStyles.inputPlaceholder.copyWith(color: AppColors.gray2)
                   ),
                   const SizedBox(width: AppSpacing.sm),
