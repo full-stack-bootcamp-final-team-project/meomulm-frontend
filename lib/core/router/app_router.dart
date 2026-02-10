@@ -6,6 +6,8 @@ import 'package:meomulm_frontend/features/accommodation/presentation/screens/acc
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/notification_list_screen.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/screens/product_list_screen.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
+import 'package:meomulm_frontend/features/auth/presentation/screens/privacy_policy_screen.dart';
+import 'package:meomulm_frontend/features/auth/presentation/screens/terms_of_service_screen.dart';
 import 'package:meomulm_frontend/features/chat/presentation/screens/chat_screen.dart';
 import 'package:meomulm_frontend/features/map/presentation/screens/search/map_search_result_screen.dart';
 import 'package:meomulm_frontend/features/map/presentation/screens/search/map_search_screen.dart';
@@ -134,6 +136,16 @@ class AppRouter {
         path: RoutePaths.confirmPassword,
         name: "confirmPassword",
         builder: (context, state) => const ConfirmPasswordScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.PrivacyPolicy,
+        name: "privacyPolicyScreen",
+        builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.TermsOfService,
+        name: "termsOfServiceScreen",
+        builder: (context, state) => const TermsOfServiceScreen(),
       ),
       GoRoute(
         path: '${RoutePaths.loginChangePassword}/:userId',
