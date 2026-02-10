@@ -25,6 +25,10 @@ class RoutePaths{
   static const String confirmPassword = '/confirm-password';
   // 비밀번호 변경 스크린 (로그인) (login_change_password_screen)
   static const String loginChangePassword = '/login-change-password';
+  // 이용 약관
+  static const String TermsOfService = '/signup-terms';
+  // 개인정보 동의
+  static const String PrivacyPolicy = '/signup-privacy';
 
   /// =====================
   /// accommodation 라우팅 경로

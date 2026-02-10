@@ -38,12 +38,20 @@ class _SignupScreenState extends State<SignupScreen> {
 
   bool _isLoading = false;
 
+
   // 중복확인 체크 + 입력값 검증
   bool _isEmailChecked = false;
   bool _isPasswordChecked = false;
   bool _isCheckPasswordChecked = false;
   bool _isNameChecked = false;
   bool _isPhoneChecked = false;
+  
+  // 이용약관, 개인정보 동의
+  bool _allCheck = false;
+  bool _oldCheck = false;
+  bool _termsCheck = false;
+  bool _privacyCheck = false;
+  bool _serviceCheck = false;
 
   // 카카오로 회원가입인지 검증
   late final bool _isKakaoSignup;
@@ -75,6 +83,13 @@ class _SignupScreenState extends State<SignupScreen> {
       });
     }
 
+    _emailController.addListener(() {
+     _isEmailChecked = false;
+    });
+
+    _phoneController.addListener(() {
+      _isPhoneChecked = false;
+    });
 
     _passwordController.addListener(() {
       final password = _passwordController.text.trim();
@@ -184,6 +199,15 @@ class _SignupScreenState extends State<SignupScreen> {
       return;
     }
 
+    if(!_oldCheck || !_termsCheck || !_privacyCheck) {
+      SnackMessenger.showMessage(
+          context,
+          '필수 이용 약관에 동의해주세요',
+          type: ToastType.error
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -206,15 +230,12 @@ class _SignupScreenState extends State<SignupScreen> {
         checkPassword = KeyboardConverter.convertToEnglish(checkPassword);
       }
 
-      // 전화번호 - 여부 확인
-      String checkPhone = PhoneNumberCheck(phone);
-
       // 회원가입 요청
       final user = await AuthService.signup(
         userEmail: _emailController.text.trim(),
         userPassword: password,
         userName: _nameController.text.trim(),
-        userPhone: checkPhone,
+        userPhone: _phoneController.text.trim(),
         userBirth: _birthController.text.trim()
       );
 
@@ -320,22 +341,149 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
-  // 전화번호 - 확인 (없으면 추가)
-  String PhoneNumberCheck(String phone) {
-    if (phone.length == 10) {
-      return '${phone.substring(0, 2)}-'
-          '${phone.substring(2, 6)}-'
-          '${phone.substring(6)}';
-    }
-
-    if (phone.length == 11) {
-      return '${phone.substring(0, 3)}-'
-          '${phone.substring(3, 7)}-'
-          '${phone.substring(7)}';
-    }
-
-    return phone; // 형식이 다르면 원본 반환
+  // 모두 동의 체크
+  void _syncAllCheck() {
+    _allCheck = _oldCheck && _privacyCheck && _termsCheck && _serviceCheck;
   }
+  // 체크 항목 변경
+  void _setAllChecks(bool value) {
+    _allCheck = value;
+    _oldCheck = value;
+    _privacyCheck = value;
+    _termsCheck = value;
+    _serviceCheck = value;
+  }
+  
+  // 이용 약관
+  void _userCheckInfo() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              insetPadding: EdgeInsets.zero,
+              title: const Text('회원가입 약관 동의', textAlign: TextAlign.center),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(height: 10),
+                  // 전체 항목
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _allCheck,
+                        onChanged: (o) {
+                          final value = o ?? false;
+                          setDialogState(() => _setAllChecks(value));
+                        },
+                      ),
+                      const Expanded(child: Text('모두 동의')),
+                    ],
+                  ),
+                  SizedBox(height: AppSpacing.s),
+                  Padding(
+                    padding: EdgeInsets.zero,
+                    child: const Divider(height: 1, thickness: 1),
+                  ),
+                  SizedBox(height: AppSpacing.s),
+                  // 나이
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _oldCheck,
+                        onChanged: (o) {
+                          setDialogState(() {
+                            _oldCheck = o ?? false;
+                            _syncAllCheck();
+                          });
+                        },
+                      ),
+                      const Expanded(child: Text('만 14세 이상입니다 (필수)')),
+                    ],
+                  ),
+                  // 개인정보
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _privacyCheck,
+                        onChanged: (p) {
+                          setDialogState(() {
+                            _privacyCheck = p ?? false;
+                            _syncAllCheck();
+                          });
+                        },
+                      ),
+                      const Expanded(child: Text('개인정보처리방침 (필수)')),
+                      TextButton(
+                        onPressed: () => context.push('/signup-privacy'),
+                        child: const Text('약관'),
+                      ),
+                    ],
+                  ),
+                  // 이용 약관
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _termsCheck,
+                        onChanged: (t) {
+                          setDialogState(() {
+                            _termsCheck = t ?? false;
+                            _syncAllCheck();
+                          });
+                        },
+                      ),
+                      const Expanded(child: Text('서비스 이용 약관 (필수)')),
+                      TextButton(
+                        onPressed: () => context.push('/signup-terms'),
+                        child: const Text('약관'),
+                      ),
+                    ],
+                  ),
+                  // 이벤트 및 광고
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _serviceCheck,
+                        onChanged: (s) {
+                          setDialogState(() {
+                            _serviceCheck = s ?? false;
+                            _syncAllCheck();
+                          });
+                        },
+                      ),
+                      const Expanded(child: Text('이벤트 및 광고 동의 (선택)')),
+                    ],
+                  ),
+                  SizedBox(height: 40)
+                ],
+              ),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed:  () => Navigator.pop(context),
+                      child: const Text('확인'),
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: Size(AppButtonStyles.buttonWidthMd, AppButtonStyles.buttonHeightMd),
+                          backgroundColor: AppColors.main,
+                          foregroundColor: AppColors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadiusGeometry.circular(10)
+                          )
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -378,7 +526,49 @@ class _SignupScreenState extends State<SignupScreen> {
                     BirthDateSelector(
                       birthController: _birthController,
                     ),
-                    const SizedBox(height: AppSpacing.lg),
+                    const SizedBox(height: AppSpacing.xl),
+
+                    
+                    ElevatedButton(
+                        onPressed: _userCheckInfo,
+                        child: Text("meomulm 이용 약관 동의하기")
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    // // 이용 약관 동의 버튼
+                    // Row(
+                    //   children: [
+                    //     Checkbox(
+                    //         value: _privacyCheck,
+                    //         onChanged: (bool? value) {
+                    //           setState(() {
+                    //             _privacyCheck = value!;
+                    //           });
+                    //         }
+                    //     ),
+                    //     ElevatedButton(
+                    //         onPressed: () => context.push('/signup-privacy'),
+                    //         child: Text("개인정보 수집 동의하기")),
+                    //   ],
+                    // ),
+                    // SizedBox(height: 10),
+                    //
+                    // // 개인정보 동의 버튼
+                    // Row(
+                    //   children: [
+                    //     Checkbox(
+                    //         value: _termsCheck,
+                    //         onChanged: (bool? value) {
+                    //           setState(() {
+                    //             _termsCheck = value!;
+                    //           });
+                    //         }
+                    //     ),
+                    //     ElevatedButton(
+                    //         onPressed: () => context.push('/signup-terms'),
+                    //         child: Text("이용 약관 동의하기")),
+                    //   ],
+                    // ),
+                    // SizedBox(height: 10),
 
                     // 회원가입 버튼
                     SizedBox(
