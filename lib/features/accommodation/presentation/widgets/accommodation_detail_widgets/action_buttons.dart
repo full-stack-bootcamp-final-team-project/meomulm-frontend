@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_icons.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/features/accommodation/data/datasources/favorite_api_service.dart';
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -148,15 +149,11 @@ class _ActionButtonsState extends State<ActionButtons> {
 
     FlutterClipboard.copy(deepLink).then((_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('링크가 복사되었습니다'),
-            duration: const Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.black,
-            shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          ),
+        SnackMessenger.showMessage(
+          context,
+          "링크가 복사되었습니다.",
+          bottomPadding: AppSpacing.xxxxl,
+          type: ToastType.success
         );
       }
     });

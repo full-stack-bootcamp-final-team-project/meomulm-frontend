@@ -44,7 +44,7 @@ class ReviewCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      reviewDate,
+                      reviewDate.length >= 10 ? reviewDate.substring(0, 10) : reviewDate,
                       style: AppTextStyles.bodySmGray,
                     ),
                   ],
@@ -53,11 +53,11 @@ class ReviewCard extends StatelessWidget {
               Row(
                 children: List.generate(5, (index) {
                   if (index < reviewRating.floor()) {
-                    return const Icon(AppIcons.star, color: AppColors.ratingColor, size: AppIcons.sizeMd);
+                    return const Icon(AppIcons.star, color: AppColors.ratingColor, size: AppIcons.sizeXs);
                   } else if (index < reviewRating) {
-                    return const Icon(AppIcons.starHalf, color: AppColors.ratingColor, size: AppIcons.sizeMd);
+                    return const Icon(AppIcons.starHalf, color: AppColors.ratingColor, size: AppIcons.sizeXs);
                   } else {
-                    return const Icon(AppIcons.starBorder, color: AppColors.ratingColor, size: AppIcons.sizeMd);
+                    return const Icon(AppIcons.starBorder, color: AppColors.ratingColor, size: AppIcons.sizeXs);
                   }
                 }),
               ),
@@ -70,12 +70,19 @@ class ReviewCard extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md),
             decoration: BoxDecoration(
-              color: AppColors.gray4,
+              color: AppColors.gray5,
               borderRadius: BorderRadius.circular(AppBorderRadius.lg),
             ),
+
+            // child: Text(
+            //   reviewText,
+            //   style: const TextStyle(fontSize: 14, height: 1.4),
+            // ),
             child: Text(
-              reviewText,
+              '"$reviewText"',
               style: const TextStyle(fontSize: 14, height: 1.4),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

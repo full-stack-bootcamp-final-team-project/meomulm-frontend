@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/router/app_router.dart';
+import 'package:meomulm_frontend/core/theme/app_colors.dart';
 
 class NotificationToast extends StatelessWidget {
   final Map<String, dynamic> notification;
@@ -23,11 +24,11 @@ class NotificationToast extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.95),
+            color: AppColors.white.withOpacity(0.95),
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: AppColors.black.withOpacity(0.3),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -53,7 +54,7 @@ class NotificationToast extends StatelessWidget {
                 const CircleAvatar(
                   backgroundColor: Color(0xFF007AFF),
                   radius: 18,
-                  child: Icon(Icons.notifications_active, color: Colors.white, size: 20),
+                  child: Icon(Icons.notifications_active, color: AppColors.white, size: 20),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

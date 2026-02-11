@@ -21,9 +21,8 @@ class NotificationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     debugPrint("${notification.notificationId} isRead : ${notification.isRead}");
-    final bool isRead = notification.isRead;
     final unreadColor = AppColors.menuSelected;
-    final backgroundColor = isRead ? AppColors.gray5 : Colors.white;
+    final backgroundColor = notification.isRead ? AppColors.gray5 : Colors.white;
 
     return GestureDetector(
       onTap: () async {
@@ -32,6 +31,7 @@ class NotificationCard extends StatelessWidget {
             await NotificationApiService.updateNotificationStatus(
               notificationId: notification.notificationId,
             );
+            notification.isRead = true;
             if (onTap != null) onTap!();
           } catch (e) {
             debugPrint('읽음 처리 실패: $e');
@@ -51,7 +51,7 @@ class NotificationCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppBorderRadius.xxl),
           boxShadow: [
             BoxShadow(
-              color: AppColors.black.withOpacity(0.03),
+              color: AppColors.black.withOpacity(0.15),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -66,7 +66,7 @@ class NotificationCard extends StatelessWidget {
               height: 8,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isRead ? Colors.transparent : unreadColor,
+                color: notification.isRead ? Colors.transparent : unreadColor,
               ),
             ),
 
@@ -77,9 +77,9 @@ class NotificationCard extends StatelessWidget {
                   Text(
                     notification.notificationContent,
                     style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: isRead ? FontWeight.w400 : FontWeight.w600,
-                      color: isRead ? AppColors.gray2 : AppColors.black,
+                      fontSize: 13,
+                      fontWeight: notification.isRead ? FontWeight.w400 : FontWeight.w600,
+                      color: notification.isRead ? AppColors.gray2 : AppColors.black,
                       height: 1.4,
                       letterSpacing: -0.3,
                     ),
@@ -88,7 +88,7 @@ class NotificationCard extends StatelessWidget {
                   Text(
                     _formatDate(notification.createdAt),
                     style: const TextStyle(
-                      fontSize: 12,
+                      fontSize: 10,
                       color: AppColors.gray2,
                       letterSpacing: -0.2,
                     ),

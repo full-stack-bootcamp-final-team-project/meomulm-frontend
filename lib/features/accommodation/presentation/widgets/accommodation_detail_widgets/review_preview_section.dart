@@ -55,12 +55,18 @@ class ReviewPreviewSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.md),
-          Text(
-            desc,
-            style: const TextStyle(color: AppColors.gray3, fontSize: 14),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
+          Row(
+            children: [
+              Text('"'),
+              Text(
+                desc,
+                style: const TextStyle(color: AppColors.gray2, fontSize: 14),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text('"'),
+            ]
+          )
         ],
       ),
     );

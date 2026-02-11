@@ -19,6 +19,17 @@ class AccommodationApiService {
     ),
   );
 
+  static final Dio _dio_review = Dio(
+    BaseOptions(
+      baseUrl: ApiPaths.baseUrl,
+      connectTimeout : const Duration(seconds: 10),
+      receiveTimeout : const Duration(seconds: 30),
+      headers:{
+        'Content-Type' : 'application/json',
+      },
+    ),
+  );
+
 
 
   static Future<List<AccommodationResponseModel>> searchAccommodations({
@@ -112,7 +123,7 @@ class AccommodationApiService {
 
   static Future<ReviewSummaryModel?> getReviewSummary(int accommodationId) async {
     try {
-      final res = await _dio.get('/reviews/summary/${accommodationId}');
+      final res = await _dio_review.get('/review/summary/${accommodationId}');
 
       if (res.statusCode == 200) {
         return ReviewSummaryModel.fromJson(res.data);
@@ -130,7 +141,7 @@ class AccommodationApiService {
   static Future<List<AccommodationReviewModel>> getReviewsByAccommodationId(int id) async {
     try {
       // 백엔드 엔드포인트: @GetMapping("/accommodationId/{accommodationId}")
-      final res = await _dio.get('/review/accommodationId/$id');
+      final res = await _dio_review.get('/review/accommodationId/${id}');
       if (res.statusCode == 200) {
         return (res.data as List)
             .map((json) => AccommodationReviewModel.fromJson(json))

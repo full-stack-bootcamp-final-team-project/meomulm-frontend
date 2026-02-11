@@ -31,7 +31,7 @@ class _CalendarDialogState extends State<CalendarDialog> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final maxHeight = 620;
+    final maxHeight = 500;
     final maxPadding = (MediaQuery.of(context).size.height - maxHeight) / 2;
 
     return Dialog(
@@ -64,6 +64,8 @@ class _CalendarDialogState extends State<CalendarDialog> {
                   rangeStartDay: rangeStart,
                   rangeEndDay: rangeEnd,
                   rangeSelectionMode: RangeSelectionMode.enforced,
+                  sixWeekMonthsEnforced: true,
+                  rowHeight: 44,
 
                   calendarStyle: CalendarStyle(
                     todayDecoration: BoxDecoration(
