@@ -43,6 +43,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
       return;
     }
 
+
     setState(() {
       isLoading = true;
     });
@@ -58,6 +59,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
       List<Product> allRooms = response.allProducts ?? [];
       List<int> availableIds = response.availableProductIds ?? [];
 
+      debugPrint('allRooms: ${response.allProducts}');
+      debugPrint('availableIds: ${response.availableProductIds}');
       // availableProductIds 먼저 나오도록 정렬
       allRooms.sort((a, b) {
         final aAvailable = availableIds.contains(a.productId);

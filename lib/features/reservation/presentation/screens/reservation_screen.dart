@@ -6,6 +6,7 @@ import 'package:meomulm_frontend/core/constants/paths/route_paths.dart' as AppRo
 import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
+import 'package:meomulm_frontend/core/widgets/buttons/bottom_action_button.dart';
 import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/core/widgets/input/custom_underline_text_field.dart';
 import 'package:meomulm_frontend/core/widgets/input/phone_number_formatter.dart';
@@ -44,13 +45,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
       _nameFocusNode.requestFocus();
     });
 
-    // Provider에서 기존 예약자 정보 불러오기
     final reservationProvider = context.read<ReservationProvider>();
     _nameController = TextEditingController(text: reservationProvider.bookerName ?? '');
     _emailController = TextEditingController(text: reservationProvider.bookerEmail ?? '');
     _phoneController = TextEditingController(text: reservationProvider.bookerPhone ?? '');
 
-    // 토큰 체크 및 유저 프로필 로드
     Future.microtask(() {
       final token = context.read<AuthProvider>().token;
       if (token != null) {
@@ -63,12 +62,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
     _nameController.addListener(_validateForm);
     _emailController.addListener(_validateForm);
     _phoneController.addListener(_validateForm);
-
-    // 최초 form validation
     _validateForm();
   }
 
-  /// 예약 API 호출 후 반환된 reservationId를 provider에 저장 → 결제 화면으로
   Future<void> _makeReservation() async {
     final reservationProvider = context.read<ReservationProvider>();
     final accommodationProvider = context.read<AccommodationProvider>();
@@ -83,10 +79,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
       isLoading = true;
     });
 
-    if(!_canSubmit){
-      SnackMessenger.showMessage(context, "값을 정확히 입력해주세요.",type: ToastType.error);
+    if (!_canSubmit) {
+      SnackMessenger.showMessage(context, "값을 정확히 입력해주세요.", type: ToastType.error);
       return;
     }
+
     try {
       final token = context.read<AuthProvider>().token;
       if (token == null) {
@@ -94,8 +91,6 @@ class _ReservationScreenState extends State<ReservationScreen> {
         return;
       }
 
-
-      // ── 예약 API 호출 → reservationId 반환 ──
       final int reservationId = await ReservationApiService.postReservation(
         token,
         reservationInfo.roomId,
@@ -108,10 +103,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
         reservationInfo.totalPrice,
       );
 
-      // provider에 reservationId 저장 (결제 화면에서 사용)
       reservationProvider.setReservationId(reservationId);
 
-      // provider에 예약자 정보 저장
       reservationProvider.setBookerInfo(
         name: _nameController.text,
         email: _emailController.text,
@@ -121,10 +114,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
       debugPrint('[ReservationScreen] 예약 완료 | reservationId=$reservationId');
 
       if (!mounted) return;
-
-      // 결제 화면으로 이동
-      GoRouter.of(context).push(AppRouter.RoutePaths.paymentSuccess);
-
+      GoRouter.of(context).push(AppRouter.RoutePaths.payment);
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -162,22 +152,14 @@ class _ReservationScreenState extends State<ReservationScreen> {
     super.dispose();
   }
 
-
-
   Future<void> _deleteBookerInfo() async {
     final reservationProvider = context.read<ReservationProvider>();
-
-    // Provider에 새로 만든 메서드 사용
     reservationProvider.clearBookerInfo();
-
-    // TextField 컨트롤러도 초기화 (UI 반영용)
     _nameController.clear();
     _emailController.clear();
     _phoneController.clear();
-
     Navigator.of(context).maybePop();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -195,166 +177,150 @@ class _ReservationScreenState extends State<ReservationScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBarWidget(
-          title: TitleLabels.booking,
-          onBack: _deleteBookerInfo),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg, AppSpacing.xl, AppSpacing.lg, AppSpacing.xxxl),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 숙소 정보
-                Text(accommodation.selectedAccommodationName ?? '숙소 이름 없음',
-                    style: AppTextStyles.bodyXl),
-                const SizedBox(height: AppSpacing.sm),
-                Text(reservationInfo?.productName ?? '객실 이름 없음',
-                    style: AppTextStyles.subTitle),
-                const SizedBox(height: AppSpacing.xs),
-                Text(reservationInfo?.peopleInfo ?? '인원 정보 없음',
-                    style: AppTextStyles.bodySm),
-                const SizedBox(height: AppSpacing.xl),
-
-                // 체크인 / 체크아웃
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 108,
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        decoration: BoxDecoration(
-                          color: AppColors.selectedLight,
-                          borderRadius:
-                          BorderRadius.circular(AppBorderRadius.md),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('체크인', style: AppTextStyles.bodySm),
-                            const SizedBox(height: AppSpacing.sm),
-                            Text(
-                              '$checkInDate\n${reservationInfo != null ? reservationInfo.checkInfo.split('~')[0].replaceFirst('체크인 ', '') : '체크인 정보 없음'}',
-                              style: AppTextStyles.bodyMd,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: Container(
-                        height: 108,
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        decoration: BoxDecoration(
-                          color: AppColors.selectedLight,
-                          borderRadius:
-                          BorderRadius.circular(AppBorderRadius.md),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('체크아웃', style: AppTextStyles.bodySm),
-                            const SizedBox(height: AppSpacing.sm),
-                            Text(
-                              '$checkOutDate\n${reservationInfo != null ? reservationInfo.checkInfo.split('~')[1].trimLeft().replaceFirst('체크아웃 ', '') : '체크아웃 정보 없음'}',
-                              style: AppTextStyles.bodyMd,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: AppSpacing.xxl),
-
-                // 예약자 정보
-                const Text('예약자 정보', style: AppTextStyles.cardTitle),
-                const SizedBox(height: AppSpacing.xl),
-
-                CustomUnderlineTextField(
-                  label: "이름",
-                  isRequired: true,
-                  hintText: InputMessages.emptyName,
-                  controller: _nameController,
-                  focusNode: _nameFocusNode,
-                  validator: (value) => RegexpUtils.validateName(value),
-                  onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(_emailFocusNode);
-                  },
-                  textInputAction: TextInputAction.next,
-                ),
-
-                const SizedBox(height: AppSpacing.xl),
-                CustomUnderlineTextField(
-                  label: "이메일",
-                  isRequired: true,
-                  hintText: InputMessages.emptyEmail,
-                  controller: _emailController,
-                  focusNode: _emailFocusNode,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) => RegexpUtils.validateEmail(value),
-                  onFieldSubmitted: (_) {
-                    FocusScope.of(context).requestFocus(_phoneFocusNode);
-                  },
-                  textInputAction: TextInputAction.next,
-                ),
-
-                const SizedBox(height: AppSpacing.xl),
-                CustomUnderlineTextField(
-                  label: "휴대폰 번호",
-                  isRequired: true,
-                  hintText: InputMessages.emptyPhone,
-                  controller: _phoneController,
-                  focusNode: _phoneFocusNode,
-                  onFieldSubmitted: (_) => _makeReservation(),
-                  keyboardType: TextInputType.phone,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    PhoneNumberFormatter(),
-                  ],
-                  validator: (value) => RegexpUtils.validatePhone(value),
-                ),
-
-                const SizedBox(height: AppSpacing.xxxl),
-
-                // 결제 정보
-                const Text('결제 정보', style: AppTextStyles.cardTitle),
-                const SizedBox(height: AppSpacing.xl),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('총 객실 가격', style: AppTextStyles.bodyLg),
-                    Text(reservationInfo?.totalCommaPrice ?? '가격 정보 없음',
-                        style: AppTextStyles.bodyXl),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
+        title: TitleLabels.booking,
+        onBack: _deleteBookerInfo,
       ),
-
-      // 하단 예약 버튼
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-              AppSpacing.xl, AppSpacing.xxs, AppSpacing.xl, AppSpacing.xl),
-          child: SizedBox(
-            height: AppSpacing.xxxl,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor:
-                _canSubmit ? AppColors.onPressed : Colors.grey,
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 80), // 버튼 높이만큼 패딩
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg, AppSpacing.xl, AppSpacing.lg, AppSpacing.xxxl),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(accommodation.selectedAccommodationName ?? '숙소 이름 없음',
+                        style: AppTextStyles.bodyXl),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(reservationInfo?.productName ?? '객실 이름 없음',
+                        style: AppTextStyles.subTitle),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(reservationInfo?.peopleInfo ?? '인원 정보 없음',
+                        style: AppTextStyles.bodySm),
+                    const SizedBox(height: AppSpacing.xl),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 108,
+                            padding: const EdgeInsets.all(AppSpacing.md),
+                            decoration: BoxDecoration(
+                              color: AppColors.selectedLight,
+                              borderRadius: BorderRadius.circular(AppBorderRadius.md),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('체크인', style: AppTextStyles.bodySm),
+                                const SizedBox(height: AppSpacing.sm),
+                                Text(
+                                  '$checkInDate\n${reservationInfo != null ? reservationInfo.checkInfo.split('~')[0].replaceFirst('체크인 ', '') : '체크인 정보 없음'}',
+                                  style: AppTextStyles.bodyMd,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Container(
+                            height: 108,
+                            padding: const EdgeInsets.all(AppSpacing.md),
+                            decoration: BoxDecoration(
+                              color: AppColors.selectedLight,
+                              borderRadius: BorderRadius.circular(AppBorderRadius.md),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('체크아웃', style: AppTextStyles.bodySm),
+                                const SizedBox(height: AppSpacing.sm),
+                                Text(
+                                  '$checkOutDate\n${reservationInfo != null ? reservationInfo.checkInfo.split('~')[1].trimLeft().replaceFirst('체크아웃 ', '') : '체크아웃 정보 없음'}',
+                                  style: AppTextStyles.bodyMd,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.xxl),
+                    const Text('예약자 정보', style: AppTextStyles.cardTitle),
+                    const SizedBox(height: AppSpacing.xl),
+                    CustomUnderlineTextField(
+                      label: "이름",
+                      isRequired: true,
+                      hintText: InputMessages.emptyName,
+                      controller: _nameController,
+                      focusNode: _nameFocusNode,
+                      validator: (value) => RegexpUtils.validateName(value),
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(_emailFocusNode);
+                      },
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    CustomUnderlineTextField(
+                      label: "이메일",
+                      isRequired: true,
+                      hintText: InputMessages.emptyEmail,
+                      controller: _emailController,
+                      focusNode: _emailFocusNode,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) => RegexpUtils.validateEmail(value),
+                      onFieldSubmitted: (_) {
+                        FocusScope.of(context).requestFocus(_phoneFocusNode);
+                      },
+                      textInputAction: TextInputAction.next,
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    CustomUnderlineTextField(
+                      label: "휴대폰 번호",
+                      isRequired: true,
+                      hintText: InputMessages.emptyPhone,
+                      controller: _phoneController,
+                      focusNode: _phoneFocusNode,
+                      onFieldSubmitted: (_) => _makeReservation(),
+                      keyboardType: TextInputType.phone,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        PhoneNumberFormatter(),
+                      ],
+                      validator: (value) => RegexpUtils.validatePhone(value),
+                    ),
+                    const SizedBox(height: AppSpacing.xxxl),
+                    const Text('결제 정보', style: AppTextStyles.cardTitle),
+                    const SizedBox(height: AppSpacing.xl),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('총 객실 가격', style: AppTextStyles.bodyLg),
+                        Text(reservationInfo?.totalCommaPrice ?? '가격 정보 없음',
+                            style: AppTextStyles.bodyXl),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-              onPressed: _canSubmit ? _makeReservation : null,
-              child: const Text(TitleLabels.payment, style: AppTextStyles.buttonLg),
             ),
           ),
-        ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SafeArea(
+              child: BottomActionButton(
+                  label: ButtonLabels.register,
+                  onPressed: _canSubmit ? _makeReservation : null,
+                ),
+              ),
+            ),
+
+        ],
       ),
     );
   }
