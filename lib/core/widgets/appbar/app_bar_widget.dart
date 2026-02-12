@@ -15,6 +15,9 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       centerTitle: true,
 
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+
       toolbarHeight: AppBarDimensions.appBarHeight - AppBarDimensions.dividerHeight,
 
       leading: IconButton(
