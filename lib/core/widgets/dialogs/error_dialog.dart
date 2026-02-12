@@ -4,15 +4,11 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 class ErrorDialog extends StatelessWidget {
   final String message;
   final VoidCallback? onConfirm;
-  final String? title;
-  final String? type;
 
   const ErrorDialog({
     super.key,
     required this.message,
     this.onConfirm,
-    this.title,
-    this.type,
   });
 
   @override
@@ -28,14 +24,14 @@ class ErrorDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              type == 'info' ? Icons.info_outline : Icons.error_outline,
-              color: type == 'info' ? AppColors.gray2 : AppColors.error,
+              Icons.error_outline,
+              color: AppColors.error,
               size: AppIcons.sizeXxl,
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-                title ?? '오류',
-                style: type == 'info' ? AppTextStyles.bodyXl:  AppTextStyles.textError,
+                '오류',
+                style: AppTextStyles.textError,
             ),
             const SizedBox(height: AppSpacing.sm),
             Text(

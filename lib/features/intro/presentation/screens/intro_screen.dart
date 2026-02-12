@@ -8,7 +8,7 @@ import 'package:meomulm_frontend/features/home/presentation/providers/home_provi
 import 'package:meomulm_frontend/features/intro/presentation/widget/loading_bar_widget.dart';
 import 'package:meomulm_frontend/features/intro/presentation/widget/logo_widget.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/widgets/dialogs/error_dialog.dart';
+import 'package:meomulm_frontend/core/widgets/dialogs/error_dialog.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -22,16 +22,13 @@ class _IntroScreenState extends State<IntroScreen>
 
   // 애니메이션 관련
   late AnimationController _controller; // 애니메이션을 시간으로 제어
-  late Animation<double> _animation; // 0.0 ~ 1.0 진행률 애니메이션
 
   // 상태 관리
-  bool _isAnimationDone = false; // 애니메이션 종료 여부
   bool _isHomeReady = false;     // 초기 데이터 준비 완료 여부
   bool _isNavigated = false;     // 홈 화면 이동 여부 (중복 방지)
   bool _isDialogShowing = false; // 에러 다이얼로그 중복 방지
 
   // 경고 타이머
-  Timer? _softErrorTimer;        // 5초 후 경고
   Timer? _hardErrorTimer;        // 30초 후 치명적 오류
 
   // 로딩바 Key (강제로 재생성할 때 사용)
@@ -50,16 +47,8 @@ class _IntroScreenState extends State<IntroScreen>
       duration: const Duration(seconds: 3),
     );
 
-    // 애니메이션 완료 시 상태 업데이트
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _isAnimationDone = true;
-        _checkAndNavigate(); // 애니메이션 + 홈 준비 완료 시 이동
-      }
-    });
-
     // 애니메이션 시작
-    _controller.forward();
+    _controller.repeat(reverse: true);
 
     // 홈 화면 준비 (API 호출 등)
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -91,7 +80,7 @@ class _IntroScreenState extends State<IntroScreen>
   void _checkAndNavigate() {
     if (_isNavigated) return; // 중복 이동 방지
 
-    if (_isAnimationDone && _isHomeReady && mounted) {
+    if (_isHomeReady && mounted) {
       _isNavigated = true;
       _cancelTimers(); // 타이머 해제
       context.go(RoutePaths.home); // 홈 화면 이동
@@ -102,18 +91,6 @@ class _IntroScreenState extends State<IntroScreen>
   void _startErrorTimers() {
     // 기존 타이머 취소
     _cancelTimers();
-
-    // ⚠️ 5초 경고 (재시도 가능)
-    _softErrorTimer = Timer(const Duration(seconds: 5), () {
-      if (!_isHomeReady && mounted) {
-        _showErrorDialog(
-          message: '로딩 중 입니다.\n잠시 기다려주세요.',
-          isHard: false,
-          title:'로딩 중',
-          type:'info'
-        );
-      }
-    });
 
     // 🚨 30초 오류
     _hardErrorTimer = Timer(const Duration(seconds: 27), () {
@@ -135,7 +112,6 @@ class _IntroScreenState extends State<IntroScreen>
   void _resetIntro() {
     _cancelTimers();
 
-    _isAnimationDone = false;
     _isHomeReady = false;
     _isNavigated = false;
 
@@ -155,7 +131,7 @@ class _IntroScreenState extends State<IntroScreen>
   /// ========================== 에러 다이얼로그 ==========================
   /// isHard: true → 앱 종료 / 재시도 불가
   /// isHard: false → 소프트 에러, 다시 시도 가능
-  void _showErrorDialog({required String message, required bool isHard, String? title, String? type}) {
+  void _showErrorDialog({required String message, required bool isHard}) {
     if (_isDialogShowing) return;
     _isDialogShowing = true;
 
@@ -169,15 +145,12 @@ class _IntroScreenState extends State<IntroScreen>
           if (!isHard) _resetIntro(); // 소프트 에러 → 재시도
           // isHard면 앱 종료나 다른 처리 가능
         },
-        title: title,
-        type: type,
       ),
     );
   }
 
   /// ========================== 타이머 해제 ==========================
   void _cancelTimers() {
-    _softErrorTimer?.cancel();
     _hardErrorTimer?.cancel();
   }
 
