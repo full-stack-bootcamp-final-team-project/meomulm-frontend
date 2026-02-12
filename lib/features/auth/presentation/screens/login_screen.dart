@@ -72,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
   }
-  
+
   // 아이디 저장
   void _saveOrRemoveEmail(String email) async {
     final prefs = await SharedPreferences.getInstance();
@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
       SnackMessenger.showMessage(
           context,
           emailRegexp,
-        type: ToastType.error
+          type: ToastType.error
       );
       return;
     }
@@ -125,12 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await context.read<HomeProvider>().loadHome(isLoggedIn: true);
 
       FocusManager.instance.primaryFocus?.unfocus();
-      SnackMessenger.showMessage(
-          context,
-          SnackBarMessages.loginCompleted,
-          type: ToastType.success
-      );
-      context.go('${RoutePaths.home}');
+      context.go(RoutePaths.home, extra: {'toast': '로그인 성공'});
 
     } catch (e) {
       if (!mounted) return;
@@ -210,8 +205,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
         SnackMessenger.showMessage(
             context,
-          '카카오 로그인 성공!',
-          type: ToastType.success
+            '카카오 로그인 성공!',
+            type: ToastType.success
         );
 
         context.go(RoutePaths.home);
@@ -224,8 +219,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
         SnackMessenger.showMessage(
             context,
-          '미가입 회원입니다. 회원가입을 진행해주세요.',
-          type: ToastType.error
+            '미가입 회원입니다. 회원가입을 진행해주세요.',
+            type: ToastType.error
         );
 
         // 회원가입 페이지로 카카오 정보 전달
@@ -252,7 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
       SnackMessenger.showMessage(
           context,
           errorMessage,
-        type: ToastType.error
+          type: ToastType.error
       );
 
     } catch (e, stackTrace) {

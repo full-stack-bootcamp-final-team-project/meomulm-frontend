@@ -92,7 +92,7 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
             "비밀번호가 변경되었습니다.",
             type: ToastType.success
         );
-        context.push('${RoutePaths.login}');
+        context.go('${RoutePaths.login}');
 
       } else {
         SnackMessenger.showMessage(
