@@ -24,7 +24,7 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
-  bool _isLoading = true;
+  bool _isLoading = false;
   bool _isCardFilled = false;
   bool _isProcessing = false;
   String? _errorMessage;
@@ -305,7 +305,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               bottom: AppSpacing.lg,
               child: BottomActionButton(
                 label: ButtonLabels.payWithPrice(_paymentIntent?.amount ?? 0),
-                onPressed: (_isCardFilled && !_isProcessing && _paymentIntent != null)
+                onPressed: (_isCardFilled && !_isProcessing && _paymentIntent != null && !_isLoading)
                     ? _processPayment
                     : null,
               ),

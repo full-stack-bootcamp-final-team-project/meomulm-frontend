@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart' as AppRouter;
+import 'package:meomulm_frontend/core/utils/accommodation_image_utils.dart';
 import 'package:meomulm_frontend/features/accommodation/presentation/widgets/product_detail_widgets/product_search_box.dart';
 import 'package:provider/provider.dart';
 
@@ -58,6 +59,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
       List<Product> allRooms = response.allProducts ?? [];
       List<int> availableIds = response.availableProductIds ?? [];
+
+
 
       debugPrint('allRooms: ${response.allProducts}');
       debugPrint('availableIds: ${response.availableProductIds}');
@@ -225,10 +228,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   price: room.productPrice ?? 0,
                   checkInfo:
                   '체크인 ${room.productCheckInTime} ~ 체크아웃 ${room.productCheckOutTime}',
-                  imageUrl: (room.images != null &&
-                      room.images!.isNotEmpty)
-                      ? room.images![0].productImageUrl ?? ''
-                      : '',
+
                   peopleInfo:
                   '기준 ${room.productStandardNumber}인 / 최대 ${room.productMaximumNumber}인',
                   facilities: [
