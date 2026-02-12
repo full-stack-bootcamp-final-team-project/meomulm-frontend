@@ -137,6 +137,15 @@ class _MyReservationsScreenState extends State<MyReservationsScreen>
     final w = MediaQuery.of(context).size.width;
     final maxWidth = w >= 600 ? w : double.infinity;
 
+    if(provider.isLoading) {
+      return Scaffold(
+        appBar: AppBarWidget(title: TitleLabels.myBookings),
+        body: Center(
+          child: CircularProgressIndicator(),
+        )
+      );
+    }
+
     return Scaffold(
       appBar: AppBarWidget(title: TitleLabels.myBookings),
       body: Center(
