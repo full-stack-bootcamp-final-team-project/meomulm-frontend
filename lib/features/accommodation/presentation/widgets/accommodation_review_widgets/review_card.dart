@@ -3,6 +3,7 @@ import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_icons.dart';
 import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
+import 'package:meomulm_frontend/core/widgets/layouts/star_rating_widget.dart';
 
 class ReviewCard extends StatelessWidget {
   final String reviewerName;
@@ -50,17 +51,7 @@ class ReviewCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Row(
-                children: List.generate(5, (index) {
-                  if (index < reviewRating.floor()) {
-                    return const Icon(AppIcons.star, color: AppColors.ratingColor, size: AppIcons.sizeXs);
-                  } else if (index < reviewRating) {
-                    return const Icon(AppIcons.starHalf, color: AppColors.ratingColor, size: AppIcons.sizeXs);
-                  } else {
-                    return const Icon(AppIcons.starBorder, color: AppColors.ratingColor, size: AppIcons.sizeXs);
-                  }
-                }),
-              ),
+              StarRatingWidget(rating: (reviewRating * 1.0 / 2.0)),
             ],
           ),
 

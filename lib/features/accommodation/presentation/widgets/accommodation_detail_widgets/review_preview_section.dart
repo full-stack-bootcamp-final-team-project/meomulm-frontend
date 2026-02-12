@@ -5,6 +5,7 @@ import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_icons.dart';
 import 'package:meomulm_frontend/core/theme/app_text_styles.dart';
+import 'package:meomulm_frontend/features/accommodation/data/datasources/review_rating_servivce.dart';
 
 class ReviewPreviewSection extends StatelessWidget {
   final String rating;
@@ -41,7 +42,7 @@ class ReviewPreviewSection extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.xs),
               Text(
-                  rating,
+                  RatingHelper.calculateRating(rating).toStringAsFixed(1),
                   style: AppTextStyles.bodyMd
               ),
               const SizedBox(width: 8),

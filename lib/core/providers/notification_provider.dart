@@ -18,8 +18,8 @@ class NotificationProvider extends ChangeNotifier {
 
     stompClient = StompClient(
       config: StompConfig(
-        url: 'ws://localhost:8080/ws-native',
-        // url: 'wss://meomulm-backend.onrender.com/ws-native',
+        // url: 'ws://localhost:8080/ws-native',
+        url: 'wss://meomulm-backend.onrender.com/ws-native',
         // url: 'wss://render-test-backend-5buy.onrender.com/ws-native',
         onConnect: (frame) => _onConnect(frame, token),
         onWebSocketError: (error) => print("❌ 웹소켓 에러: $error"),
