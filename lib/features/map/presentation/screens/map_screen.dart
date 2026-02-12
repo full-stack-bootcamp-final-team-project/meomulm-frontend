@@ -137,12 +137,38 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<AccommodationProvider>();
 
+    if (_myLatLng == null && _locationError == null) {
+      return Scaffold(
+        appBar: SearchBarWidget(
+          dateText: DatePeopleTextUtil.range(provider.checkIn, provider.checkOut),
+          peopleCount: provider.guestNumber,
+          onSearch: () => context.push(RoutePaths.mapSearch),
+          onBack: () => context.go(RoutePaths.home),
+          onFilter: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AccommodationFilterScreen(),
+              ),
+            );
+
+            if (result == true) {
+              _reloadWithFilter();
+            }
+          },
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: SearchBarWidget(
         dateText: DatePeopleTextUtil.range(provider.checkIn, provider.checkOut),
         peopleCount: provider.guestNumber,
         onSearch: () => context.push(RoutePaths.mapSearch),
-        onBack: ()=> context.go(RoutePaths.home),
+        onBack: () => context.go(RoutePaths.home),
         onFilter: () async {
           final result = await Navigator.push(
             context,
