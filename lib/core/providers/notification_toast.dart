@@ -64,7 +64,7 @@ class NotificationToast extends StatelessWidget {
                     children: [
                       const Text(
                         "새로운 알림",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                       Text(
                         notification['notificationContent'] ?? "알림 내용이 없습니다.",
