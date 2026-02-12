@@ -169,37 +169,11 @@ class _NotificationListScreenState extends State<NotificationListScreen> {
                   size: AppIcons.sizeXl
               ),
             ),
-            child: GestureDetector(
-              onTap: () async {
-                final linkUrl = item.notificationLinkUrl;
-
-                if (!item.isRead) {
-                  setState(() {
-                    item.isRead = true;
-                  });
-
-                  NotificationApiService.updateNotificationStatus(
-                    notificationId: item.notificationId,
-                  ).catchError((e) => debugPrint('서버 읽음 처리 실패: $e'));
-                }
-
-                if (linkUrl != null && linkUrl.isNotEmpty) {
-                  try {
-                    final uri = Uri.parse(linkUrl);
-                    final parsedPath = AppRouter.parseDeepLinkUri(uri);
-
-                    if (parsedPath != null) {
-                      debugPrint('알림 클릭 이동 경로: $parsedPath');
-                      context.push(parsedPath);
-                    } else {
-                      debugPrint('해당 링크를 해석할 수 없습니다: $linkUrl');
-                    }
-                  } catch (e) {
-                    debugPrint('URI 파싱 에러: $e');
-                  }
-                }
+            child: NotificationCard(
+              notification: item,
+              onTap: () {
+                setState(() {});
               },
-              child: NotificationCard(notification: item),
             ),
           );
         },
