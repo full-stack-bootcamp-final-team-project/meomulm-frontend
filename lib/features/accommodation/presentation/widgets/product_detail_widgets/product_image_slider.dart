@@ -87,9 +87,13 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
 
               final imageUrl = widget.imageUrl[index];
 
-              return GestureDetector(
+              return
+
+                GestureDetector(
                 onLongPress: _copyLink,
-                child: Image.network(
+                child:
+
+                Image.network(
                   imageUrl,
                   fit: BoxFit.cover,
                   loadingBuilder: (context, child, loadingProgress) {
@@ -139,7 +143,9 @@ class _ProductImageSliderState extends State<ProductImageSlider> {
                       ),
                     );
                   },
-                ),
+                )
+
+
               );
             },
           ),

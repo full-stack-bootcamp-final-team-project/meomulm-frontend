@@ -25,7 +25,7 @@ class ReservationScreen extends StatefulWidget {
 }
 
 class _ReservationScreenState extends State<ReservationScreen> {
-  bool isLoading = true;
+  bool isLoading = false;
 
   late final TextEditingController _nameController;
   late final TextEditingController _emailController;
@@ -314,9 +314,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
             bottom: 0,
             child: SafeArea(
               child: BottomActionButton(
-                  label: ButtonLabels.register,
-                  onPressed: _canSubmit ? _makeReservation : null,
-                ),
+                label: ButtonLabels.register,
+                onPressed: (_canSubmit && !isLoading) ? _makeReservation : null,
+              ),
               ),
             ),
 
