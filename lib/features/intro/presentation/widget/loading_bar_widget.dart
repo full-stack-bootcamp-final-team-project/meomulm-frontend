@@ -12,8 +12,13 @@ class LoadingBarWidget extends StatefulWidget {
 
 class _LoadingBarWidgetState extends State<LoadingBarWidget>
     with SingleTickerProviderStateMixin {
+
   late AnimationController _controller; // 애니메이션 컨트롤러
   late Animation<double> _animation; // 진행률 애니메이션
+
+  // 자동차 회전 관련
+  double _previousValue = 0;
+  bool _isReversing = false;
 
   @override
   void initState() {
@@ -29,8 +34,18 @@ class _LoadingBarWidgetState extends State<LoadingBarWidget>
       CurvedAnimation(parent: _controller, curve: Curves.linear),
     );
 
-    // 애니메이션 실행 (1회)
-    _controller.forward();
+    // 자동차 회전관련
+    _controller.addListener(() {
+      if (_controller.value < _previousValue) {
+        _isReversing = true;
+      } else {
+        _isReversing = false;
+      }
+      _previousValue = _controller.value;
+    });
+
+    // 무한 왕복 애니메이션
+    _controller.repeat(reverse: true);
   }
 
   @override
@@ -51,6 +66,8 @@ class _LoadingBarWidgetState extends State<LoadingBarWidget>
             builder: (context, child) {
               return LayoutBuilder(
                 builder: (context, constraints) {
+                  final maxWidth = constraints.maxWidth;
+
                   return SizedBox(
                     height: 50,
                     child: Stack(
@@ -66,12 +83,17 @@ class _LoadingBarWidgetState extends State<LoadingBarWidget>
 
                         /// 자동차 아이콘
                         Positioned(
-                          left: _animation.value * constraints!.maxWidth - 40,
+                          left: _animation.value * (maxWidth - 40),
                           bottom: 5,
-                          child: Transform.flip(
-                            flipX: true,
+                          child: Transform(
+                            alignment: Alignment.center,
+                            transform: Matrix4.rotationY(
+                              _isReversing ? 0 : 3.1416,
+                            ),
                             child: const Text(
-                                '🚗', style: TextStyle(fontSize: 30)),
+                              '🚗',
+                              style: TextStyle(fontSize: 30),
+                            ),
                           ),
                         ),
 
