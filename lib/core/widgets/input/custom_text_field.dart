@@ -4,7 +4,7 @@ import 'package:meomulm_frontend/core/theme/app_styles.dart';
 import 'package:meomulm_frontend/core/widgets/input/form_label.dart';
 
 class CustomTextField extends StatefulWidget {
-  final String label;
+  final String? label;
   final bool isRequired;
   final String hintText;
   final TextEditingController controller;
@@ -21,7 +21,7 @@ class CustomTextField extends StatefulWidget {
 
   const CustomTextField({
     super.key,
-    required this.label,
+    this.label,
     this.isRequired = false,
     required this.hintText,
     required this.controller,
@@ -51,7 +51,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        FormLabel(label: widget.label, isRequired: widget.isRequired),
+        FormLabel(label: widget.label ?? '', isRequired: widget.isRequired),
         TextFormField(
           controller: widget.controller,
           focusNode: widget.focusNode,
@@ -106,7 +106,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     : Icons.visibility,
               ),
               style: IconButton.styleFrom(
-                foregroundColor: AppColors.gray3
+                  foregroundColor: AppColors.gray3
               ),
               onPressed: widget.readOnly
                   ? null

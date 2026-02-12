@@ -45,7 +45,7 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _isCheckPasswordChecked = false;
   bool _isNameChecked = false;
   bool _isPhoneChecked = false;
-  
+
   // 이용약관, 개인정보 동의
   bool _allCheck = false;
   bool _oldCheck = false;
@@ -84,7 +84,7 @@ class _SignupScreenState extends State<SignupScreen> {
     }
 
     _emailController.addListener(() {
-     _isEmailChecked = false;
+      _isEmailChecked = false;
     });
 
     _phoneController.addListener(() {
@@ -221,8 +221,8 @@ class _SignupScreenState extends State<SignupScreen> {
       if (KeyboardConverter.containsKorean(password)) {
         password = KeyboardConverter.convertToEnglish(password);
         SnackMessenger.showMessage(
-            context,
-            "비밀번호가 한글 키보드로 입력되어 자동 변환되었습니다.",
+          context,
+          "비밀번호가 한글 키보드로 입력되어 자동 변환되었습니다.",
         );
       }
 
@@ -232,11 +232,11 @@ class _SignupScreenState extends State<SignupScreen> {
 
       // 회원가입 요청
       final user = await AuthService.signup(
-        userEmail: _emailController.text.trim(),
-        userPassword: password,
-        userName: _nameController.text.trim(),
-        userPhone: _phoneController.text.trim(),
-        userBirth: _birthController.text.trim()
+          userEmail: _emailController.text.trim(),
+          userPassword: password,
+          userName: _nameController.text.trim(),
+          userPhone: _phoneController.text.trim(),
+          userBirth: _birthController.text.trim()
       );
 
       if (!mounted) return;
@@ -247,7 +247,7 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       // 회원가입 후 로그인 페이지로 이동
-      context.push('${RoutePaths.login}');
+      context.go('${RoutePaths.login}');
 
     } catch (e) {
       if (!mounted) return;
@@ -353,7 +353,7 @@ class _SignupScreenState extends State<SignupScreen> {
     _termsCheck = value;
     _serviceCheck = value;
   }
-  
+
   // 이용 약관
   void _userCheckInfo() {
     showDialog(
@@ -399,7 +399,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           });
                         },
                       ),
-                      const Expanded(child: Text('만 14세 이상입니다 (필수)')),
+                      const Expanded(child: Text('만 12세 이상입니다 (필수)')),
                     ],
                   ),
                   // 개인정보
@@ -484,7 +484,6 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -528,7 +527,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                     const SizedBox(height: AppSpacing.xl),
 
-                    
+
                     ElevatedButton(
                         onPressed: _userCheckInfo,
                         child: Text("meomulm 이용 약관 동의하기")

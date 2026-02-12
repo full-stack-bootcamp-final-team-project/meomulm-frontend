@@ -62,9 +62,7 @@ class _FindIdScreenState extends State<FindIdScreen> {
     }
 
     try {
-      String checkPhone = PhoneNumberCheck(phone);
-
-      final res = await AuthService.userEmailCheck(name, checkPhone);
+      final res = await AuthService.userEmailCheck(name, phone);
 
       if (!mounted) return;
       if (res != null) {
@@ -154,23 +152,6 @@ class _FindIdScreenState extends State<FindIdScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('오류 : $e')));
     }
-  }
-
-  // 전화번호 - 확인 (없으면 추가)
-  String PhoneNumberCheck(String phone) {
-    if (phone.length == 10) {
-      return '${phone.substring(0, 2)}-'
-          '${phone.substring(2, 6)}-'
-          '${phone.substring(6)}';
-    }
-
-    if (phone.length == 11) {
-      return '${phone.substring(0, 3)}-'
-          '${phone.substring(3, 7)}-'
-          '${phone.substring(7)}';
-    }
-
-    return phone; // 형식이 다르면 원본 반환
   }
 
   @override

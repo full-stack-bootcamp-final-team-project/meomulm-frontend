@@ -38,6 +38,67 @@ class _HomeScreenState extends State<HomeScreen> {
   // 광고영역 자동 스크롤
   late final HomeAdAutoScrollController _adAutoController;
 
+  bool _toastShown = false;
+
+  void _showOverlayToast(String message) {
+    final overlay = Overlay.of(context);
+    if (overlay == null) return;
+
+    late OverlayEntry entry;
+
+    entry = OverlayEntry(
+        builder: (_) => Positioned(
+          left: 16,
+          right: 16,
+          bottom: 140,
+          child: Center(
+            child: Material(
+
+              color: Colors.transparent,
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.success,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        )
+    );
+
+
+    overlay.insert(entry);
+    Future.delayed(const Duration(seconds: 2), () {
+      entry.remove();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_toastShown) return;
+
+    final extra = GoRouterState.of(context).extra;
+    if (extra is Map && extra['toast'] is String) {
+      _toastShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showOverlayToast(extra['toast'] as String);
+      });
+    }
+  }
+
   @override
   void dispose() {
     // 자동 스크롤

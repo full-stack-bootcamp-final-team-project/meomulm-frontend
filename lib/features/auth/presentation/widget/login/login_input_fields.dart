@@ -3,7 +3,7 @@ import 'package:meomulm_frontend/core/constants/ui/labels_constants.dart';
 import 'package:meomulm_frontend/core/theme/app_colors.dart';
 import 'package:meomulm_frontend/core/theme/app_dimensions.dart';
 import 'package:meomulm_frontend/core/theme/app_input_styles.dart';
-import 'package:meomulm_frontend/core/widgets/input/text_field_widget.dart';
+import 'package:meomulm_frontend/core/widgets/input/custom_text_field.dart';
 
 class LoginInputFields extends StatelessWidget {
   final TextEditingController emailController;
@@ -46,24 +46,24 @@ class LoginInputFields extends StatelessWidget {
 
         SizedBox(height: AppSpacing.xxl),
 
-        TextFieldWidget(
+        CustomTextField(
           hintText: "이메일를 입력하세요",
-          style: AppInputStyles.standard,
           controller: emailController,
           onFieldSubmitted: (_) {
             FocusScope.of(context).requestFocus(passwordFocusNode);
           },
           textInputAction: TextInputAction.next,
           focusNode: emailFocusNode,
+          keyboardType: TextInputType.emailAddress,
         ),
         SizedBox(height: AppSpacing.lg),
 
-        TextFieldWidget(
+        CustomTextField(
           hintText: "비밀번호를 입력하세요",
-          style: AppInputStyles.password,
           controller: passwordController,
           onFieldSubmitted: (_) => onSubmit(),
           focusNode: passwordFocusNode,
+          obscureText: true,
         ),
         SizedBox(height: AppSpacing.sm),
       ],
