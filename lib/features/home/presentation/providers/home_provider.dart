@@ -6,10 +6,10 @@ import 'package:meomulm_frontend/features/accommodation/data/datasources/accommo
 import 'package:meomulm_frontend/features/accommodation/data/models/accommodation_response_model.dart';
 
 class HomeProvider with ChangeNotifier {
-  // 인기 숙소 조회
+  /// 인기 숙소 조회
 
   final HomeAccommodationService _homeService = HomeAccommodationService() ;
-  // 최근 본 숙소 조회
+  /// 최근 본 숙소 조회
   final AccommodationApiService _accommodationService = AccommodationApiService();
 
   bool isLoading = false;
@@ -49,22 +49,22 @@ class HomeProvider with ChangeNotifier {
 
   /// 최근 본 숙소 ID 저장 + 리스트 갱신
   Future<void> addRecentAccommodationId(
-      int id,
+      int accommodationId,
       {required bool isLoggedIn}
     ) async {
     if (!isLoggedIn) return;
     final prefs = await SharedPreferences.getInstance();
     final ids = prefs.getStringList('recent_ids') ?? [];
 
-    ids.remove(id.toString()); // 중복 제거
-    ids.insert(0, id.toString()); // 가장 최근 본 숙소를 맨 앞에 삽입
+    ids.remove(accommodationId.toString()); // 중복 제거
+    ids.insert(0, accommodationId.toString()); // 가장 최근 본 숙소를 맨 앞에 삽입
 
     if (ids.length > 12) ids.removeLast(); // 최대 12개
 
     await prefs.setStringList('recent_ids', ids);
 
     // 로컬 -> 서버 조회 후 recentList 갱신
-    await loadRecentFromLocal(isLoggedIn: true);
+    await loadRecentFromLocal(isLoggedIn: isLoggedIn);
   }
 
   /// 최근 본 숙소 서버 조회
