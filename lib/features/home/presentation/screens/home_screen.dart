@@ -126,6 +126,10 @@ class _HomeScreenState extends State<HomeScreen> {
           (_) => _updateGradientIfNeeded(),
     );
 
+    final auth = context.read<AuthProvider>();
+
+    context.read<HomeProvider>().loadRecentFromLocal(isLoggedIn: auth.isLoggedIn);
+
     // 광고 영역 자동 스크롤
     _adAutoController = HomeAdAutoScrollController(_adScroll);
 
@@ -133,6 +137,8 @@ class _HomeScreenState extends State<HomeScreen> {
       // 광고 영역 자동 스크롤
       _adAutoController.start(context);
     });
+
+
   }
 
   // 새로 고침(홈 -> 홈 가는 버튼 클릭 시)
@@ -247,15 +253,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                   scrollByItem: _scrollByItem,
                                 ),
                                 // 최근 본 숙소
-                                HomeSectionWidget(
-                                  width: width,
-                                  height: sectionHeight,
-                                  title: "최근 본 숙소",
-                                  isHot: false,
-                                  items: homeProvider.recentList,
-                                  controller: _recentScroll,
-                                  scrollByItem: _scrollByItem,
-                                ),
+                                if (homeProvider.recentList.isNotEmpty)
+                                  HomeSectionWidget(
+                                    width: width,
+                                    height: sectionHeight,
+                                    title: "최근 본 숙소",
+                                    isHot: false,
+                                    items: homeProvider.recentList,
+                                    controller: _recentScroll,
+                                    scrollByItem: _scrollByItem,
+                                  ),
                                 HomeSectionWidget(
                                   width: width,
                                   height: sectionHeight,
