@@ -111,6 +111,15 @@ class _MyReviewScreenState extends State<MyReviewScreen> {
     final w = MediaQuery.of(context).size.width;
     final maxWidth = w >= 600 ? w : double.infinity;
 
+    if(isLoading) {
+      return Scaffold(
+        appBar: AppBarWidget(title: TitleLabels.myReviews),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBarWidget(title: TitleLabels.myReviews),
