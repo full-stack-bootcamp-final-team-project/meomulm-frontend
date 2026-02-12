@@ -107,8 +107,10 @@ class _IntroScreenState extends State<IntroScreen>
     _softErrorTimer = Timer(const Duration(seconds: 5), () {
       if (!_isHomeReady && mounted) {
         _showErrorDialog(
-          message: '네트워크 연결이 원활하지 않습니다.\n다시 접속해주세요.',
+          message: '로딩 중 입니다.\n잠시 기다려주세요.',
           isHard: false,
+          title:'로딩 중',
+          type:'info'
         );
       }
     });
@@ -153,7 +155,7 @@ class _IntroScreenState extends State<IntroScreen>
   /// ========================== 에러 다이얼로그 ==========================
   /// isHard: true → 앱 종료 / 재시도 불가
   /// isHard: false → 소프트 에러, 다시 시도 가능
-  void _showErrorDialog({required String message, required bool isHard}) {
+  void _showErrorDialog({required String message, required bool isHard, String? title, String? type}) {
     if (_isDialogShowing) return;
     _isDialogShowing = true;
 
@@ -167,6 +169,8 @@ class _IntroScreenState extends State<IntroScreen>
           if (!isHard) _resetIntro(); // 소프트 에러 → 재시도
           // isHard면 앱 종료나 다른 처리 가능
         },
+        title: title,
+        type: type,
       ),
     );
   }

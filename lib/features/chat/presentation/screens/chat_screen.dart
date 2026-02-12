@@ -223,16 +223,17 @@ class _ChatScreenState extends State<ChatScreen> {
 
           // 로딩 표시
           if (loading) const LoadingIndicator(),
+
+          SafeArea(
+            child: MessageInput(
+              controller: inputController,
+              onSend: sendMessage,
+              isLoading: loading,
+            ),
+          ),
         ],
       ),
       // 입력창
-      bottomNavigationBar: SafeArea(
-        child: MessageInput(
-          controller: inputController,
-          onSend: sendMessage,
-          isLoading: loading,
-        ),
-      ),
     );
   }
 }
