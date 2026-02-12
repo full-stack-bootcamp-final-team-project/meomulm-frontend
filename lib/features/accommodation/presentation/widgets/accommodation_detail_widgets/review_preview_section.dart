@@ -20,6 +20,8 @@ class ReviewPreviewSection extends StatelessWidget {
     required this.onReviewTap
   });
 
+
+
   @override
   Widget build(BuildContext context) {
     return Padding(
