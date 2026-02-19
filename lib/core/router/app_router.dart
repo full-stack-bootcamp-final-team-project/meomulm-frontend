@@ -72,7 +72,7 @@ class AppRouter {
   }
 
   static final GoRouter router = GoRouter(
-    navigatorKey: navigatorKey, // ✅ Key 등록
+    navigatorKey: navigatorKey, // Key 등록
     // ----------------------------------------------------------------
     // initialLocation: pendingDeepLink가 있으면 그것을 사용, 아니면 /intro
     // ----------------------------------------------------------------
@@ -84,7 +84,14 @@ class AppRouter {
 
       final loc = state.uri.toString();
 
-      // ✅ 보호가 필요한 경로: /mypage 로 시작하는 모든 경로
+      // 만약 주소가 스키마로 시작한다면 경로만 추출하여 다시 리다이렉트
+      if (loc.startsWith('meomulm://')) {
+        final String purePath = loc.replaceFirst('meomulm://', '/');
+        // 정제된 경로가 유효한지 확인 후 이동
+        return purePath;
+      }
+
+      // 보호가 필요한 경로: /mypage 로 시작하는 모든 경로
       final needsAuth = loc.startsWith('/mypage');
 
       // 로그인 안 했는데 보호 경로 접근 → 로그인으로
