@@ -37,7 +37,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void initState() {
     super.initState();
     _cardFormController.addListener(_onCardFormChanged);
-    _fetchPaymentIntent();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchPaymentIntent();
+    });
   }
 
   @override

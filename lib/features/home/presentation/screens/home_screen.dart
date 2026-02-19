@@ -126,20 +126,19 @@ class _HomeScreenState extends State<HomeScreen> {
           (_) => _updateGradientIfNeeded(),
     );
 
-    final auth = context.read<AuthProvider>();
-
-    context.read<HomeProvider>().loadRecentFromLocal(isLoggedIn: auth.isLoggedIn);
-
-    // 광고 영역 자동 스크롤
-    _adAutoController = HomeAdAutoScrollController(_adScroll);
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // 광고 영역 자동 스크롤
+      final auth = context.read<AuthProvider>();
+      context.read<HomeProvider>().loadRecentFromLocal(
+        isLoggedIn: auth.isLoggedIn,
+      );
+
       _adAutoController.start(context);
     });
 
-
+    // 광고 컨트롤러 생성만 먼저
+    _adAutoController = HomeAdAutoScrollController(_adScroll);
   }
+
 
   // 새로 고침(홈 -> 홈 가는 버튼 클릭 시)
   // 홈의 전체 스크롤 처음으로 돌리기(화면 최상단 이동 포함)

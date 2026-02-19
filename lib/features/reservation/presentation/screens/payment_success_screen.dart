@@ -23,9 +23,11 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
   @override
   void initState() {
     super.initState();
-    _deleteBookerInfo();
 
-    // 5초 뒤 메인으로 이동
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _deleteBookerInfo();
+    });
+
     _timer = Timer(const Duration(seconds: 5), () {
       if (mounted) {
         context.go(AppRouter.RoutePaths.home);
