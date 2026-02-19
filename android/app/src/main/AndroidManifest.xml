@@ -21,15 +21,27 @@
                 android:hardwareAccelerated="true"
                 android:windowSoftInputMode="adjustResize">
 
-        <meta-data
-                android:name="io.flutter.embedding.android.NormalTheme"
-                android:resource="@style/NormalTheme" />
+            <meta-data
+                    android:name="io.flutter.embedding.android.NormalTheme"
+                    android:resource="@style/NormalTheme" />
 
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN"/>
-            <category android:name="android.intent.category.LAUNCHER"/>
-        </intent-filter>
-    </activity>
+            <intent-filter>
+                <!-- 현재 상태에서는 사용자가 앱 아이콘을 직접 터치해서 실행하는 것만 가능하다. -->
+                <!-- meomulm:// 커스텀 스킴은 안드로이드 시스템이 이미 알고 있는 주소일 때만 동작한다. -->
+                <action android:name="android.intent.action.MAIN"/>             <!-- 이 액티비티가 애플리케이션의 메인 진입점임을 나타낸다. -->
+                <category android:name="android.intent.category.LAUNCHER"/>     <!-- 안드로이드 홈 화면의 앱 아이콘을 클릭했을 때 이 액티비티를 실행하라는 뜻이다. -->
+            </intent-filter>
+
+
+            <!-- 추가 내용 -->
+            <!-- 어플이 설치되어 있을 경우, 안드로이드 시스템이 Manifest를 감지해서 앱을 즉시 실행한다. -->
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW"/>             <!-- 데이터를 사용자에게 보여주라는 명령 (딥링크의 필수 액션) -->
+                <category android:name="android.intent.category.DEFAULT"/>      <!-- 암시적 인텐트를 수신하기 위해 필수. -->
+                <category android:name="android.intent.category.BROWSABLE" />   <!-- 웹 브라우저에서 링크를 클릭했을 때 앱이 열리도록 허용. -->
+                <data android:scheme="meomulm"/>                                <!-- 딥링크의 '주소 체계'를 결정하는 핵심 설정이며, 전용 프로토콜을 설정한다. -->
+            </intent-filter>
+        </activity>
 
         <meta-data
                 android:name="flutterEmbedding"
