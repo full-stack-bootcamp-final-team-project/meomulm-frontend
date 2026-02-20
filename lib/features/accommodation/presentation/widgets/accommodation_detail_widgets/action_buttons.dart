@@ -9,6 +9,7 @@ import 'package:meomulm_frontend/features/accommodation/data/datasources/favorit
 import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:meomulm_frontend/core/constants/paths/route_paths.dart' as AppRouter;
+import 'package:share_plus/share_plus.dart';
 
 class ActionButtons extends StatefulWidget {
   final int accommodationId;
@@ -113,7 +114,8 @@ class _ActionButtonsState extends State<ActionButtons> {
         _buildCircleButton(
           icon: Icons.share,
           iconColor: AppColors.white,
-          onTap: () => _copyLink(context),
+          // onTap: () => _copyLink(context),
+          onTap: () => _shareLink(context),
         ),
       ],
     );
@@ -144,19 +146,31 @@ class _ActionButtonsState extends State<ActionButtons> {
     );
   }
 
-  void _copyLink(BuildContext context) {
-    final deepLink = _buildDeepLink(widget.accommodationId);
+  // void _copyLink(BuildContext context) {
+  //   final deepLink = _buildDeepLink(widget.accommodationId);
+  //
+  //   FlutterClipboard.copy(deepLink).then((_) {
+  //     if (context.mounted) {
+  //       SnackMessenger.showMessage(
+  //         context,
+  //         "링크가 복사되었습니다.",
+  //         bottomPadding: AppSpacing.xxxxl,
+  //         type: ToastType.success
+  //       );
+  //     }
+  //   });
+  // }
+  void _shareLink(BuildContext context) {
+    final String deepLink = _buildDeepLink(widget.accommodationId);
 
-    FlutterClipboard.copy(deepLink).then((_) {
-      if (context.mounted) {
-        SnackMessenger.showMessage(
-          context,
-          "링크가 복사되었습니다.",
-          bottomPadding: AppSpacing.xxxxl,
-          type: ToastType.success
-        );
-      }
-    });
+    // Share.share(메시지 내용, subject: 메일 등 제목이 필요한 곳에 사용)
+    // 넘겨주는 데이터 자체를 ShareParams 라는 전용 객체로 감싸서 보내도록 한다.
+    SharePlus.instance.share(
+      ShareParams(
+        text: "머묾 앱에서 이 숙소를 확인해보세요! 🏠\n$deepLink",
+        subject: "숙소 공유하기",
+      ),
+    );
   }
 }
 
