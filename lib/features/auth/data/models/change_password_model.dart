@@ -1,22 +1,22 @@
 class ChangePasswordModel {
-  final int userId;
+  final String userEmail;
   final String? userPassword;
 
   ChangePasswordModel({
-    required this.userId,
+    required this.userEmail,
     this.userPassword,
   });
 
   factory ChangePasswordModel.fromJson(Map<String, dynamic> json) {
     return ChangePasswordModel(
-      userId: json['userId'] as int,
-      userPassword: json['userPassword'] as String?,
+      userEmail: json['userEmail'],
+      userPassword: json['userPassword'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'userId': userId,
+      'userEmail': userEmail,
       if (userPassword != null) 'userPassword': userPassword,
     };
   }
@@ -26,7 +26,7 @@ class ChangePasswordModel {
     String? userPassword,
   }) {
     return ChangePasswordModel(
-      userId: userId ?? this.userId,
+      userEmail: userEmail,
       userPassword: userPassword ?? this.userPassword,
     );
   }

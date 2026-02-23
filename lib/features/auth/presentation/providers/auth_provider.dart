@@ -4,12 +4,27 @@ import 'dart:convert';
 
 class AuthProvider with ChangeNotifier {
   String? _token;
+  String? _verifiedEmail;
   bool _isLoading = false;
 
   // Getters
   String? get token => _token;
+  String? get verifiedEmail => _verifiedEmail;
   bool get isLoading => _isLoading;
   bool get isLoggedIn => _token != null && _isTokenValid();
+
+
+  // 인증된 이메일 저장
+  Future<void> saveVerifiedEmail(String email) async {
+    _verifiedEmail = email;
+    notifyListeners();
+  }
+
+  // 이메일 초기화
+  void clearVerifiedEmail() {
+    _verifiedEmail = null;
+    notifyListeners();
+  }
 
   /// JWT 토큰 유효성 검증 (만료 시간 체크)
   bool _isTokenValid() {

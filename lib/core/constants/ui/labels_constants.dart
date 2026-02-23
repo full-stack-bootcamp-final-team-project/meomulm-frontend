@@ -7,6 +7,7 @@ class ButtonLabels {
   static const String login = '로그인';
   static const String signUp = '회원가입';
   static const String findId = '아이디 찾기';
+  static const String confirmUser = '본인 인증';
   static const String changePassword = '비밀번호 변경';
 
   static const String confirm = '확인';
