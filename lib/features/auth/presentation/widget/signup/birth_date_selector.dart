@@ -6,10 +6,12 @@ import 'package:meomulm_frontend/core/widgets/input/form_label.dart';
 
 class BirthDateSelector extends StatefulWidget {
   final TextEditingController birthController;
+  final bool enabled;
 
   const BirthDateSelector({
     super.key,
     required this.birthController,
+    this.enabled = true,
   });
 
   @override
@@ -66,6 +68,7 @@ class _BirthDateSelectorState extends State<BirthDateSelector> {
                 hint: 'YYYY',
                 items: _year,
                 value: _selectYear.isEmpty ? null : _selectYear,
+                enabled: widget.enabled,
                 onChanged: (y) {
                   setState(() {
                     _selectYear = y!;
@@ -80,6 +83,7 @@ class _BirthDateSelectorState extends State<BirthDateSelector> {
                 hint: 'MM',
                 items: _month,
                 value: _selectMonth.isEmpty ? null : _selectMonth,
+                enabled: widget.enabled,
                 onChanged: (m) {
                   setState(() {
                     _selectMonth = m!;
@@ -94,6 +98,7 @@ class _BirthDateSelectorState extends State<BirthDateSelector> {
                 hint: 'DD',
                 items: _day,
                 value: _selectDay.isEmpty ? null : _selectDay,
+                enabled: widget.enabled,
                 onChanged: (d) {
                   setState(() {
                     _selectDay = d!;
@@ -127,6 +132,7 @@ class _BirthDateSelectorState extends State<BirthDateSelector> {
     required List<String> items,
     required String? value,
     required ValueChanged<String?> onChanged,
+    bool enabled = true,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -156,7 +162,7 @@ class _BirthDateSelectorState extends State<BirthDateSelector> {
             child: Text(e),
           ))
               .toList(),
-          onChanged: onChanged,
+          onChanged: enabled ? onChanged : null,
         ),
       ),
     );

@@ -138,22 +138,22 @@ class AuthService {
           }
       );
 
-      if(res.data != null){
+      if(res.data == 1){
         return res.data;
       } else {
-        return null;
+        return 0;
       }
 
     } catch(e) {
       print("본인 인증 실패 $e");
-      return null;
+      return 0;
     }
   }
 
   // 비밀번호 변경 (로그인)
-  static Future<int?> LoginChangePassword(int userId, String userPassword) async {
+  static Future<int?> LoginChangePassword(String email, String userPassword) async {
     final changePassword = ChangePasswordModel(
-      userId: userId,
+      userEmail: email,
       userPassword: userPassword,
     );
 
@@ -172,6 +172,54 @@ class AuthService {
     } catch(e) {
       print("비밀번호 변경 실패 $e");
       return null;
+    }
+  }
+
+  // 이메일 인증번호 발송
+  static Future<bool> sendEmailCode(String email) async {
+    try {
+      final res = await _dio.post(
+        '${ApiPaths.authUrl}/sendEmailCode',
+        data: {
+          "userEmail": email,
+        },
+      );
+
+      if (res.statusCode == 200 && res.data == 1) {
+        return true;
+      }
+
+      return false;
+
+    } catch (e) {
+     return false;
+    }
+  }
+
+  // 이메일 인증번호 확인
+  static Future<bool> verifyEmailCode({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      final res = await _dio.post(
+        '${ApiPaths.authUrl}/verifyEmailCode',
+        data: {
+          "userEmail": email,
+          "inputCode": code,
+        },
+      );
+
+      print(res.data);
+
+      if(res.data == 1){
+        return true;
+      } else {
+        return false;
+      }
+
+    } catch (e) {
+      return false;
     }
   }
 }

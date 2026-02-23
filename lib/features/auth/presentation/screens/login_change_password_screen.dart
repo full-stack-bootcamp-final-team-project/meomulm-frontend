@@ -6,12 +6,13 @@ import 'package:meomulm_frontend/core/utils/regexp_utils.dart';
 import 'package:meomulm_frontend/core/widgets/appbar/app_bar_widget.dart';
 import 'package:meomulm_frontend/core/widgets/dialogs/snack_messenger.dart';
 import 'package:meomulm_frontend/features/auth/data/datasources/auth_service.dart';
+import 'package:meomulm_frontend/features/auth/presentation/providers/auth_provider.dart';
 import 'package:meomulm_frontend/features/auth/presentation/widget/change_password/change_password_form_fields.dart';
+import 'package:provider/provider.dart';
 
 class LoginChangePasswordScreen extends StatefulWidget {
-  final int userId;
 
-  const LoginChangePasswordScreen({super.key, required this.userId});
+  const LoginChangePasswordScreen({super.key});
 
   @override
   State<LoginChangePasswordScreen> createState() =>
@@ -81,12 +82,21 @@ class _LoginChangePasswordScreenState extends State<LoginChangePasswordScreen> {
       return;
     }
 
+    final email = context.read<AuthProvider>().verifiedEmail;
+
+    if (email == null) {
+      SnackMessenger.showMessage(context, "인증 정보가 없습니다. 다시 시도해주세요.", type: ToastType.error);
+      context.go(RoutePaths.login);
+      return;
+    }
+
     try {
-      final res = await AuthService.LoginChangePassword(widget.userId, password);
+      final res = await AuthService.LoginChangePassword(email, password);
 
       if(!mounted) return;
 
       if(res != null || res != 0){
+        context.read<AuthProvider>().clearVerifiedEmail();
         SnackMessenger.showMessage(
             context,
             "비밀번호가 변경되었습니다.",
